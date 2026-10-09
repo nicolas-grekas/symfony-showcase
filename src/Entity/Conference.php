@@ -36,6 +36,13 @@ class Conference
 
         #[ORM\Column]
         public private(set) DatePoint $cfpClosesAt,
+
+        #[ORM\Column]
+        public private(set) int $ticketCapacity = 0,
+
+        /** In cents of euro */
+        #[ORM\Column]
+        public private(set) int $ticketPrice = 0,
     ) {
         $this->id = Uuid::v7();
     }
@@ -43,5 +50,10 @@ class Conference
     public function isCfpOpen(DatePoint $now): bool
     {
         return $this->cfpOpensAt <= $now && $now < $this->cfpClosesAt;
+    }
+
+    public function isOnSale(DatePoint $now): bool
+    {
+        return 0 < $this->ticketCapacity && $now < $this->startsOn;
     }
 }

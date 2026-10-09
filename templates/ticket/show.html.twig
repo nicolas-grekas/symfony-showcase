@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ticket for {{ ticket.conference.name }}{% endblock %}
+
+{% block body %}
+    <article class="ticket">
+        <h1>{{ ticket.conference.name }}</h1>
+        <p>{{ ticket.conference.city }}, {{ ticket.conference.startsOn|date('F j') }} to {{ ticket.conference.endsOn|date('F j, Y') }}</p>
+        <p class="holder">{{ ticket.buyer.name }}</p>
+        <p><code>{{ ticket.id }}</code></p>
+        <p>Paid {{ (ticket.price / 100)|format_currency('EUR') }} on {{ ticket.paidAt|date('F j, Y') }}</p>
+    </article>
+{% endblock %}

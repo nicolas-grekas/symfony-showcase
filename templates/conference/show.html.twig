@@ -9,6 +9,9 @@
     {% if conference.isCfpOpen(now) %}
         <p><a class="button" href="{{ path('cfp_submit', {slug: conference.slug}) }}">Submit a talk</a> before {{ conference.cfpClosesAt|date('F j, Y') }}</p>
     {% endif %}
+    {% if conference.isOnSale(now) %}
+        <p><a class="button" href="{{ path('ticket_buy', {slug: conference.slug}) }}">Buy a ticket</a> for {{ (conference.ticketPrice / 100)|format_currency('EUR') }}</p>
+    {% endif %}
 
     <h2>Talks</h2>
     {% for talk in talks %}

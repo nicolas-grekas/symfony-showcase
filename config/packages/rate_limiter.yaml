@@ -3,3 +3,7 @@ rate_limiter:
         policy: sliding_window
         limit: 60
         interval: '1 minute'
+    ticket_purchase:
+        policy: fixed_window
+        limit: 5
+        interval: '10 minutes'

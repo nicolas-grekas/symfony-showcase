@@ -6,6 +6,7 @@ use App\Entity\Conference;
 use App\Entity\Material\Slides;
 use App\Entity\Proposal;
 use App\Entity\Speaker;
+use App\Entity\Ticket;
 use App\Entity\User;
 use App\Enum\Format;
 use App\Enum\Level;
@@ -28,8 +29,8 @@ class AppFixtures extends Fixture
     {
         $today = $this->now()->setTime(0, 0);
 
-        $open = new Conference('SymfonyLive Lille', 'symfonylive-lille', 'Lille', $today->modify('+90 days'), $today->modify('+91 days'), $today->modify('-30 days'), $today->modify('+30 days'));
-        $past = new Conference('SymfonyCon Amsterdam', 'symfonycon-amsterdam', 'Amsterdam', $today->modify('+20 days'), $today->modify('+22 days'), $today->modify('-120 days'), $today->modify('-60 days'));
+        $open = new Conference('SymfonyLive Lille', 'symfonylive-lille', 'Lille', $today->modify('+90 days'), $today->modify('+91 days'), $today->modify('-30 days'), $today->modify('+30 days'), ticketCapacity: 150, ticketPrice: 19900);
+        $past = new Conference('SymfonyCon Amsterdam', 'symfonycon-amsterdam', 'Amsterdam', $today->modify('+20 days'), $today->modify('+22 days'), $today->modify('-120 days'), $today->modify('-60 days'), ticketCapacity: 2, ticketPrice: 34900);
 
         $alice = new Speaker('alice@example.com');
         $alice->name = 'Alice Martin';
@@ -67,6 +68,14 @@ class AppFixtures extends Fixture
 
         // speakers log in with the identity provider, so they have no password
         $manager->persist(new User('alice@example.com', 'Alice Martin'));
+
+        // the last two seats of Amsterdam were sold this week
+        foreach ([['eve@example.com', 'Eve Dubois', 2], ['frank@example.com', 'Frank Weber', 5]] as [$email, $name, $daysAgo]) {
+            $manager->persist($buyer = new User($email, $name));
+            $ticket = new Ticket($past, $buyer, $orderedAt = $today->modify("-$daysAgo days 10:00"));
+            $ticket->markPaid('pay_fixture_'.$daysAgo, $orderedAt->modify('+2 minutes'));
+            $manager->persist($ticket);
+        }
 
         $manager->persist($open);
         $manager->persist($past);

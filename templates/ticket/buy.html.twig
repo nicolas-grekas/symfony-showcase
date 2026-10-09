@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tickets for {{ conference.name }}{% endblock %}
+
+{% block body %}
+    <h1>Tickets for {{ conference.name }}</h1>
+    <p>{{ conference.city }}, {{ conference.startsOn|date('F j') }} to {{ conference.endsOn|date('F j, Y') }}</p>
+
+    {% if ticket and ticket.status.value == 'paid' %}
+        <p class="flash flash-success">You have a ticket, sent to {{ ticket.buyer.email }}. See you there!</p>
+    {% elseif ticket %}
+        <p>We hold a seat for you until {{ ticket.heldUntil|date('H:i') }}, while your payment is confirmed.</p>
+        <form method="post">
+            <input type="hidden" name="_token" value="{{ csrf_token('ticket-purchase') }}">
+            <button type="submit">Resume the payment</button>
+        </form>
+    {% elseif seats_left and on_sale %}
+        <p class="price">{{ (conference.ticketPrice / 100)|format_currency('EUR') }}</p>
+        <p>{{ seats_left }} seats left.</p>
+        <form method="post">
+            <input type="hidden" name="_token" value="{{ csrf_token('ticket-purchase') }}">
+            <button type="submit">Buy a ticket</button>
+        </form>
+    {% else %}
+        <p><strong>Sold out.</strong></p>
+    {% endif %}
+{% endblock %}

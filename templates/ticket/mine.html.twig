@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}My tickets{% endblock %}
+
+{% block body %}
+    <h1>My tickets</h1>
+
+    <ul>
+        {% for item in tickets %}
+            <li><a href="{{ item.url }}">{{ item.ticket.conference.name }}</a>, {{ item.ticket.conference.startsOn|date('F j, Y') }}</li>
+        {% else %}
+            <li>No tickets yet.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
