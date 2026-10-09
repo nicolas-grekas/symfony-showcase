@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Fake payment provider{% endblock %}
+
+{% block body %}
+    <h1>Fake payment provider</h1>
+    <p>{{ description }}: <strong>{{ (amount / 100)|format_currency('EUR') }}</strong></p>
+    <form method="post">
+        <button type="submit" name="pay">Pay</button>
+        <button type="submit" name="cancel">Cancel</button>
+    </form>
+{% endblock %}

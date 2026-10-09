@@ -33,6 +33,9 @@ messenger:
         Symfony\Component\Mailer\Messenger\SendEmailMessage: async
         Symfony\Component\Notifier\Message\ChatMessage: async
         Symfony\Component\Notifier\Message\SmsMessage: async
+        # webhooks are acknowledged right away and consumed by a worker
+        Symfony\Component\RemoteEvent\Messenger\ConsumeRemoteEventMessage: async
+        Symfony\Component\Webhook\Messenger\SendWebhookMessage: async
         App\Message\DomainEvent: events
         App\Message\TravelCommand: events
 
