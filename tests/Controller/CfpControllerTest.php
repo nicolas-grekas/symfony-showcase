@@ -3,6 +3,7 @@
 namespace App\Tests\Controller;
 
 use App\Entity\Proposal;
+use App\Entity\User;
 use App\Enum\ProposalStatus;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -12,13 +13,13 @@ final class CfpControllerTest extends WebTestCase
     public function testSubmitAProposalStepByStep()
     {
         $client = static::createClient();
+        $client->loginUser($this->findUser('alice@example.com'));
         $client->request('GET', '/conferences/symfonylive-lille/cfp');
         $this->assertResponseIsSuccessful();
+        $this->assertInputValueSame('proposal_flow[speaker][name]', 'Alice Martin');
 
         $client->submitForm('Next', [
-            'proposal_flow[speaker][name]' => 'Carol Smith',
-            'proposal_flow[speaker][email]' => 'carol@example.com',
-            'proposal_flow[speaker][bio]' => 'Carol writes about forms.',
+            'proposal_flow[speaker][bio]' => 'Alice writes about forms.',
         ]);
         $this->assertSelectorTextContains('ol.steps li.current li.current', 'Talk');
 
@@ -54,11 +55,10 @@ final class CfpControllerTest extends WebTestCase
     public function testTheCodeOfConductMustBeAccepted()
     {
         $client = static::createClient();
+        $client->loginUser($this->findUser('alice@example.com'));
         $client->request('GET', '/conferences/symfonylive-lille/cfp');
         $client->submitForm('Next', [
-            'proposal_flow[speaker][name]' => 'Carol Smith',
-            'proposal_flow[speaker][email]' => 'carol@example.com',
-            'proposal_flow[speaker][bio]' => 'Carol writes about forms.',
+            'proposal_flow[speaker][bio]' => 'Alice writes about forms.',
         ]);
         $client->submitForm('Next', [
             'proposal_flow[talk][title]' => 'Form flows in practice',
@@ -76,8 +76,22 @@ final class CfpControllerTest extends WebTestCase
     public function testTheCallForPapersOfAPastConferenceIsClosed()
     {
         $client = static::createClient();
+        $client->loginUser($this->findUser('alice@example.com'));
         $client->request('GET', '/conferences/symfonycon-amsterdam/cfp');
 
         $this->assertResponseStatusCodeSame(410);
+    }
+
+    public function testSubmittingRequiresToLogIn()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/conferences/symfonylive-lille/cfp');
+
+        $this->assertResponseRedirects('/login');
+    }
+
+    private function findUser(string $email): User
+    {
+        return static::getContainer()->get(EntityManagerInterface::class)->getRepository(User::class)->findOneBy(['email' => $email]);
     }
 }
