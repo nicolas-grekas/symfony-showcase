@@ -47,7 +47,7 @@ What the app exercises, and what building it found.
 | 13 | Neither FrameworkBundle nor DoctrineBundle registers the new `CollectionDenormalizer` | DX, 8.2 | open: DoctrineBundle should register it |
 | 14 | `IterableToArrayCollection` wraps a `MapCollection` that builds its own `new ObjectMapper()` instead of using the app's | bug, 8.2 | symfony/symfony#66755 |
 | 15 | On 8.2 the workflow recipe's `framework.workflows: null` file is useless: WorkflowBundle is enabled by default and `#[AsWorkflow]` needs no YAML | recipe | symfony/recipes#1592 should drop the file (see the script for the user) |
-| 16 | DomCrawler assertions wrapped in `LogicalAnd` print the exported `Crawler` object on failure | DX, all branches | noted |
+| 16 | DomCrawler assertions wrapped in `LogicalAnd` print the exported `Crawler` object on failure (BrowserKit cookie and route assertions dump the response or the client) | DX, all branches | symfony/symfony#66765 (8.2) |
 | 18 | A `User::__serialize()` that hashes the password the MakerBundle way logs out the users who have none (e.g. those of `oidc_login`): `hash('crc32c', '')` never matches a `null` password | app gotcha | symfony/symfony#66763 (the example of the interface), symfony/maker-bundle#1845 |
 | 19 | `logout_form()`/`impersonation_form()` return `{action, fields}`: every app writes the same macro, and nothing tells which field is the CSRF token the `csrf-protection` Stimulus controller should handle | DX, 8.2 | noted |
 | 20 | A recent-authentication check on a POST action sends the user to the homepage once the password is confirmed (no target path is saved for unsafe methods): guard a GET page instead | doc | noted, done that way in the app |

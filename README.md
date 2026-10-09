@@ -4,7 +4,9 @@ A conference app (call for papers, reviews, tickets, back office and API) writte
 exercise the features of Symfony 8.2 the way an application would use them. What building
 it found, bugs and rough edges of 8.2 included, is listed in [LEDGER.md](LEDGER.md) with
 the pull requests that fix them. Until they are merged, some features need the patched
-Symfony the ledger describes.
+Symfony the ledger describes. `composer.json` also takes DoctrineBundle from a local
+checkout of its 3.4 branch with its open pull requests (`repositories.doctrine-bundle`);
+remove that entry to use the published 3.4.x-dev.
 
 ## Running it
 
