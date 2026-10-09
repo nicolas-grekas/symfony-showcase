@@ -659,6 +659,22 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         phone?: scalar|Param|null, // Default: ""
  *     }>,
  * }
+ * @psalm-type KeyManagementConfig = Param|bool|string|array{
+ *     enabled?: bool|Param, // Default: true
+ *     default_client?: scalar|Param|null, // Name of the default client (must match an entry of "clients"); inferred when only one client is registered. // Default: null
+ *     clients?: Param|string|array<string, Param|string|array{ // Default: []
+ *         dsn?: scalar|Param|null,
+ *         members?: array<string, scalar|Param|null>,
+ *         retired?: list<scalar|Param|null>,
+ *     }>,
+ *     store?: array{ // Data key store: payloads then refer to a stored data key instead of carrying it, so the KMS is reached once per key and per process, and that key can be rewrapped under another provider without rewriting a payload.
+ *         connection?: scalar|Param|null, // Service id of the DBAL connection holding the table. // Default: "doctrine.dbal.default_connection"
+ *         client?: scalar|Param|null, // Name of the client wrapping the data keys this store creates (must match an entry of "clients"); defaults to the default client. // Default: null
+ *         key_id?: scalar|Param|null, // Master key wrapping the data keys this store creates (backend-specific: alias, ARN, key URL, ...).
+ *         table?: scalar|Param|null, // Name of the table holding the wrapped data keys. // Default: "key_management_data_keys"
+ *         max_age?: mixed, // Seconds after which the current data key of a scope is retired in favour of a fresh one; the default of 30 days keeps what one key seals under the collision bound of the random 96-bit IV each payload carries. 0 retires the key on every call, null never retires it. // Default: 2592000
+ *     },
+ * }
  * @psalm-type FrameworkConfig = array{
  *     secret?: scalar|Param|null, // A secret that must not change. The options that sign data default to it and take a list of secrets to rotate theirs.
  *     http_method_override?: bool|Param, // Set true to enable support for the '_method' request parameter to determine the intended HTTP method on POST requests. // Default: false
@@ -1757,6 +1773,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     http_client?: HttpClientConfig,
  *     mailer?: MailerConfig,
  *     notifier?: NotifierConfig,
+ *     key_management?: KeyManagementConfig,
  *     framework?: FrameworkConfig,
  *     doctrine?: DoctrineConfig,
  *     doctrine_migrations?: DoctrineMigrationsConfig,
@@ -1793,6 +1810,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         http_client?: HttpClientConfig,
  *         mailer?: MailerConfig,
  *         notifier?: NotifierConfig,
+ *         key_management?: KeyManagementConfig,
  *         framework?: FrameworkConfig,
  *         doctrine?: DoctrineConfig,
  *         doctrine_migrations?: DoctrineMigrationsConfig,
@@ -1833,6 +1851,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         http_client?: HttpClientConfig,
  *         mailer?: MailerConfig,
  *         notifier?: NotifierConfig,
+ *         key_management?: KeyManagementConfig,
  *         framework?: FrameworkConfig,
  *         doctrine?: DoctrineConfig,
  *         doctrine_migrations?: DoctrineMigrationsConfig,
@@ -1870,6 +1889,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         http_client?: HttpClientConfig,
  *         mailer?: MailerConfig,
  *         notifier?: NotifierConfig,
+ *         key_management?: KeyManagementConfig,
  *         framework?: FrameworkConfig,
  *         doctrine?: DoctrineConfig,
  *         doctrine_migrations?: DoctrineMigrationsConfig,

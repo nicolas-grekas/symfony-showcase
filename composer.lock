@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9d160f8df6a969ff9be67d431c8fd4bd",
+    "content-hash": "08bc265582247b8f0368faf7d7ac22ce",
     "packages": [
         {
             "name": "brick/math",
@@ -3219,6 +3219,89 @@
             "time": "2026-10-09T14:10:13+00:00"
         },
         {
+            "name": "symfony/doctrine-dbal-key-management",
+            "version": "8.2.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/doctrine-dbal-key-management.git",
+                "reference": "844e853e17c81f5870e6a05da8c92f456b24b006"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/doctrine-dbal-key-management/zipball/844e853e17c81f5870e6a05da8c92f456b24b006",
+                "reference": "844e853e17c81f5870e6a05da8c92f456b24b006",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/dbal": "^4.3",
+                "php": ">=8.4.1",
+                "psr/container": "^1.1|^2.0",
+                "symfony/key-management": "^8.2",
+                "symfony/uid": "^7.4|^8.0"
+            },
+            "require-dev": {
+                "symfony/dependency-injection": "^7.4|^8.0"
+            },
+            "default-branch": true,
+            "type": "symfony-key-management-bridge",
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\KeyManagement\\Bridge\\DoctrineDbal\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jérôme Tamarelle",
+                    "email": "jerome@tamarelle.net"
+                },
+                {
+                    "name": "Florent Morselli",
+                    "email": "florent.morselli@spomky-labs.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony Doctrine DBAL Key Management Bridge",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "dbal",
+                "doctrine",
+                "encryption",
+                "kms"
+            ],
+            "support": {
+                "source": "https://github.com/symfony/doctrine-dbal-key-management/tree/8.2"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2026-10-09T05:58:54+00:00"
+        },
+        {
             "name": "symfony/doctrine-messenger",
             "version": "8.2.x-dev",
             "source": {
@@ -3293,6 +3376,87 @@
                 }
             ],
             "time": "2026-10-09T11:27:40+00:00"
+        },
+        {
+            "name": "symfony/doctrine-orm-key-management",
+            "version": "8.2.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/doctrine-orm-key-management.git",
+                "reference": "b17c030ffa9a6a777ecccad659d8bce444cc5eeb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/doctrine-orm-key-management/zipball/b17c030ffa9a6a777ecccad659d8bce444cc5eeb",
+                "reference": "b17c030ffa9a6a777ecccad659d8bce444cc5eeb",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/orm": "^3.4",
+                "php": ">=8.4.1",
+                "psr/container": "^1.1|^2.0",
+                "symfony/doctrine-bridge": "^7.4.10|^8.0.10",
+                "symfony/doctrine-dbal-key-management": "^8.2",
+                "symfony/key-management": "^8.2"
+            },
+            "require-dev": {
+                "symfony/cache": "^7.4|^8.0",
+                "symfony/dependency-injection": "^7.4|^8.0"
+            },
+            "default-branch": true,
+            "type": "symfony-key-management-bridge",
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\KeyManagement\\Bridge\\DoctrineOrm\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Florent Morselli",
+                    "email": "florent.morselli@spomky-labs.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony Doctrine ORM Key Management Bridge",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "doctrine",
+                "encryption",
+                "kms",
+                "orm"
+            ],
+            "support": {
+                "source": "https://github.com/symfony/doctrine-orm-key-management/tree/8.2"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2026-10-09T05:58:54+00:00"
         },
         {
             "name": "symfony/dotenv",
@@ -4730,6 +4894,106 @@
                 }
             ],
             "time": "2026-10-09T16:14:16+00:00"
+        },
+        {
+            "name": "symfony/key-management",
+            "version": "8.2.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/key-management.git",
+                "reference": "ca7dd286062e857c594ea85fc675dd3f5e506640"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/key-management/zipball/ca7dd286062e857c594ea85fc675dd3f5e506640",
+                "reference": "ca7dd286062e857c594ea85fc675dd3f5e506640",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.4.1",
+                "symfony/polyfill-mbstring": "^1.0"
+            },
+            "conflict": {
+                "symfony/config": "<8.2",
+                "symfony/console": "<7.4",
+                "symfony/dependency-injection": "<8.2",
+                "symfony/serializer": "<7.4",
+                "symfony/service-contracts": "<2.5",
+                "symfony/web-profiler-bundle": "<8.2"
+            },
+            "require-dev": {
+                "psr/container": "^1.1|^2.0",
+                "psr/log": "^1|^2|^3",
+                "symfony/config": "^8.2",
+                "symfony/console": "^7.4|^8.0",
+                "symfony/dependency-injection": "^8.2",
+                "symfony/filesystem": "^7.4|^8.0",
+                "symfony/http-kernel": "^7.4|^8.0",
+                "symfony/process": "^7.4|^8.0",
+                "symfony/serializer": "^7.4|^8.0",
+                "symfony/service-contracts": "^2.5|^3.0",
+                "symfony/uid": "^7.4|^8.0",
+                "symfony/var-dumper": "^7.4|^8.0"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\KeyManagement\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jérôme Tamarelle",
+                    "email": "jerome@tamarelle.net"
+                },
+                {
+                    "name": "Florent Morselli",
+                    "email": "florent.morselli@spomky-labs.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Abstracts Key Management Systems (AWS KMS, Azure Key Vault, Google Cloud KMS, HashiCorp Vault Transit, KMIP, ...) behind a single interface",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "encryption",
+                "key management",
+                "kms",
+                "secrets",
+                "vault"
+            ],
+            "support": {
+                "source": "https://github.com/symfony/key-management/tree/8.2"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2026-10-05T05:37:45+00:00"
         },
         {
             "name": "symfony/lock",
