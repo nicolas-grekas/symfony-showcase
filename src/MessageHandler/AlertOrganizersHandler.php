@@ -13,6 +13,7 @@ final class AlertOrganizersHandler
 {
     public function __construct(
         private readonly NotifierInterface $notifier,
+        private readonly AdminRecipientsProviderInterface $adminRecipients,
     ) {
     }
 
@@ -20,8 +21,7 @@ final class AlertOrganizersHandler
     {
         $this->notifier->send(
             (new Notification($alert->subject, ['email']))->content($alert->details)->importance(Notification::IMPORTANCE_HIGH),
-            // the admin recipients come from notifier.admin_recipients, which nothing but the notifier itself exposes
-            ...($this->notifier instanceof AdminRecipientsProviderInterface ? $this->notifier->getAdminRecipients() : []),
+            ...$this->adminRecipients->getAdminRecipients(),
         );
     }
 }
