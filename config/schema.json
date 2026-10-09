@@ -3120,6 +3120,35 @@
                                 },
                                 "additionalProperties": false,
                                 "description": "Data key store: payloads then refer to a stored data key instead of carrying it, so the KMS is reached once per key and per process, and that key can be rewrapped under another provider without rewriting a payload."
+                            },
+                            "doctrine": {
+                                "$ref": "#/$defs/types/object_null",
+                                "properties": {
+                                    "types": {
+                                        "$ref": "#/$defs/types/object_null",
+                                        "additionalProperties": {
+                                            "$ref": "#/$defs/types/object_null",
+                                            "properties": {
+                                                "type": {
+                                                    "$ref": "#/$defs/types/string_null",
+                                                    "description": "Doctrine type converting the value before it is encrypted."
+                                                },
+                                                "key": {
+                                                    "$ref": "#/$defs/types/string_null",
+                                                    "description": "Master key encrypting the values, or the scope of their data key when \"store\" is configured."
+                                                }
+                                            },
+                                            "additionalProperties": false
+                                        },
+                                        "description": "Encrypted Doctrine DBAL types by name, declared when the kernel boots."
+                                    }
+                                },
+                                "patternProperties": {
+                                    "^type$": {
+                                        "$ref": "#/$defs/types/variable"
+                                    }
+                                },
+                                "additionalProperties": false
                             }
                         },
                         "patternProperties": {

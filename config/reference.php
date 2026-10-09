@@ -674,6 +674,12 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         table?: scalar|Param|null, // Name of the table holding the wrapped data keys. // Default: "key_management_data_keys"
  *         max_age?: mixed, // Seconds after which the current data key of a scope is retired in favour of a fresh one; the default of 30 days keeps what one key seals under the collision bound of the random 96-bit IV each payload carries. 0 retires the key on every call, null never retires it. // Default: 2592000
  *     },
+ *     doctrine?: array{
+ *         types?: array<string, array{ // Default: []
+ *             type?: string|Param, // Doctrine type converting the value before it is encrypted.
+ *             key?: string|Param, // Master key encrypting the values, or the scope of their data key when "store" is configured.
+ *         }>,
+ *     },
  * }
  * @psalm-type FrameworkConfig = array{
  *     secret?: scalar|Param|null, // A secret that must not change. The options that sign data default to it and take a list of secrets to rotate theirs.
