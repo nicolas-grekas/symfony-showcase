@@ -6,7 +6,7 @@ http:
 
 # Processes that automatically run with the server (https://symfony.com/doc/current/setup/symfony_cli.html#configuring-workers)
 workers:
-    # Consume async messages, and restart the worker when the code changes
-    #messenger_consume_async:
-    #    cmd: ['symfony', 'console', 'messenger:consume', 'async']
-    #    watch: ['config', 'src', 'templates', 'vendor/composer/installed.json']
+    # Consume the messages and run the schedule, and restart the worker when the code changes
+    messenger_consume_async:
+        cmd: ['symfony', 'console', 'messenger:consume', 'outbox', 'events', 'async', 'scheduler_default']
+        watch: ['config', 'src', 'templates', 'vendor/composer/installed.json']
