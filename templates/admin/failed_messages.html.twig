@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Failed messages{% endblock %}
+
+{% block body %}
+    <h1>Failed messages</h1>
+
+    <table>
+        <thead><tr><th>Message</th><th>Failed at</th><th>Error</th><th></th></tr></thead>
+        <tbody>
+            {% for message in messages %}
+                <tr>
+                    <td>{{ message.class|split('\\')|last }}</td>
+                    <td>{{ message.failed_at ? message.failed_at|date('Y-m-d H:i') }}</td>
+                    <td>{{ message.error }}</td>
+                    <td>
+                        {% for action in ['retry', 'remove'] %}
+                            <form method="post" action="{{ path('admin_failed_message_' ~ action, {id: message.id}) }}" class="inline">
+                                <input type="hidden" name="_token" value="{{ csrf_token('failed-message') }}">
+                                <button type="submit">{{ action|capitalize }}</button>
+                            </form>
+                        {% endfor %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="4">No failed message.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

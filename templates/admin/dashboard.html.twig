@@ -11,6 +11,9 @@
         {% endfor %}
     </ul>
 
+    {% if is_granted('ROLE_ORGANIZER') %}
+        <p><a href="{{ path('admin_failed_messages') }}">Failed messages</a></p>
+    {% endif %}
     {% if is_granted('ROLE_ADMIN') %}
         <p><a href="{{ path('admin_users') }}">Users</a></p>
     {% endif %}
