@@ -1195,7 +1195,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         access_denied_url?: scalar|Param|null,
  *         access_denied_handler?: scalar|Param|null,
  *         entry_point?: scalar|Param|null, // An enabled authenticator name or a service id that implements "Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface".
- *         re_authentication_entry_point?: scalar|Param|null, // Service id implementing "Symfony\Component\Security\Http\EntryPoint\ReAuthenticationEntryPointInterface", asking an already authenticated user to prove possession of their credentials again when IS_AUTHENTICATED_RECENTLY or IS_AUTHENTICATED_VERY_RECENTLY is denied. Defaults to the firewall entry point when that one implements it.
+ *         re_authentication_entry_point?: scalar|Param|null, // An enabled authenticator name or a service id implementing "Symfony\Component\Security\Http\EntryPoint\ReAuthenticationEntryPointInterface", asking an already authenticated user to prove possession of their credentials again when IS_AUTHENTICATED_RECENTLY or IS_AUTHENTICATED_VERY_RECENTLY is denied. Defaults to the firewall entry point when that one implements it.
  *         provider?: scalar|Param|null,
  *         stateless?: bool|Param, // Default: false
  *         lazy?: bool|Param, // Default: false

@@ -6005,7 +6005,7 @@
                                 },
                                 "re_authentication_entry_point": {
                                     "$ref": "#/$defs/types/scalar",
-                                    "description": "Service id implementing \"Symfony\\Component\\Security\\Http\\EntryPoint\\ReAuthenticationEntryPointInterface\", asking an already authenticated user to prove possession of their credentials again when IS_AUTHENTICATED_RECENTLY or IS_AUTHENTICATED_VERY_RECENTLY is denied. Defaults to the firewall entry point when that one implements it."
+                                    "description": "An enabled authenticator name or a service id implementing \"Symfony\\Component\\Security\\Http\\EntryPoint\\ReAuthenticationEntryPointInterface\", asking an already authenticated user to prove possession of their credentials again when IS_AUTHENTICATED_RECENTLY or IS_AUTHENTICATED_VERY_RECENTLY is denied. Defaults to the firewall entry point when that one implements it."
                                 },
                                 "provider": {
                                     "$ref": "#/$defs/types/scalar"
