@@ -1,0 +1,16 @@
+{# Renders the {action, fields} returned by logout_form(), impersonation_form() and impersonation_exit_form() #}
+{% macro post_form(form, label, class = '') %}
+    <form method="post" action="{{ form.action }}" class="inline {{ class }}">
+        {% for name, value in form.fields %}
+            <input type="hidden" name="{{ name }}" value="{{ value }}">
+        {% endfor %}
+        <button type="submit">{{ label }}</button>
+    </form>
+{% endmacro %}
+
+{% macro transition_button(route, proposal, label) %}
+    <form method="post" action="{{ path(route, {id: proposal.id}) }}" class="inline">
+        <input type="hidden" name="_token" value="{{ csrf_token('proposal-transition') }}">
+        <button type="submit">{{ label }}</button>
+    </form>
+{% endmacro %}

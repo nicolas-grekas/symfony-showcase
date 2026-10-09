@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}My proposals{% endblock %}
+
+{% block body %}
+    <h1>My proposals</h1>
+
+    {% for proposal in proposals %}
+        <article>
+            <h2><a href="{{ path('proposal_show', {id: proposal.id}) }}">{{ proposal.title }}</a></h2>
+            <p>{{ proposal.conference.name }} · {{ proposal.status.value|humanize }}</p>
+        </article>
+    {% else %}
+        <p>You have not submitted any proposal yet.</p>
+    {% endfor %}
+{% endblock %}

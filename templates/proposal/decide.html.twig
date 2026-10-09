@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+{% import '_macros.html.twig' as ui %}
+
+{% block title %}Decide: {{ proposal.title }}{% endblock %}
+
+{% block body %}
+    <h1>{{ proposal.title }}</h1>
+    <p>{{ proposal.speakers|map(s => s.name)|join(', ') }} · {{ proposal.format|trans }} · {{ proposal.level|trans }}</p>
+
+    <div class="abstract">{{ proposal.abstract|nl2br }}</div>
+
+    <p class="actions">
+        {{ ui.transition_button('proposal_accept', proposal, 'Accept') }}
+        {{ ui.transition_button('proposal_reject', proposal, 'Reject') }}
+        <a href="{{ path('proposal_show', {id: proposal.id}) }}">Cancel</a>
+    </p>
+{% endblock %}

@@ -1,4 +1,5 @@
 {% extends 'base.html.twig' %}
+{% import '_macros.html.twig' as ui %}
 
 {% block title %}{{ proposal.title }}{% endblock %}
 
@@ -9,6 +10,18 @@
         · <strong>{{ proposal.status.value|humanize }}</strong>
     </p>
     <p><a href="{{ path('conference_show', {slug: proposal.conference.slug}) }}">{{ proposal.conference.name }}</a></p>
+
+    <p class="actions">
+        {% if workflow_can(proposal, 'start_review') and is_granted('PROPOSAL_REVIEW', proposal) %}
+            {{ ui.transition_button('proposal_start_review', proposal, 'Start the review') }}
+        {% endif %}
+        {% if workflow_can(proposal, 'accept') and is_granted('PROPOSAL_REVIEW', proposal) %}
+            <a class="button" href="{{ path('proposal_decide', {id: proposal.id}) }}">Accept or reject</a>
+        {% endif %}
+        {% if workflow_can(proposal, 'withdraw') and is_granted('PROPOSAL_WITHDRAW', proposal) %}
+            {{ ui.transition_button('proposal_withdraw', proposal, 'Withdraw') }}
+        {% endif %}
+    </p>
 
     <div class="abstract">{{ proposal.abstract|nl2br }}</div>
 

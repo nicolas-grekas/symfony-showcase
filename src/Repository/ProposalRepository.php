@@ -20,6 +20,20 @@ class ProposalRepository extends ServiceEntityRepository
     /**
      * @return list<Proposal>
      */
+    public function findBySpeakerEmail(string $email): array
+    {
+        return $this->createQueryBuilder('p')
+            ->join('p.speakers', 's')
+            ->where('s.email = :email')
+            ->setParameter('email', $email)
+            ->orderBy('p.id', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return list<Proposal>
+     */
     public function findAcceptedForConference(string $slug): array
     {
         return $this->createQueryBuilder('p')

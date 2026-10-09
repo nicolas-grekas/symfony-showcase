@@ -14,8 +14,23 @@
     </head>
     <body>
         <header>
+            {% import '_macros.html.twig' as ui %}
             <nav>
                 <a href="{{ path('home') }}"><strong>Conferences</strong></a>
+                <span class="spacer"></span>
+                {% if is_granted('ROLE_REVIEWER') %}
+                    <a href="{{ path('admin_dashboard') }}">Back office</a>
+                {% endif %}
+                {% if is_granted('IS_IMPERSONATOR') %}
+                    {{ ui.post_form(impersonation_exit_form(path('admin_users')), 'Exit impersonation') }}
+                {% endif %}
+                {% if app.user %}
+                    <span>{{ app.user.name ?? app.user.userIdentifier }}</span>
+                    <a href="{{ path('speaker_proposals') }}">My proposals</a>
+                    {{ ui.post_form(logout_form(), 'Log out') }}
+                {% else %}
+                    <a href="{{ path('app_login') }}">Log in</a>
+                {% endif %}
             </nav>
         </header>
         <main>

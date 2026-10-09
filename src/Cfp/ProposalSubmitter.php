@@ -7,6 +7,7 @@ use App\Entity\Material\Slides;
 use App\Entity\Material\Video;
 use App\Entity\Proposal;
 use App\Entity\Speaker;
+use App\Entity\User;
 use App\Repository\SpeakerRepository;
 use App\Workflow\ProposalWorkflow;
 use Doctrine\ORM\EntityManagerInterface;
@@ -20,9 +21,9 @@ final class ProposalSubmitter
     ) {
     }
 
-    public function submit(Conference $conference, ProposalDraft $draft): Proposal
+    public function submit(Conference $conference, ProposalDraft $draft, User $user): Proposal
     {
-        $speaker = $this->speakers->findOneBy(['email' => $draft->speaker->email]) ?? new Speaker($draft->speaker->email);
+        $speaker = $this->speakers->findOneBy(['email' => $user->email]) ?? new Speaker($user->email);
         $speaker->name = $draft->speaker->name;
         $speaker->company = $draft->speaker->company;
         $speaker->bio = $draft->speaker->bio;
