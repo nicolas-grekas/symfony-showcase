@@ -34,8 +34,7 @@ security:
                 token_handler:
                     oidc:
                         discovery:
-                            # with a trailing slash, or the last segment of the issuer is dropped when resolving the discovery path
-                            base_uri: '%env(OIDC_ISSUER)%/'
+                            base_uri: '%env(OIDC_ISSUER)%'
                             cache: { id: cache.app }
                             # the keys of the discovery document only verify the tokens of the issuer it announces
                             check_issuer: true
