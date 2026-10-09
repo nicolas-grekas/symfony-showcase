@@ -5,8 +5,11 @@ namespace App\Cfp;
 use Symfony\Component\Form\Attribute\AsFormType;
 use Symfony\Component\Form\Attribute\FormField;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
+use Symfony\Component\Serializer\Attribute\DiscriminatorMap;
 use Symfony\Component\Validator\Constraints as Assert;
 
+// the API tells the kind of each material with a "type" key, mapped by the subclasses
+#[DiscriminatorMap(typeProperty: 'type')]
 #[AsFormType]
 abstract class MaterialData
 {

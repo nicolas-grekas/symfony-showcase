@@ -2,10 +2,12 @@
 
 namespace App\Cfp;
 
+use Symfony\Component\Serializer\Attribute\Ignore;
 use Symfony\Component\Validator\Constraints as Assert;
 
 final class ProposalDraft
 {
+    #[Ignore]
     public string $currentStep = '';
 
     // the form flow validates the "Default" group and the one of the current step: each nested object is

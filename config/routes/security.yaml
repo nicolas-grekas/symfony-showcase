@@ -6,6 +6,10 @@ _security_oidc_login:
     resource: security.authenticator.oidc_login.route_loader
     type: service
 
+_security_access_token:
+    resource: security.authenticator.access_token.route_loader
+    type: service
+
 app_logout:
     path: /logout
     methods: [POST]
