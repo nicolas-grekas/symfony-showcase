@@ -47,6 +47,19 @@ class Conference
         $this->id = Uuid::v7();
     }
 
+    public function update(string $name, string $slug, string $city, DatePoint $startsOn, DatePoint $endsOn, DatePoint $cfpOpensAt, DatePoint $cfpClosesAt, int $ticketCapacity, int $ticketPrice): void
+    {
+        $this->name = $name;
+        $this->slug = $slug;
+        $this->city = $city;
+        $this->startsOn = $startsOn;
+        $this->endsOn = $endsOn;
+        $this->cfpOpensAt = $cfpOpensAt;
+        $this->cfpClosesAt = $cfpClosesAt;
+        $this->ticketCapacity = $ticketCapacity;
+        $this->ticketPrice = $ticketPrice;
+    }
+
     public function isCfpOpen(DatePoint $now): bool
     {
         return $this->cfpOpensAt <= $now && $now < $this->cfpClosesAt;

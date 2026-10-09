@@ -9,12 +9,16 @@
         {% for conference in conferences %}
             <li>
                 <a href="{{ path('admin_proposals', {conference: conference.id}) }}">{{ conference.name }}</a>: proposals
-                {% if is_granted('ROLE_ORGANIZER') %}· <a href="{{ path('admin_sales', {id: conference.id}) }}">ticket sales</a>{% endif %}
+                {% if is_granted('ROLE_ORGANIZER') %}
+                    · <a href="{{ path('admin_sales', {id: conference.id}) }}">ticket sales</a>
+                    · <a href="{{ path('admin_conference_edit', {id: conference.id}) }}">edit</a>
+                {% endif %}
             </li>
         {% endfor %}
     </ul>
 
     {% if is_granted('ROLE_ORGANIZER') %}
+        <p><a class="button" href="{{ path('admin_conference_new') }}">New conference</a></p>
         <p><a href="{{ path('admin_failed_messages') }}">Failed messages</a></p>
     {% endif %}
     {% if is_granted('ROLE_ADMIN') %}
