@@ -393,6 +393,13 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         process_only_last_missed_run?: bool|Param, // Whether a task that missed several runs runs only once instead of once per missed run. // Default: false
  *     }>,
  * }
+ * @psalm-type JsonStreamerConfig = bool|array{
+ *     enabled?: bool|Param, // Default: true
+ *     default_options?: array{
+ *         include_null_properties?: bool|Param, // Encode the properties with null value // Default: false
+ *         ...<string, mixed>
+ *     },
+ * }
  * @psalm-type AssetMapperConfig = bool|array{
  *     enabled?: bool|Param, // Default: true
  *     paths?: Param|string|array<string, scalar|Param|null>,
@@ -457,7 +464,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     signature_format?: "legacy"|"standard"|"transitional"|Param, // The signature scheme to emit and to require: "legacy" (default) for Symfony's historical "<algo>=<hex>" over the event name, the id and the body; "standard" for the Standard Webhooks "v1,<base64>" over the id, the timestamp and the body, which moves the event name from the "Webhook-Event" header to the payload's "type" key; "transitional" for both at once, during a migration. // Default: "legacy"
  *     timestamp_tolerance?: int|Param, // How far, in seconds, an incoming Standard Webhooks timestamp may be from the current time before the request is rejected as a replay. Set to 0 to accept any timestamp. Legacy signatures carry no timestamp and are never bounded. // Default: 300
  *     routing?: array<string, array{ // Default: []
- *         service?: scalar|Param|null,
+ *         service?: scalar|Param|null, // The id of the request parser service for this type of webhook; defaults to the generic parser of the component, which checks the signature scheme set in "signature_format". // Default: "webhook.request_parser"
  *         secret?: scalar|Param|null, // The secret used to verify incoming request signatures. It must be set in production: with an empty value, depending on the parser, requests from any sender are accepted or every request is rejected. // Default: ""
  *     }>,
  * }
@@ -748,7 +755,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     html_sanitizer?: mixed,
  *     webhook?: WebhookConfig,
  *     remote_event?: RemoteEventConfig,
- *     json_streamer?: mixed,
+ *     json_streamer?: JsonStreamerConfig,
  *     session?: bool|array{ // Session configuration
  *         enabled?: bool|Param, // Default: false
  *         storage_factory_id?: scalar|Param|null, // Default: "session.storage.factory.native"
@@ -1743,6 +1750,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     property_info?: PropertyInfoConfig,
  *     uid?: UidConfig,
  *     scheduler?: SchedulerConfig,
+ *     json_streamer?: JsonStreamerConfig,
  *     asset_mapper?: AssetMapperConfig,
  *     rate_limiter?: RateLimiterConfig,
  *     webhook?: WebhookConfig,
@@ -1778,6 +1786,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         property_info?: PropertyInfoConfig,
  *         uid?: UidConfig,
  *         scheduler?: SchedulerConfig,
+ *         json_streamer?: JsonStreamerConfig,
  *         asset_mapper?: AssetMapperConfig,
  *         rate_limiter?: RateLimiterConfig,
  *         webhook?: WebhookConfig,
@@ -1817,6 +1826,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         property_info?: PropertyInfoConfig,
  *         uid?: UidConfig,
  *         scheduler?: SchedulerConfig,
+ *         json_streamer?: JsonStreamerConfig,
  *         asset_mapper?: AssetMapperConfig,
  *         rate_limiter?: RateLimiterConfig,
  *         webhook?: WebhookConfig,
@@ -1853,6 +1863,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         property_info?: PropertyInfoConfig,
  *         uid?: UidConfig,
  *         scheduler?: SchedulerConfig,
+ *         json_streamer?: JsonStreamerConfig,
  *         asset_mapper?: AssetMapperConfig,
  *         rate_limiter?: RateLimiterConfig,
  *         webhook?: WebhookConfig,

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1877eb89d4719523ccdf93d34220fe61",
+    "content-hash": "a61c5ef874897022edd2a06148cf7409",
     "packages": [
         {
             "name": "brick/math",
@@ -4644,6 +4644,94 @@
             "time": "2026-09-24T16:53:38+00:00"
         },
         {
+            "name": "symfony/json-streamer",
+            "version": "8.2.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/json-streamer.git",
+                "reference": "8418d10d7792b838e7dc2c63d604a523afdaac3d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/json-streamer/zipball/8418d10d7792b838e7dc2c63d604a523afdaac3d",
+                "reference": "8418d10d7792b838e7dc2c63d604a523afdaac3d",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.4.1",
+                "psr/container": "^1.1|^2.0",
+                "psr/log": "^1|^2|^3",
+                "symfony/deprecation-contracts": "^2.5|^3",
+                "symfony/filesystem": "^7.4|^8.0",
+                "symfony/type-info": "^8.2",
+                "symfony/var-exporter": "^7.4|^8.0"
+            },
+            "conflict": {
+                "symfony/config": "<8.2",
+                "symfony/dependency-injection": "<8.1"
+            },
+            "require-dev": {
+                "nst/json-test-suite": "*",
+                "phpstan/phpdoc-parser": "^1.0",
+                "symfony/config": "^8.2",
+                "symfony/dependency-injection": "^8.1",
+                "symfony/http-kernel": "^7.4|^8.0",
+                "symfony/uid": "^7.4|^8.0"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\JsonStreamer\\": ""
+                },
+                "exclude-from-classmap": [
+                    "Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Mathias Arlaud",
+                    "email": "mathias.arlaud@gmail.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Provides powerful methods to read/write data structures from/into JSON streams.",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "json",
+                "stream"
+            ],
+            "support": {
+                "source": "https://github.com/symfony/json-streamer/tree/8.2"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2026-10-09T16:14:16+00:00"
+        },
+        {
             "name": "symfony/lock",
             "version": "8.2.x-dev",
             "source": {
@@ -5262,6 +5350,85 @@
                 }
             ],
             "time": "2026-10-09T14:10:13+00:00"
+        },
+        {
+            "name": "symfony/object-mapper",
+            "version": "8.2.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/object-mapper.git",
+                "reference": "a197f708fa84523636cac74b3007594b5a6942f3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/object-mapper/zipball/a197f708fa84523636cac74b3007594b5a6942f3",
+                "reference": "a197f708fa84523636cac74b3007594b5a6942f3",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.4.1",
+                "psr/container": "^2.0"
+            },
+            "conflict": {
+                "symfony/dependency-injection": "<8.1",
+                "symfony/property-access": "<7.2"
+            },
+            "require-dev": {
+                "symfony/cache": "^8.2",
+                "symfony/config": "^7.4|^8.0",
+                "symfony/dependency-injection": "^8.2",
+                "symfony/http-kernel": "^7.4|^8.0",
+                "symfony/property-access": "^7.4|^8.0",
+                "symfony/var-exporter": "^7.4|^8.0"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\ObjectMapper\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Provides a way to map an object to another object",
+            "homepage": "https://symfony.com",
+            "support": {
+                "source": "https://github.com/symfony/object-mapper/tree/8.2"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2026-10-03T08:17:19+00:00"
         },
         {
             "name": "symfony/options-resolver",

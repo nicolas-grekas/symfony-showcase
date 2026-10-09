@@ -1872,7 +1872,7 @@
                         "$ref": "#/$defs/nodes/remote_event"
                     },
                     "json_streamer": {
-                        "$ref": "#/$defs/types/variable"
+                        "$ref": "#/$defs/nodes/json_streamer"
                     },
                     "session": {
                         "anyOf": [
@@ -2984,6 +2984,45 @@
                         "redact_except": []
                     },
                     "scoped_clients": []
+                }
+            },
+            "json_streamer": {
+                "anyOf": [
+                    {
+                        "$ref": "#/$defs/types/object_null",
+                        "properties": {
+                            "enabled": {
+                                "$ref": "#/$defs/types/boolean",
+                                "default": true
+                            },
+                            "default_options": {
+                                "$ref": "#/$defs/types/object_null",
+                                "properties": {
+                                    "include_null_properties": {
+                                        "$ref": "#/$defs/types/boolean",
+                                        "default": false,
+                                        "description": "Encode the properties with null value"
+                                    }
+                                },
+                                "additionalProperties": true,
+                                "default": {
+                                    "include_null_properties": false
+                                }
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    {
+                        "type": [
+                            "boolean"
+                        ]
+                    }
+                ],
+                "default": {
+                    "enabled": true,
+                    "default_options": {
+                        "include_null_properties": false
+                    }
                 }
             },
             "lock": {
@@ -10284,7 +10323,9 @@
                                     "$ref": "#/$defs/types/object_null",
                                     "properties": {
                                         "service": {
-                                            "$ref": "#/$defs/types/scalar"
+                                            "$ref": "#/$defs/types/scalar",
+                                            "default": "webhook.request_parser",
+                                            "description": "The id of the request parser service for this type of webhook; defaults to the generic parser of the component, which checks the signature scheme set in \"signature_format\"."
                                         },
                                         "secret": {
                                             "$ref": "#/$defs/types/scalar",
@@ -10965,6 +11006,9 @@
         "http_client": {
             "$ref": "#/$defs/nodes/http_client"
         },
+        "json_streamer": {
+            "$ref": "#/$defs/nodes/json_streamer"
+        },
         "lock": {
             "$ref": "#/$defs/nodes/lock"
         },
@@ -11063,6 +11107,9 @@
                 },
                 "http_client": {
                     "$ref": "#/$defs/nodes/http_client"
+                },
+                "json_streamer": {
+                    "$ref": "#/$defs/nodes/json_streamer"
                 },
                 "lock": {
                     "$ref": "#/$defs/nodes/lock"
@@ -11172,6 +11219,9 @@
                 "http_client": {
                     "$ref": "#/$defs/nodes/http_client"
                 },
+                "json_streamer": {
+                    "$ref": "#/$defs/nodes/json_streamer"
+                },
                 "lock": {
                     "$ref": "#/$defs/nodes/lock"
                 },
@@ -11275,6 +11325,9 @@
                 },
                 "http_client": {
                     "$ref": "#/$defs/nodes/http_client"
+                },
+                "json_streamer": {
+                    "$ref": "#/$defs/nodes/json_streamer"
                 },
                 "lock": {
                     "$ref": "#/$defs/nodes/lock"
