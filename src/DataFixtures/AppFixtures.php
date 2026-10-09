@@ -36,6 +36,7 @@ class AppFixtures extends Fixture
         $alice->name = 'Alice Martin';
         $alice->company = 'Acme';
         $alice->bio = 'Alice builds Symfony apps for a living and maintains a few open-source bundles.';
+        $alice->phone = '+33 6 12 34 56 78';
 
         $bob = new Speaker('bob@example.com');
         $bob->name = 'Bob Durand';

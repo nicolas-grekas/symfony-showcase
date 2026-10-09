@@ -27,6 +27,7 @@ final class ProposalSubmitter
         $speaker->name = $draft->speaker->name;
         $speaker->company = $draft->speaker->company;
         $speaker->bio = $draft->speaker->bio;
+        $speaker->phone = $draft->speaker->phone ?? $speaker->phone;
 
         $proposal = new Proposal($conference, $draft->talk->title, $draft->talk->abstract, $draft->talk->level, $draft->talk->format);
         $proposal->addSpeaker($speaker);

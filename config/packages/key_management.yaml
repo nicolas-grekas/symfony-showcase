@@ -1,0 +1,7 @@
+key_management:
+    clients:
+        # a local key in development; a KMS of the hosting provider in production, e.g. aws://...
+        default: '%env(KMS_DSN)%'
+    # the data keys are kept wrapped in a table: the KMS is reached once per key, and its master key can be rotated
+    store:
+        key_id: speakers

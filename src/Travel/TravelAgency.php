@@ -28,7 +28,7 @@ final class TravelAgency
                 'city' => $proposal->conference->city,
                 'arrival' => $proposal->conference->startsOn->modify('-1 day')->format('Y-m-d'),
                 'departure' => $proposal->conference->endsOn->modify('+1 day')->format('Y-m-d'),
-                'travelers' => $proposal->speakers->map(static fn ($speaker) => ['name' => $speaker->name, 'email' => $speaker->email])->getValues(),
+                'travelers' => $proposal->speakers->map(static fn ($speaker) => array_filter(['name' => $speaker->name, 'email' => $speaker->email, 'phone' => $speaker->phone]))->getValues(),
             ],
         ]);
 

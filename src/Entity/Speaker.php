@@ -23,6 +23,10 @@ class Speaker
     #[ORM\Column(type: 'text')]
     public string $bio;
 
+    /** Encrypted at rest, for the travel agency only */
+    #[ORM\Column(type: 'encrypted_string', nullable: true)]
+    public ?string $phone = null;
+
     public function __construct(
         #[ORM\Column(length: 180, unique: true)]
         public private(set) string $email,

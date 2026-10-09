@@ -663,7 +663,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     enabled?: bool|Param, // Default: true
  *     default_client?: scalar|Param|null, // Name of the default client (must match an entry of "clients"); inferred when only one client is registered. // Default: null
  *     clients?: Param|string|array<string, Param|string|array{ // Default: []
- *         dsn?: scalar|Param|null,
+ *         dsn?: string|Param,
  *         members?: array<string, scalar|Param|null>,
  *         retired?: list<scalar|Param|null>,
  *     }>,
