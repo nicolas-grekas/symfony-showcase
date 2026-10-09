@@ -4,10 +4,10 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "php": ">=8.4",
+        "php": ">=8.5",
         "ext-ctype": "*",
         "ext-iconv": "*",
-        "doctrine/doctrine-bundle": "^3.3",
+        "doctrine/doctrine-bundle": "3.4.x-dev",
         "doctrine/doctrine-migrations-bundle": "^4.0",
         "doctrine/orm": "^3.7",
         "phpdocumentor/reflection-docblock": "^6.0",
@@ -37,9 +37,11 @@
         "symfony/string": "8.2.*",
         "symfony/translation": "8.2.*",
         "symfony/twig-bundle": "8.2.*",
+        "symfony/uid": "8.2.*",
         "symfony/ux-turbo": "^3.5",
         "symfony/validator": "8.2.*",
         "symfony/web-link": "8.2.*",
+        "symfony/workflow": "8.2.*",
         "symfony/yaml": "8.2.*",
         "twig/extra-bundle": "^2.12|^3.0",
         "twig/twig": "^2.12|^3.0"
@@ -93,12 +95,14 @@
     },
     "extra": {
         "symfony": {
-            "allow-contrib": false,
+            "allow-contrib": "true",
             "require": "8.2.*",
             "docker": true
         }
     },
     "require-dev": {
+        "dama/doctrine-test-bundle": "^8.7",
+        "doctrine/doctrine-fixtures-bundle": "^4.3",
         "opis/json-schema": "^2.6",
         "phpunit/phpunit": "^13.4",
         "symfony/browser-kit": "8.2.*",
@@ -107,5 +111,15 @@
         "symfony/maker-bundle": "^1.0",
         "symfony/stopwatch": "8.2.*",
         "symfony/web-profiler-bundle": "8.2.*"
-    }
+    },
+    "repositories": [{
+        "name": "doctrine-bundle",
+        "type": "path",
+        "url": "../doctrine-worktrees/showcase",
+        "options": {
+            "versions": {
+                "doctrine/doctrine-bundle": "3.4.x-dev"
+            }
+        }
+    }]
 }

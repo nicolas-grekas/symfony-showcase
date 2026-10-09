@@ -312,6 +312,44 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         unwrap_exceptions?: bool|Param, // Whether the application gets the exception of the failing handler instead of a HandlerFailedException when it dispatches a message. // Default: false
  *     }>,
  * }
+ * @psalm-type WorkflowConfig = bool|array{
+ *     enabled?: bool|Param, // Default: true
+ *     workflows?: array<string, array{ // Default: []
+ *         audit_trail?: bool|array{
+ *             enabled?: bool|Param, // Default: false
+ *         },
+ *         type?: "workflow"|"state_machine"|Param, // Default: "state_machine"
+ *         marking_store?: array{
+ *             type?: "method"|Param,
+ *             property?: scalar|Param|null,
+ *             service?: scalar|Param|null,
+ *         },
+ *         supports?: Param|string|list<scalar|Param|null>,
+ *         definition_validators?: list<scalar|Param|null>,
+ *         support_strategy?: scalar|Param|null,
+ *         initial_marking?: \BackedEnum|Param|string|list<scalar|Param|null>,
+ *         events_to_dispatch?: null|list<string|Param>,
+ *         places?: Param|string|list<array{ // Default: []
+ *             name?: scalar|Param|null,
+ *             metadata?: array<string, mixed>,
+ *         }>,
+ *         transitions?: list<array{ // Default: []
+ *             name?: string|Param,
+ *             guard?: string|Param, // An expression to block the transition.
+ *             from?: \BackedEnum|Param|string|list<array{ // Default: []
+ *                 place?: string|Param,
+ *                 weight?: int|Param, // Default: 1
+ *             }>,
+ *             to?: \BackedEnum|Param|string|list<array{ // Default: []
+ *                 place?: string|Param,
+ *                 weight?: int|Param, // Default: 1
+ *             }>,
+ *             weight?: int|Param, // Default: 1
+ *             metadata?: array<string, mixed>,
+ *         }>,
+ *         metadata?: array<string, mixed>,
+ *     }>,
+ * }
  * @psalm-type TypeInfoConfig = bool|array{
  *     enabled?: bool|Param, // Default: true
  *     aliases?: array<string, scalar|Param|null>,
@@ -328,6 +366,15 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  * @psalm-type PropertyInfoConfig = bool|array{ // Property info configuration
  *     enabled?: bool|Param, // Default: true
  *     with_constructor_extractor?: bool|Param, // Registers the constructor extractor. // Default: true
+ * }
+ * @psalm-type UidConfig = bool|array{
+ *     enabled?: bool|Param, // Default: true
+ *     default_uuid_version?: 7|6|4|1|Param, // Default: 7
+ *     name_based_uuid_version?: 5|3|Param, // Default: 5
+ *     name_based_uuid_namespace?: scalar|Param|null,
+ *     time_based_uuid_version?: 7|6|1|Param, // Default: 7
+ *     time_based_uuid_node?: scalar|Param|null,
+ *     uuid47_secret?: scalar|Param|null, // A high-entropy secret used by the "uuid47_transformer" service. Defaults to the "kernel.secret" parameter; the service is not registered when neither is defined. // Default: null
  * }
  * @psalm-type AssetMapperConfig = bool|array{
  *     enabled?: bool|Param, // Default: true
@@ -615,7 +662,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         dsn?: scalar|Param|null, // Default: "file:%kernel.cache_dir%/profiler"
  *         collect_serializer_data?: true|Param, // Deprecated: Setting the "framework.profiler.collect_serializer_data.collect_serializer_data" configuration option is deprecated. It will be removed in version 9.0. // Default: true
  *     },
- *     workflows?: mixed,
+ *     workflows?: WorkflowConfig,
  *     router?: RouterConfig,
  *     assets?: AssetConfig,
  *     asset_mapper?: AssetMapperConfig,
@@ -635,7 +682,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     mailer?: MailerConfig,
  *     notifier?: NotifierConfig,
  *     rate_limiter?: mixed,
- *     uid?: mixed,
+ *     uid?: UidConfig,
  *     html_sanitizer?: mixed,
  *     webhook?: mixed,
  *     remote_event?: mixed,
@@ -811,6 +858,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             class_metadata_factory_name?: scalar|Param|null, // Default: "Doctrine\\ORM\\Mapping\\ClassMetadataFactory"
  *             default_repository_class?: scalar|Param|null, // Default: "Doctrine\\ORM\\EntityRepository"
  *             auto_mapping?: scalar|Param|null, // Default: false
+ *             auto_discover_entities?: bool|Param|null, // Registers all entity classes discovered by the container scan, removing the need for explicit "mappings". When not set, enabled if neither "mappings" nor "auto_mapping" is configured and Symfony 8.2 and doctrine/orm 3.6 are available. // Default: null
  *             naming_strategy?: scalar|Param|null, // Default: "doctrine.orm.naming_strategy.default"
  *             quote_strategy?: scalar|Param|null, // Default: "doctrine.orm.quote_strategy.default"
  *             typed_field_mapper?: scalar|Param|null, // Default: "doctrine.orm.typed_field_mapper.default"
@@ -1607,6 +1655,12 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     generate_final_classes?: bool|Param, // Default: true
  *     generate_final_entities?: bool|Param, // Default: false
  * }
+ * @psalm-type DamaDoctrineTestConfig = array{
+ *     enable_static_connection?: mixed, // Default: true
+ *     enable_static_meta_data_cache?: bool|Param, // Default: true
+ *     enable_static_query_cache?: bool|Param, // Default: true
+ *     connection_keys?: list<mixed>,
+ * }
  * @psalm-type ConfigType = array{
  *     imports?: ImportsConfig,
  *     parameters?: ParametersConfig,
@@ -1619,9 +1673,11 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     translation?: TranslationConfig,
  *     web_link?: WebLinkConfig,
  *     messenger?: MessengerConfig,
+ *     workflow?: WorkflowConfig,
  *     type_info?: TypeInfoConfig,
  *     property_access?: PropertyAccessConfig,
  *     property_info?: PropertyInfoConfig,
+ *     uid?: UidConfig,
  *     asset_mapper?: AssetMapperConfig,
  *     http_client?: HttpClientConfig,
  *     mailer?: MailerConfig,
@@ -1647,9 +1703,11 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         translation?: TranslationConfig,
  *         web_link?: WebLinkConfig,
  *         messenger?: MessengerConfig,
+ *         workflow?: WorkflowConfig,
  *         type_info?: TypeInfoConfig,
  *         property_access?: PropertyAccessConfig,
  *         property_info?: PropertyInfoConfig,
+ *         uid?: UidConfig,
  *         asset_mapper?: AssetMapperConfig,
  *         http_client?: HttpClientConfig,
  *         mailer?: MailerConfig,
@@ -1679,9 +1737,11 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         translation?: TranslationConfig,
  *         web_link?: WebLinkConfig,
  *         messenger?: MessengerConfig,
+ *         workflow?: WorkflowConfig,
  *         type_info?: TypeInfoConfig,
  *         property_access?: PropertyAccessConfig,
  *         property_info?: PropertyInfoConfig,
+ *         uid?: UidConfig,
  *         asset_mapper?: AssetMapperConfig,
  *         http_client?: HttpClientConfig,
  *         mailer?: MailerConfig,
@@ -1708,9 +1768,11 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         translation?: TranslationConfig,
  *         web_link?: WebLinkConfig,
  *         messenger?: MessengerConfig,
+ *         workflow?: WorkflowConfig,
  *         type_info?: TypeInfoConfig,
  *         property_access?: PropertyAccessConfig,
  *         property_info?: PropertyInfoConfig,
+ *         uid?: UidConfig,
  *         asset_mapper?: AssetMapperConfig,
  *         http_client?: HttpClientConfig,
  *         mailer?: MailerConfig,
@@ -1725,6 +1787,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         twig_extra?: TwigExtraConfig,
  *         security?: SecurityConfig,
  *         monolog?: MonologConfig,
+ *         dama_doctrine_test?: DamaDoctrineTestConfig,
  *     },
  *     ...<string, ExtensionType|array{ // extra keys must follow the when@%env% pattern or match an extension alias
  *         imports?: ImportsConfig,
