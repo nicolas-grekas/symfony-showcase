@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Upcoming conferences</h1>
+
+    {% for conference in conferences %}
+        <article>
+            <h2><a href="{{ path('conference_show', {slug: conference.slug}) }}">{{ conference.name }}</a></h2>
+            <p>{{ conference.city }}, {{ conference.startsOn|date('F j') }} to {{ conference.endsOn|date('F j, Y') }}</p>
+            {% if conference.isCfpOpen(now) %}
+                <p><a class="button" href="{{ path('cfp_submit', {slug: conference.slug}) }}">Submit a talk</a> before {{ conference.cfpClosesAt|date('F j, Y') }}</p>
+            {% endif %}
+        </article>
+    {% else %}
+        <p>No conference is planned yet.</p>
+    {% endfor %}
+{% endblock %}

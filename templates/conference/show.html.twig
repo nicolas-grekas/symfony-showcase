@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ conference.name }}{% endblock %}
+
+{% block body %}
+    <h1>{{ conference.name }}</h1>
+    <p>{{ conference.city }}, {{ conference.startsOn|date('F j') }} to {{ conference.endsOn|date('F j, Y') }}</p>
+
+    {% if conference.isCfpOpen(now) %}
+        <p><a class="button" href="{{ path('cfp_submit', {slug: conference.slug}) }}">Submit a talk</a> before {{ conference.cfpClosesAt|date('F j, Y') }}</p>
+    {% endif %}
+
+    <h2>Talks</h2>
+    {% for talk in talks %}
+        <article>
+            <h3><a href="{{ path('proposal_show', {id: talk.id}) }}">{{ talk.title }}</a></h3>
+            <p>{{ talk.speakers|map(s => s.name)|join(', ') }} · {{ talk.format|trans }} · {{ talk.level|trans }}</p>
+        </article>
+    {% else %}
+        <p>The program is not published yet.</p>
+    {% endfor %}
+{% endblock %}

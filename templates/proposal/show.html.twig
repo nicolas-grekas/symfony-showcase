@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ proposal.title }}{% endblock %}
+
+{% block body %}
+    <h1>{{ proposal.title }}</h1>
+    <p>
+        {{ proposal.speakers|map(s => s.name)|join(', ') }} · {{ proposal.format|trans }} · {{ proposal.level|trans }}
+        · <strong>{{ proposal.status.value|humanize }}</strong>
+    </p>
+    <p><a href="{{ path('conference_show', {slug: proposal.conference.slug}) }}">{{ proposal.conference.name }}</a></p>
+
+    <div class="abstract">{{ proposal.abstract|nl2br }}</div>
+
+    {% if proposal.materials is not empty %}
+        <h2>Material</h2>
+        <ul>
+            {% for material in proposal.materials %}
+                <li><a href="{{ material.url }}" rel="nofollow noopener">{{ material.url }}</a></li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}
