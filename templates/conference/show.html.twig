@@ -14,6 +14,7 @@
     {% endif %}
 
     <h2>Talks</h2>
+    <p><a href="{{ path('conference_schedule', {slug: conference.slug}) }}">See the schedule</a></p>
     {% for talk in talks %}
         <article>
             <h3><a href="{{ path('proposal_show', {id: talk.id}) }}">{{ talk.title }}</a></h3>

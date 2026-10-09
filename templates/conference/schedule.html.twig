@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Schedule of {{ conference.name }}{% endblock %}
+
+{% block body %}
+    <h1>Schedule of {{ conference.name }}</h1>
+
+    {% for day, slots in days %}
+        <h2>{{ day|date('l, F j') }}</h2>
+        {% for time, talks in slots %}
+            <section class="slot">
+                <h3>{{ time }}</h3>
+                {% for talk in talks %}
+                    <article class="talk">
+                        <a href="{{ path('proposal_show', {id: talk.id}) }}">{{ talk.title }}</a>
+                        · {{ talk.speakers|map(s => s.name)|join(', ') }} · {{ talk.room|trans }}
+                    </article>
+                {% endfor %}
+            </section>
+        {% endfor %}
+    {% else %}
+        <p>The schedule is not published yet.</p>
+    {% endfor %}
+{% endblock %}

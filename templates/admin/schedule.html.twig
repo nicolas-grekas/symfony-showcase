@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Schedule of {{ conference.name }}{% endblock %}
+
+{% block body %}
+    <h1>Schedule of {{ conference.name }}</h1>
+    <p>{{ conference.startsOn|date('F j') }} to {{ conference.endsOn|date('F j, Y') }}</p>
+
+    {{ form_start(form) }}
+        {{ form_errors(form) }}
+        <table>
+            <thead><tr><th>Talk</th><th>Starts at</th><th>Room</th></tr></thead>
+            <tbody>
+                {% for slot in form.slots %}
+                    <tr>
+                        <td>{{ slot.vars.data.title }}</td>
+                        <td>{{ form_widget(slot.startsAt) }}{{ form_errors(slot.startsAt) }}</td>
+                        <td>{{ form_widget(slot.room) }}</td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="3">No talk is accepted yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button type="submit">Save</button>
+    {{ form_end(form) }}
+{% endblock %}

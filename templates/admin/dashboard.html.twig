@@ -11,6 +11,7 @@
                 <a href="{{ path('admin_proposals', {conference: conference.id}) }}">{{ conference.name }}</a>: proposals
                 {% if is_granted('ROLE_ORGANIZER') %}
                     · <a href="{{ path('admin_sales', {id: conference.id}) }}">ticket sales</a>
+                    · <a href="{{ path('admin_schedule', {id: conference.id}) }}">schedule</a>
                     · <a href="{{ path('admin_conference_edit', {id: conference.id}) }}">edit</a>
                 {% endif %}
             </li>

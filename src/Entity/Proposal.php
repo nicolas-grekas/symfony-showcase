@@ -6,6 +6,7 @@ use App\Entity\Material\Material;
 use App\Enum\Format;
 use App\Enum\Level;
 use App\Enum\ProposalStatus;
+use App\Enum\Room;
 use App\Repository\ProposalRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -26,6 +27,12 @@ class Proposal
 
     #[ORM\Column(nullable: true)]
     public private(set) ?DatePoint $submittedAt = null;
+
+    #[ORM\Column(nullable: true)]
+    public private(set) ?DatePoint $scheduledAt = null;
+
+    #[ORM\Column(enumType: Room::class, nullable: true)]
+    public private(set) ?Room $room = null;
 
     /** @var Collection<int, Speaker> */
     #[ORM\ManyToMany(targetEntity: Speaker::class)]
@@ -81,6 +88,12 @@ class Proposal
     {
         $material->proposal = $this;
         $this->materials->add($material);
+    }
+
+    public function schedule(?DatePoint $at, ?Room $room): void
+    {
+        $this->scheduledAt = $at;
+        $this->room = $room;
     }
 
     public function markSubmitted(DatePoint $at): void

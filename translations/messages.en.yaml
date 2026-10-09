@@ -9,3 +9,7 @@ format:
     talk: Talk (%minutes% minutes)
     workshop: Workshop (%minutes% minutes)
     lightning: Lightning talk (%minutes% minutes)
+room:
+    main: Main room
+    second: Second room
+    workshop: Workshop room

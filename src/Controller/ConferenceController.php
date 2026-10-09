@@ -43,4 +43,15 @@ final class ConferenceController extends AbstractController
             'now' => $this->now(),
         ]);
     }
+
+    #[Route('/conferences/{slug:conference}/schedule', name: 'conference_schedule', methods: ['GET'])]
+    public function schedule(Conference $conference, ProposalRepository $proposals): Response
+    {
+        $days = [];
+        foreach ($proposals->findScheduled($conference) as $talk) {
+            $days[$talk->scheduledAt->format('Y-m-d')][$talk->scheduledAt->format('H:i')][] = $talk;
+        }
+
+        return $this->render('conference/schedule.html.twig', ['conference' => $conference, 'days' => $days]);
+    }
 }
