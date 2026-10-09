@@ -1,0 +1,8 @@
+scheduler:
+    # scheduled messages follow the routing of Messenger, as they will by default in 9.0
+    use_messenger_routing: true
+    schedules:
+        default:
+            # missed runs are caught up after a downtime, once only, by a single worker
+            stateful: true
+            process_only_last_missed_run: true
