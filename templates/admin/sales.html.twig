@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ticket sales of {{ conference.name }}{% endblock %}
+
+{% block body %}
+    <h1>Ticket sales of {{ conference.name }}</h1>
+
+    <p class="sold">Sold: {{ totals.count }} / {{ conference.ticketCapacity }}</p>
+    <p class="revenue">Revenue: {{ (totals.revenue / 100)|format_currency('EUR') }}</p>
+
+    <table class="sales">
+        <thead><tr><th>Day</th><th>Tickets</th></tr></thead>
+        <tbody>
+            {% for day, count in days %}
+                <tr><td>{{ day|date('l, F j') }}</td><td>{{ count }}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
