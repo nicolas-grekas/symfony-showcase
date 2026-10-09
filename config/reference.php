@@ -354,6 +354,9 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         metadata?: array<string, mixed>,
  *     }>,
  * }
+ * @psalm-type RemoteEventConfig = bool|array{
+ *     enabled?: bool|Param, // Default: true
+ * }
  * @psalm-type TypeInfoConfig = bool|array{
  *     enabled?: bool|Param, // Default: true
  *     aliases?: array<string, scalar|Param|null>,
@@ -435,6 +438,27 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             amount?: int|Param, // Amount of tokens to add each interval. // Default: 1
  *         },
  *         anchor_at?: scalar|Param|null, // Aligns the "fixed_window" policy to a calendar (e.g. "2024-01-05 00:00:00 UTC" combined with `interval: 1 month` resets the counter on the 5th of each month). UTC if not specified. // Default: null
+ *     }>,
+ * }
+ * @psalm-type WebhookConfig = bool|array{
+ *     enabled?: bool|Param, // Default: true
+ *     message_bus?: scalar|Param|null, // The message bus to use. // Default: "messenger.default_bus"
+ *     http_client?: scalar|Param|null, // The HTTP client to use to send webhooks. // Default: "http_client"
+ *     no_private_network?: bool|array{ // Refuse to send webhooks to URLs that resolve to a private network.
+ *         enabled?: bool|Param, // Default: false
+ *         subnets?: Param|null|string|list<scalar|Param|null>,
+ *         allow_list?: Param|string|list<scalar|Param|null>,
+ *     },
+ *     event_header_name?: scalar|Param|null, // Default: "Webhook-Event"
+ *     id_header_name?: scalar|Param|null, // Default: "Webhook-Id"
+ *     timestamp_header_name?: scalar|Param|null, // Default: "Webhook-Timestamp"
+ *     signature_header_name?: scalar|Param|null, // Default: "Webhook-Signature"
+ *     signing_algorithm?: scalar|Param|null, // Default: "sha256"
+ *     signature_format?: "legacy"|"standard"|"transitional"|Param, // The signature scheme to emit and to require: "legacy" (default) for Symfony's historical "<algo>=<hex>" over the event name, the id and the body; "standard" for the Standard Webhooks "v1,<base64>" over the id, the timestamp and the body, which moves the event name from the "Webhook-Event" header to the payload's "type" key; "transitional" for both at once, during a migration. // Default: "legacy"
+ *     timestamp_tolerance?: int|Param, // How far, in seconds, an incoming Standard Webhooks timestamp may be from the current time before the request is rejected as a replay. Set to 0 to accept any timestamp. Legacy signatures carry no timestamp and are never bounded. // Default: 300
+ *     routing?: array<string, array{ // Default: []
+ *         service?: scalar|Param|null,
+ *         secret?: scalar|Param|null, // The secret used to verify incoming request signatures. It must be set in production: with an empty value, depending on the parser, requests from any sender are accepted or every request is rejected. // Default: ""
  *     }>,
  * }
  * @psalm-type HttpClientConfig = bool|array{
@@ -722,8 +746,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     rate_limiter?: RateLimiterConfig,
  *     uid?: UidConfig,
  *     html_sanitizer?: mixed,
- *     webhook?: mixed,
- *     remote_event?: mixed,
+ *     webhook?: WebhookConfig,
+ *     remote_event?: RemoteEventConfig,
  *     json_streamer?: mixed,
  *     session?: bool|array{ // Session configuration
  *         enabled?: bool|Param, // Default: false
@@ -1713,6 +1737,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     lock?: LockConfig,
  *     messenger?: MessengerConfig,
  *     workflow?: WorkflowConfig,
+ *     remote_event?: RemoteEventConfig,
  *     type_info?: TypeInfoConfig,
  *     property_access?: PropertyAccessConfig,
  *     property_info?: PropertyInfoConfig,
@@ -1720,6 +1745,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     scheduler?: SchedulerConfig,
  *     asset_mapper?: AssetMapperConfig,
  *     rate_limiter?: RateLimiterConfig,
+ *     webhook?: WebhookConfig,
  *     http_client?: HttpClientConfig,
  *     mailer?: MailerConfig,
  *     notifier?: NotifierConfig,
@@ -1746,6 +1772,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         lock?: LockConfig,
  *         messenger?: MessengerConfig,
  *         workflow?: WorkflowConfig,
+ *         remote_event?: RemoteEventConfig,
  *         type_info?: TypeInfoConfig,
  *         property_access?: PropertyAccessConfig,
  *         property_info?: PropertyInfoConfig,
@@ -1753,6 +1780,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         scheduler?: SchedulerConfig,
  *         asset_mapper?: AssetMapperConfig,
  *         rate_limiter?: RateLimiterConfig,
+ *         webhook?: WebhookConfig,
  *         http_client?: HttpClientConfig,
  *         mailer?: MailerConfig,
  *         notifier?: NotifierConfig,
@@ -1783,6 +1811,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         lock?: LockConfig,
  *         messenger?: MessengerConfig,
  *         workflow?: WorkflowConfig,
+ *         remote_event?: RemoteEventConfig,
  *         type_info?: TypeInfoConfig,
  *         property_access?: PropertyAccessConfig,
  *         property_info?: PropertyInfoConfig,
@@ -1790,6 +1819,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         scheduler?: SchedulerConfig,
  *         asset_mapper?: AssetMapperConfig,
  *         rate_limiter?: RateLimiterConfig,
+ *         webhook?: WebhookConfig,
  *         http_client?: HttpClientConfig,
  *         mailer?: MailerConfig,
  *         notifier?: NotifierConfig,
@@ -1817,6 +1847,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         lock?: LockConfig,
  *         messenger?: MessengerConfig,
  *         workflow?: WorkflowConfig,
+ *         remote_event?: RemoteEventConfig,
  *         type_info?: TypeInfoConfig,
  *         property_access?: PropertyAccessConfig,
  *         property_info?: PropertyInfoConfig,
@@ -1824,6 +1855,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         scheduler?: SchedulerConfig,
  *         asset_mapper?: AssetMapperConfig,
  *         rate_limiter?: RateLimiterConfig,
+ *         webhook?: WebhookConfig,
  *         http_client?: HttpClientConfig,
  *         mailer?: MailerConfig,
  *         notifier?: NotifierConfig,

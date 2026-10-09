@@ -1866,10 +1866,10 @@
                         "$ref": "#/$defs/types/variable"
                     },
                     "webhook": {
-                        "$ref": "#/$defs/types/variable"
+                        "$ref": "#/$defs/nodes/webhook"
                     },
                     "remote_event": {
-                        "$ref": "#/$defs/types/variable"
+                        "$ref": "#/$defs/nodes/remote_event"
                     },
                     "json_streamer": {
                         "$ref": "#/$defs/types/variable"
@@ -5339,6 +5339,28 @@
                         "storage_service": null
                     },
                     "limiters": []
+                }
+            },
+            "remote_event": {
+                "anyOf": [
+                    {
+                        "$ref": "#/$defs/types/object_null",
+                        "properties": {
+                            "enabled": {
+                                "$ref": "#/$defs/types/boolean",
+                                "default": true
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    {
+                        "type": [
+                            "boolean"
+                        ]
+                    }
+                ],
+                "default": {
+                    "enabled": true
                 }
             },
             "router": {
@@ -10137,6 +10159,170 @@
                 },
                 "additionalProperties": false
             },
+            "webhook": {
+                "anyOf": [
+                    {
+                        "$ref": "#/$defs/types/object_null",
+                        "properties": {
+                            "enabled": {
+                                "$ref": "#/$defs/types/boolean",
+                                "default": true
+                            },
+                            "message_bus": {
+                                "$ref": "#/$defs/types/scalar",
+                                "default": "messenger.default_bus",
+                                "description": "The message bus to use."
+                            },
+                            "http_client": {
+                                "$ref": "#/$defs/types/scalar",
+                                "default": "http_client",
+                                "description": "The HTTP client to use to send webhooks."
+                            },
+                            "no_private_network": {
+                                "anyOf": [
+                                    {
+                                        "$ref": "#/$defs/types/object_null",
+                                        "properties": {
+                                            "enabled": {
+                                                "$ref": "#/$defs/types/boolean",
+                                                "default": false
+                                            },
+                                            "subnets": {
+                                                "anyOf": [
+                                                    {
+                                                        "$ref": "#/$defs/types/array_null",
+                                                        "items": {
+                                                            "$ref": "#/$defs/types/scalar"
+                                                        }
+                                                    },
+                                                    {
+                                                        "type": [
+                                                            "string"
+                                                        ]
+                                                    }
+                                                ],
+                                                "default": null,
+                                                "description": "Subnets in CIDR notation to consider private. Defaults to the standard private subnets."
+                                            },
+                                            "allow_list": {
+                                                "anyOf": [
+                                                    {
+                                                        "$ref": "#/$defs/types/array_null",
+                                                        "items": {
+                                                            "$ref": "#/$defs/types/scalar"
+                                                        }
+                                                    },
+                                                    {
+                                                        "type": [
+                                                            "string"
+                                                        ]
+                                                    }
+                                                ],
+                                                "description": "IPs or subnets in CIDR notation to send to even when they match the private subnets."
+                                            }
+                                        },
+                                        "additionalProperties": false
+                                    },
+                                    {
+                                        "type": [
+                                            "boolean"
+                                        ]
+                                    }
+                                ],
+                                "default": {
+                                    "enabled": false,
+                                    "subnets": null,
+                                    "allow_list": []
+                                },
+                                "description": "Refuse to send webhooks to URLs that resolve to a private network."
+                            },
+                            "event_header_name": {
+                                "$ref": "#/$defs/types/scalar",
+                                "default": "Webhook-Event"
+                            },
+                            "id_header_name": {
+                                "$ref": "#/$defs/types/scalar",
+                                "default": "Webhook-Id"
+                            },
+                            "timestamp_header_name": {
+                                "$ref": "#/$defs/types/scalar",
+                                "default": "Webhook-Timestamp"
+                            },
+                            "signature_header_name": {
+                                "$ref": "#/$defs/types/scalar",
+                                "default": "Webhook-Signature"
+                            },
+                            "signing_algorithm": {
+                                "$ref": "#/$defs/types/scalar",
+                                "default": "sha256"
+                            },
+                            "signature_format": {
+                                "anyOf": [
+                                    {
+                                        "enum": [
+                                            "legacy",
+                                            "standard",
+                                            "transitional"
+                                        ]
+                                    },
+                                    {
+                                        "$ref": "#/$defs/types/param"
+                                    }
+                                ],
+                                "default": "legacy",
+                                "description": "The signature scheme to emit and to require: \"legacy\" (default) for Symfony's historical \"<algo>=<hex>\" over the event name, the id and the body; \"standard\" for the Standard Webhooks \"v1,<base64>\" over the id, the timestamp and the body, which moves the event name from the \"Webhook-Event\" header to the payload's \"type\" key; \"transitional\" for both at once, during a migration."
+                            },
+                            "timestamp_tolerance": {
+                                "$ref": "#/$defs/types/integer",
+                                "minimum": 0,
+                                "default": 300,
+                                "description": "How far, in seconds, an incoming Standard Webhooks timestamp may be from the current time before the request is rejected as a replay. Set to 0 to accept any timestamp. Legacy signatures carry no timestamp and are never bounded."
+                            },
+                            "routing": {
+                                "$ref": "#/$defs/types/object_null",
+                                "additionalProperties": {
+                                    "$ref": "#/$defs/types/object_null",
+                                    "properties": {
+                                        "service": {
+                                            "$ref": "#/$defs/types/scalar"
+                                        },
+                                        "secret": {
+                                            "$ref": "#/$defs/types/scalar",
+                                            "default": "",
+                                            "description": "The secret used to verify incoming request signatures. It must be set in production: with an empty value, depending on the parser, requests from any sender are accepted or every request is rejected."
+                                        }
+                                    },
+                                    "additionalProperties": false
+                                }
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    {
+                        "type": [
+                            "boolean"
+                        ]
+                    }
+                ],
+                "default": {
+                    "enabled": true,
+                    "message_bus": "messenger.default_bus",
+                    "http_client": "http_client",
+                    "no_private_network": {
+                        "enabled": false,
+                        "subnets": null,
+                        "allow_list": []
+                    },
+                    "event_header_name": "Webhook-Event",
+                    "id_header_name": "Webhook-Id",
+                    "timestamp_header_name": "Webhook-Timestamp",
+                    "signature_header_name": "Webhook-Signature",
+                    "signing_algorithm": "sha256",
+                    "signature_format": "legacy",
+                    "timestamp_tolerance": 300,
+                    "routing": []
+                }
+            },
             "workflow": {
                 "anyOf": [
                     {
@@ -10803,6 +10989,9 @@
         "rate_limiter": {
             "$ref": "#/$defs/nodes/rate_limiter"
         },
+        "remote_event": {
+            "$ref": "#/$defs/nodes/remote_event"
+        },
         "router": {
             "$ref": "#/$defs/nodes/router"
         },
@@ -10841,6 +11030,9 @@
         },
         "web_link": {
             "$ref": "#/$defs/nodes/web_link"
+        },
+        "webhook": {
+            "$ref": "#/$defs/nodes/webhook"
         },
         "workflow": {
             "$ref": "#/$defs/nodes/workflow"
@@ -10899,6 +11091,9 @@
                 "rate_limiter": {
                     "$ref": "#/$defs/nodes/rate_limiter"
                 },
+                "remote_event": {
+                    "$ref": "#/$defs/nodes/remote_event"
+                },
                 "router": {
                     "$ref": "#/$defs/nodes/router"
                 },
@@ -10940,6 +11135,9 @@
                 },
                 "web_profiler": {
                     "$ref": "#/$defs/nodes/web_profiler"
+                },
+                "webhook": {
+                    "$ref": "#/$defs/nodes/webhook"
                 },
                 "workflow": {
                     "$ref": "#/$defs/nodes/workflow"
@@ -10998,6 +11196,9 @@
                 "rate_limiter": {
                     "$ref": "#/$defs/nodes/rate_limiter"
                 },
+                "remote_event": {
+                    "$ref": "#/$defs/nodes/remote_event"
+                },
                 "router": {
                     "$ref": "#/$defs/nodes/router"
                 },
@@ -11039,6 +11240,9 @@
                 },
                 "web_profiler": {
                     "$ref": "#/$defs/nodes/web_profiler"
+                },
+                "webhook": {
+                    "$ref": "#/$defs/nodes/webhook"
                 },
                 "workflow": {
                     "$ref": "#/$defs/nodes/workflow"
@@ -11096,6 +11300,9 @@
                 "rate_limiter": {
                     "$ref": "#/$defs/nodes/rate_limiter"
                 },
+                "remote_event": {
+                    "$ref": "#/$defs/nodes/remote_event"
+                },
                 "router": {
                     "$ref": "#/$defs/nodes/router"
                 },
@@ -11134,6 +11341,9 @@
                 },
                 "web_link": {
                     "$ref": "#/$defs/nodes/web_link"
+                },
+                "webhook": {
+                    "$ref": "#/$defs/nodes/webhook"
                 },
                 "workflow": {
                     "$ref": "#/$defs/nodes/workflow"
