@@ -1836,7 +1836,7 @@
                         "$ref": "#/$defs/nodes/web_link"
                     },
                     "lock": {
-                        "$ref": "#/$defs/types/variable"
+                        "$ref": "#/$defs/nodes/lock"
                     },
                     "semaphore": {
                         "$ref": "#/$defs/types/variable"
@@ -1845,7 +1845,7 @@
                         "$ref": "#/$defs/nodes/messenger"
                     },
                     "scheduler": {
-                        "$ref": "#/$defs/types/variable"
+                        "$ref": "#/$defs/nodes/scheduler"
                     },
                     "http_client": {
                         "$ref": "#/$defs/nodes/http_client"
@@ -1857,7 +1857,7 @@
                         "$ref": "#/$defs/nodes/notifier"
                     },
                     "rate_limiter": {
-                        "$ref": "#/$defs/types/variable"
+                        "$ref": "#/$defs/nodes/rate_limiter"
                     },
                     "uid": {
                         "$ref": "#/$defs/nodes/uid"
@@ -2984,6 +2984,64 @@
                         "redact_except": []
                     },
                     "scoped_clients": []
+                }
+            },
+            "lock": {
+                "anyOf": [
+                    {
+                        "$ref": "#/$defs/types/object_null",
+                        "properties": {
+                            "enabled": {
+                                "$ref": "#/$defs/types/boolean",
+                                "default": true
+                            },
+                            "resources": {
+                                "anyOf": [
+                                    {
+                                        "$ref": "#/$defs/types/object_null",
+                                        "additionalProperties": {
+                                            "anyOf": [
+                                                {
+                                                    "$ref": "#/$defs/types/array_null",
+                                                    "items": {
+                                                        "$ref": "#/$defs/types/variable"
+                                                    }
+                                                },
+                                                {
+                                                    "type": [
+                                                        "string"
+                                                    ]
+                                                }
+                                            ],
+                                            "description": "Each store is a DSN, a store keyword, the id of a service holding a connection, or an array with a \"service_id\" key and an \"advisory\" key."
+                                        }
+                                    },
+                                    {
+                                        "type": [
+                                            "string"
+                                        ]
+                                    }
+                                ],
+                                "description": "Defaults to a \"default\" resource using the semaphore store when it is supported, the flock store otherwise."
+                            }
+                        },
+                        "patternProperties": {
+                            "^resource$": {
+                                "$ref": "#/$defs/types/variable"
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    {
+                        "type": [
+                            "string",
+                            "boolean"
+                        ]
+                    }
+                ],
+                "default": {
+                    "enabled": true,
+                    "resources": []
                 }
             },
             "mailer": {
@@ -5124,6 +5182,165 @@
                 },
                 "description": "Property info configuration"
             },
+            "rate_limiter": {
+                "anyOf": [
+                    {
+                        "$ref": "#/$defs/types/object_null",
+                        "properties": {
+                            "enabled": {
+                                "$ref": "#/$defs/types/boolean",
+                                "default": true
+                            },
+                            "builder": {
+                                "$ref": "#/$defs/types/object_null",
+                                "properties": {
+                                    "lock_factory": {
+                                        "$ref": "#/$defs/types/scalar",
+                                        "default": "auto",
+                                        "description": "The service ID of the lock factory to use with the RateLimiterBuilder."
+                                    },
+                                    "cache_pool": {
+                                        "$ref": "#/$defs/types/scalar",
+                                        "default": "cache.rate_limiter",
+                                        "description": "The cache pool to use with RateLimiterBuilder."
+                                    },
+                                    "storage_service": {
+                                        "$ref": "#/$defs/types/scalar",
+                                        "default": null,
+                                        "description": "The service ID of a custom storage implementation, this precedes any configured \"cache_pool\"."
+                                    }
+                                },
+                                "additionalProperties": false,
+                                "default": {
+                                    "lock_factory": "auto",
+                                    "cache_pool": "cache.rate_limiter",
+                                    "storage_service": null
+                                },
+                                "description": "Configuration for the RateLimiterBuilder service."
+                            },
+                            "limiters": {
+                                "$ref": "#/$defs/types/object_null",
+                                "additionalProperties": {
+                                    "$ref": "#/$defs/types/object_null",
+                                    "properties": {
+                                        "lock_factory": {
+                                            "$ref": "#/$defs/types/scalar",
+                                            "default": "auto",
+                                            "description": "The service ID of the lock factory used by this limiter (or null to disable locking)."
+                                        },
+                                        "cache_pool": {
+                                            "$ref": "#/$defs/types/scalar",
+                                            "default": "cache.rate_limiter",
+                                            "description": "The cache pool to use for storing the current limiter state."
+                                        },
+                                        "storage_service": {
+                                            "$ref": "#/$defs/types/scalar",
+                                            "default": null,
+                                            "description": "The service ID of a custom storage implementation, this precedes any configured \"cache_pool\"."
+                                        },
+                                        "policy": {
+                                            "anyOf": [
+                                                {
+                                                    "enum": [
+                                                        "fixed_window",
+                                                        "token_bucket",
+                                                        "sliding_window",
+                                                        "compound",
+                                                        "no_limit"
+                                                    ]
+                                                },
+                                                {
+                                                    "$ref": "#/$defs/types/param"
+                                                }
+                                            ],
+                                            "description": "The algorithm to be used by this limiter."
+                                        },
+                                        "limiters": {
+                                            "anyOf": [
+                                                {
+                                                    "$ref": "#/$defs/types/object_null",
+                                                    "additionalProperties": {
+                                                        "$ref": "#/$defs/types/object_null",
+                                                        "properties": {
+                                                            "key": {
+                                                                "$ref": "#/$defs/types/scalar",
+                                                                "default": null,
+                                                                "description": "The key to pass to this limiter, instead of the one passed to the compound limiter's create() method."
+                                                            }
+                                                        },
+                                                        "additionalProperties": false
+                                                    }
+                                                },
+                                                {
+                                                    "type": [
+                                                        "string"
+                                                    ]
+                                                }
+                                            ],
+                                            "description": "The limiters to use when using the \"compound\" policy."
+                                        },
+                                        "limit": {
+                                            "$ref": "#/$defs/types/integer",
+                                            "description": "The maximum allowed hits in a fixed interval or burst."
+                                        },
+                                        "interval": {
+                                            "$ref": "#/$defs/types/scalar",
+                                            "description": "Configures the fixed interval if \"policy\" is set to \"fixed_window\" or \"sliding_window\". The value must be a number followed by \"second\", \"minute\", \"hour\", \"day\", \"week\" or \"month\" (or their plural equivalent)."
+                                        },
+                                        "rate": {
+                                            "$ref": "#/$defs/types/object_null",
+                                            "properties": {
+                                                "interval": {
+                                                    "$ref": "#/$defs/types/scalar",
+                                                    "description": "Configures the rate interval. The value must be a number followed by \"second\", \"minute\", \"hour\", \"day\", \"week\" or \"month\" (or their plural equivalent)."
+                                                },
+                                                "amount": {
+                                                    "$ref": "#/$defs/types/integer",
+                                                    "default": 1,
+                                                    "description": "Amount of tokens to add each interval."
+                                                }
+                                            },
+                                            "additionalProperties": false,
+                                            "description": "Configures the fill rate if \"policy\" is set to \"token_bucket\"."
+                                        },
+                                        "anchor_at": {
+                                            "$ref": "#/$defs/types/scalar",
+                                            "default": null,
+                                            "description": "Aligns the \"fixed_window\" policy to a calendar (e.g. \"2024-01-05 00:00:00 UTC\" combined with `interval: 1 month` resets the counter on the 5th of each month). UTC if not specified."
+                                        }
+                                    },
+                                    "patternProperties": {
+                                        "^limiter$": {
+                                            "$ref": "#/$defs/types/variable"
+                                        }
+                                    },
+                                    "additionalProperties": false
+                                }
+                            }
+                        },
+                        "patternProperties": {
+                            "^limiter$": {
+                                "$ref": "#/$defs/types/variable"
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    {
+                        "type": [
+                            "boolean"
+                        ]
+                    }
+                ],
+                "default": {
+                    "enabled": true,
+                    "builder": {
+                        "lock_factory": "auto",
+                        "cache_pool": "cache.rate_limiter",
+                        "storage_service": null
+                    },
+                    "limiters": []
+                }
+            },
             "router": {
                 "anyOf": [
                     {
@@ -5179,6 +5396,65 @@
                     "https_port": 443,
                     "strict_requirements": true,
                     "utf8": true
+                }
+            },
+            "scheduler": {
+                "anyOf": [
+                    {
+                        "$ref": "#/$defs/types/object_null",
+                        "properties": {
+                            "enabled": {
+                                "$ref": "#/$defs/types/boolean",
+                                "default": true
+                            },
+                            "use_messenger_routing": {
+                                "$ref": "#/$defs/types/boolean_null",
+                                "default": null,
+                                "description": "Whether scheduled messages are routed to the Messenger senders configured for their class, as any other dispatched message is. A class with no sender configured still runs in the scheduler worker, and a \"transports\" option set on a task still wins."
+                            },
+                            "schedules": {
+                                "$ref": "#/$defs/types/object_null",
+                                "additionalProperties": {
+                                    "$ref": "#/$defs/types/object_null",
+                                    "properties": {
+                                        "stateful": {
+                                            "$ref": "#/$defs/types/boolean",
+                                            "default": false,
+                                            "description": "Whether the schedule keeps its state in the \"cache.scheduler\" pool and, when locks are enabled, runs in only one worker at a time."
+                                        },
+                                        "cache_pool": {
+                                            "$ref": "#/$defs/types/scalar",
+                                            "default": null,
+                                            "description": "The cache pool that stores the state of the schedule, so that a restarted worker resumes where the previous one stopped."
+                                        },
+                                        "lock_factory": {
+                                            "$ref": "#/$defs/types/scalar",
+                                            "default": null,
+                                            "description": "The service ID of the lock factory used to run the schedule in only one worker at a time."
+                                        },
+                                        "process_only_last_missed_run": {
+                                            "$ref": "#/$defs/types/boolean",
+                                            "default": false,
+                                            "description": "Whether a task that missed several runs runs only once instead of once per missed run."
+                                        }
+                                    },
+                                    "additionalProperties": false
+                                },
+                                "description": "Options of the schedules, keyed by schedule name, whether their tasks are declared with attributes or returned by a schedule provider."
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    {
+                        "type": [
+                            "boolean"
+                        ]
+                    }
+                ],
+                "default": {
+                    "enabled": true,
+                    "use_messenger_routing": null,
+                    "schedules": []
                 }
             },
             "security": {
@@ -9325,7 +9601,7 @@
                                 "properties": {
                                     "enabled": {
                                         "$ref": "#/$defs/types/boolean",
-                                        "default": false
+                                        "default": true
                                     }
                                 },
                                 "additionalProperties": false
@@ -9337,7 +9613,7 @@
                             }
                         ],
                         "default": {
-                            "enabled": false
+                            "enabled": true
                         }
                     },
                     "inky": {
@@ -9347,7 +9623,7 @@
                                 "properties": {
                                     "enabled": {
                                         "$ref": "#/$defs/types/boolean",
-                                        "default": false
+                                        "default": true
                                     }
                                 },
                                 "additionalProperties": false
@@ -9359,7 +9635,7 @@
                             }
                         ],
                         "default": {
-                            "enabled": false
+                            "enabled": true
                         }
                     },
                     "string": {
@@ -10503,6 +10779,9 @@
         "http_client": {
             "$ref": "#/$defs/nodes/http_client"
         },
+        "lock": {
+            "$ref": "#/$defs/nodes/lock"
+        },
         "mailer": {
             "$ref": "#/$defs/nodes/mailer"
         },
@@ -10521,8 +10800,14 @@
         "property_info": {
             "$ref": "#/$defs/nodes/property_info"
         },
+        "rate_limiter": {
+            "$ref": "#/$defs/nodes/rate_limiter"
+        },
         "router": {
             "$ref": "#/$defs/nodes/router"
+        },
+        "scheduler": {
+            "$ref": "#/$defs/nodes/scheduler"
         },
         "security": {
             "$ref": "#/$defs/nodes/security"
@@ -10587,6 +10872,9 @@
                 "http_client": {
                     "$ref": "#/$defs/nodes/http_client"
                 },
+                "lock": {
+                    "$ref": "#/$defs/nodes/lock"
+                },
                 "mailer": {
                     "$ref": "#/$defs/nodes/mailer"
                 },
@@ -10608,8 +10896,14 @@
                 "property_info": {
                     "$ref": "#/$defs/nodes/property_info"
                 },
+                "rate_limiter": {
+                    "$ref": "#/$defs/nodes/rate_limiter"
+                },
                 "router": {
                     "$ref": "#/$defs/nodes/router"
+                },
+                "scheduler": {
+                    "$ref": "#/$defs/nodes/scheduler"
                 },
                 "security": {
                     "$ref": "#/$defs/nodes/security"
@@ -10680,6 +10974,9 @@
                 "http_client": {
                     "$ref": "#/$defs/nodes/http_client"
                 },
+                "lock": {
+                    "$ref": "#/$defs/nodes/lock"
+                },
                 "mailer": {
                     "$ref": "#/$defs/nodes/mailer"
                 },
@@ -10698,8 +10995,14 @@
                 "property_info": {
                     "$ref": "#/$defs/nodes/property_info"
                 },
+                "rate_limiter": {
+                    "$ref": "#/$defs/nodes/rate_limiter"
+                },
                 "router": {
                     "$ref": "#/$defs/nodes/router"
+                },
+                "scheduler": {
+                    "$ref": "#/$defs/nodes/scheduler"
                 },
                 "security": {
                     "$ref": "#/$defs/nodes/security"
@@ -10769,6 +11072,9 @@
                 "http_client": {
                     "$ref": "#/$defs/nodes/http_client"
                 },
+                "lock": {
+                    "$ref": "#/$defs/nodes/lock"
+                },
                 "mailer": {
                     "$ref": "#/$defs/nodes/mailer"
                 },
@@ -10787,8 +11093,14 @@
                 "property_info": {
                     "$ref": "#/$defs/nodes/property_info"
                 },
+                "rate_limiter": {
+                    "$ref": "#/$defs/nodes/rate_limiter"
+                },
                 "router": {
                     "$ref": "#/$defs/nodes/router"
+                },
+                "scheduler": {
+                    "$ref": "#/$defs/nodes/scheduler"
                 },
                 "security": {
                     "$ref": "#/$defs/nodes/security"

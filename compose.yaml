@@ -36,6 +36,16 @@ services:
       retries: 30
 ###< keycloak ###
 
+###> rabbitmq ###
+  rabbitmq:
+    image: rabbitmq:4-management-alpine
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+###< rabbitmq ###
+
 volumes:
 ###> doctrine/doctrine-bundle ###
   database_data:

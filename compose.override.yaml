@@ -23,3 +23,10 @@ services:
       # a fixed port, as the issuer of the tokens is the URL the browser uses
       - "8180:8080"
 ###< keycloak ###
+
+###> rabbitmq ###
+  rabbitmq:
+    ports:
+      - "5672"
+      - "15672"
+###< rabbitmq ###

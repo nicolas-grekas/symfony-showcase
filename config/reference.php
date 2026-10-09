@@ -256,6 +256,10 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  * @psalm-type WebLinkConfig = bool|array{ // Web links configuration
  *     enabled?: bool|Param, // Default: true
  * }
+ * @psalm-type LockConfig = Param|bool|string|array{
+ *     enabled?: bool|Param, // Default: true
+ *     resources?: Param|string|array<string, Param|string|list<mixed>>,
+ * }
  * @psalm-type MessengerConfig = bool|array{
  *     enabled?: bool|Param, // Default: true
  *     routing?: array<string, Param|string|list<scalar|Param|null>>,
@@ -376,6 +380,16 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     time_based_uuid_node?: scalar|Param|null,
  *     uuid47_secret?: scalar|Param|null, // A high-entropy secret used by the "uuid47_transformer" service. Defaults to the "kernel.secret" parameter; the service is not registered when neither is defined. // Default: null
  * }
+ * @psalm-type SchedulerConfig = bool|array{
+ *     enabled?: bool|Param, // Default: true
+ *     use_messenger_routing?: bool|Param|null, // Whether scheduled messages are routed to the Messenger senders configured for their class, as any other dispatched message is. A class with no sender configured still runs in the scheduler worker, and a "transports" option set on a task still wins. // Default: null
+ *     schedules?: array<string, array{ // Default: []
+ *         stateful?: bool|Param, // Whether the schedule keeps its state in the "cache.scheduler" pool and, when locks are enabled, runs in only one worker at a time. // Default: false
+ *         cache_pool?: scalar|Param|null, // The cache pool that stores the state of the schedule, so that a restarted worker resumes where the previous one stopped. // Default: null
+ *         lock_factory?: scalar|Param|null, // The service ID of the lock factory used to run the schedule in only one worker at a time. // Default: null
+ *         process_only_last_missed_run?: bool|Param, // Whether a task that missed several runs runs only once instead of once per missed run. // Default: false
+ *     }>,
+ * }
  * @psalm-type AssetMapperConfig = bool|array{
  *     enabled?: bool|Param, // Default: true
  *     paths?: Param|string|array<string, scalar|Param|null>,
@@ -398,6 +412,30 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         formats?: list<scalar|Param|null>,
  *         extensions?: list<scalar|Param|null>,
  *     },
+ * }
+ * @psalm-type RateLimiterConfig = bool|array{
+ *     enabled?: bool|Param, // Default: true
+ *     builder?: array{ // Configuration for the RateLimiterBuilder service.
+ *         lock_factory?: scalar|Param|null, // The service ID of the lock factory to use with the RateLimiterBuilder. // Default: "auto"
+ *         cache_pool?: scalar|Param|null, // The cache pool to use with RateLimiterBuilder. // Default: "cache.rate_limiter"
+ *         storage_service?: scalar|Param|null, // The service ID of a custom storage implementation, this precedes any configured "cache_pool". // Default: null
+ *     },
+ *     limiters?: array<string, array{ // Default: []
+ *         lock_factory?: scalar|Param|null, // The service ID of the lock factory used by this limiter (or null to disable locking). // Default: "auto"
+ *         cache_pool?: scalar|Param|null, // The cache pool to use for storing the current limiter state. // Default: "cache.rate_limiter"
+ *         storage_service?: scalar|Param|null, // The service ID of a custom storage implementation, this precedes any configured "cache_pool". // Default: null
+ *         policy?: "fixed_window"|"token_bucket"|"sliding_window"|"compound"|"no_limit"|Param, // The algorithm to be used by this limiter.
+ *         limiters?: Param|string|array<string, array{ // Default: []
+ *             key?: scalar|Param|null, // The key to pass to this limiter, instead of the one passed to the compound limiter's create() method. // Default: null
+ *         }>,
+ *         limit?: int|Param, // The maximum allowed hits in a fixed interval or burst.
+ *         interval?: scalar|Param|null, // Configures the fixed interval if "policy" is set to "fixed_window" or "sliding_window". The value must be a number followed by "second", "minute", "hour", "day", "week" or "month" (or their plural equivalent).
+ *         rate?: array{ // Configures the fill rate if "policy" is set to "token_bucket".
+ *             interval?: scalar|Param|null, // Configures the rate interval. The value must be a number followed by "second", "minute", "hour", "day", "week" or "month" (or their plural equivalent).
+ *             amount?: int|Param, // Amount of tokens to add each interval. // Default: 1
+ *         },
+ *         anchor_at?: scalar|Param|null, // Aligns the "fixed_window" policy to a calendar (e.g. "2024-01-05 00:00:00 UTC" combined with `interval: 1 month` resets the counter on the 5th of each month). UTC if not specified. // Default: null
+ *     }>,
  * }
  * @psalm-type HttpClientConfig = bool|array{
  *     enabled?: bool|Param, // Default: true
@@ -674,14 +712,14 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     property_info?: PropertyInfoConfig,
  *     cache?: CacheConfig,
  *     web_link?: WebLinkConfig,
- *     lock?: mixed,
+ *     lock?: LockConfig,
  *     semaphore?: mixed,
  *     messenger?: MessengerConfig,
- *     scheduler?: mixed,
+ *     scheduler?: SchedulerConfig,
  *     http_client?: HttpClientConfig,
  *     mailer?: MailerConfig,
  *     notifier?: NotifierConfig,
- *     rate_limiter?: mixed,
+ *     rate_limiter?: RateLimiterConfig,
  *     uid?: UidConfig,
  *     html_sanitizer?: mixed,
  *     webhook?: mixed,
@@ -1022,10 +1060,10 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         enabled?: bool|Param, // Default: false
  *     },
  *     cssinliner?: bool|array{
- *         enabled?: bool|Param, // Default: false
+ *         enabled?: bool|Param, // Default: true
  *     },
  *     inky?: bool|array{
- *         enabled?: bool|Param, // Default: false
+ *         enabled?: bool|Param, // Default: true
  *     },
  *     string?: bool|array{
  *         enabled?: bool|Param, // Default: false
@@ -1672,13 +1710,16 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     validation?: ValidationConfig,
  *     translation?: TranslationConfig,
  *     web_link?: WebLinkConfig,
+ *     lock?: LockConfig,
  *     messenger?: MessengerConfig,
  *     workflow?: WorkflowConfig,
  *     type_info?: TypeInfoConfig,
  *     property_access?: PropertyAccessConfig,
  *     property_info?: PropertyInfoConfig,
  *     uid?: UidConfig,
+ *     scheduler?: SchedulerConfig,
  *     asset_mapper?: AssetMapperConfig,
+ *     rate_limiter?: RateLimiterConfig,
  *     http_client?: HttpClientConfig,
  *     mailer?: MailerConfig,
  *     notifier?: NotifierConfig,
@@ -1702,13 +1743,16 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         validation?: ValidationConfig,
  *         translation?: TranslationConfig,
  *         web_link?: WebLinkConfig,
+ *         lock?: LockConfig,
  *         messenger?: MessengerConfig,
  *         workflow?: WorkflowConfig,
  *         type_info?: TypeInfoConfig,
  *         property_access?: PropertyAccessConfig,
  *         property_info?: PropertyInfoConfig,
  *         uid?: UidConfig,
+ *         scheduler?: SchedulerConfig,
  *         asset_mapper?: AssetMapperConfig,
+ *         rate_limiter?: RateLimiterConfig,
  *         http_client?: HttpClientConfig,
  *         mailer?: MailerConfig,
  *         notifier?: NotifierConfig,
@@ -1736,13 +1780,16 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         validation?: ValidationConfig,
  *         translation?: TranslationConfig,
  *         web_link?: WebLinkConfig,
+ *         lock?: LockConfig,
  *         messenger?: MessengerConfig,
  *         workflow?: WorkflowConfig,
  *         type_info?: TypeInfoConfig,
  *         property_access?: PropertyAccessConfig,
  *         property_info?: PropertyInfoConfig,
  *         uid?: UidConfig,
+ *         scheduler?: SchedulerConfig,
  *         asset_mapper?: AssetMapperConfig,
+ *         rate_limiter?: RateLimiterConfig,
  *         http_client?: HttpClientConfig,
  *         mailer?: MailerConfig,
  *         notifier?: NotifierConfig,
@@ -1767,13 +1814,16 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         validation?: ValidationConfig,
  *         translation?: TranslationConfig,
  *         web_link?: WebLinkConfig,
+ *         lock?: LockConfig,
  *         messenger?: MessengerConfig,
  *         workflow?: WorkflowConfig,
  *         type_info?: TypeInfoConfig,
  *         property_access?: PropertyAccessConfig,
  *         property_info?: PropertyInfoConfig,
  *         uid?: UidConfig,
+ *         scheduler?: SchedulerConfig,
  *         asset_mapper?: AssetMapperConfig,
+ *         rate_limiter?: RateLimiterConfig,
  *         http_client?: HttpClientConfig,
  *         mailer?: MailerConfig,
  *         notifier?: NotifierConfig,
