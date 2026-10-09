@@ -1,0 +1,46 @@
+{
+    "realm": "showcase",
+    "enabled": true,
+    "registrationAllowed": false,
+    "loginWithEmailAllowed": true,
+    "clients": [
+        {
+            "clientId": "showcase-app",
+            "name": "Conference app",
+            "enabled": true,
+            "publicClient": false,
+            "clientAuthenticatorType": "client-secret",
+            "secret": "showcase-secret",
+            "standardFlowEnabled": true,
+            "directAccessGrantsEnabled": false,
+            "redirectUris": ["http://127.0.0.1:8124/*", "http://localhost:8124/*"],
+            "webOrigins": ["+"],
+            "attributes": {
+                "pkce.code.challenge.method": "S256",
+                "post.logout.redirect.uris": "http://127.0.0.1:8124/*##http://localhost:8124/*",
+                "backchannel.logout.url": "http://host.docker.internal:8124/oidc/backchannel-logout",
+                "backchannel.logout.session.required": "true"
+            }
+        }
+    ],
+    "users": [
+        {
+            "username": "alice",
+            "email": "alice@example.com",
+            "emailVerified": true,
+            "firstName": "Alice",
+            "lastName": "Martin",
+            "enabled": true,
+            "credentials": [{"type": "password", "value": "alice", "temporary": false}]
+        },
+        {
+            "username": "carol",
+            "email": "carol@example.com",
+            "emailVerified": true,
+            "firstName": "Carol",
+            "lastName": "Smith",
+            "enabled": true,
+            "credentials": [{"type": "password", "value": "carol", "temporary": false}]
+        }
+    ]
+}

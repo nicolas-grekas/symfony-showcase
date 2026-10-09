@@ -6,16 +6,23 @@ use App\Entity\Conference;
 use App\Entity\Material\Slides;
 use App\Entity\Proposal;
 use App\Entity\Speaker;
+use App\Entity\User;
 use App\Enum\Format;
 use App\Enum\Level;
 use App\Enum\ProposalStatus;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\Clock\ClockAwareTrait;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 {
     use ClockAwareTrait;
+
+    public function __construct(
+        private readonly UserPasswordHasherInterface $passwordHasher,
+    ) {
+    }
 
     public function load(ObjectManager $manager): void
     {
@@ -46,6 +53,20 @@ class AppFixtures extends Fixture
             $proposal->markSubmitted($conference->cfpOpensAt->modify('+3 days'));
             $manager->persist($proposal);
         }
+
+        foreach ([
+            ['admin@example.com', 'Ada Admin', ['ROLE_ADMIN']],
+            ['organizer@example.com', 'Olga Organizer', ['ROLE_ORGANIZER']],
+            ['reviewer@example.com', 'Rémi Reviewer', ['ROLE_REVIEWER']],
+        ] as [$email, $name, $roles]) {
+            $user = new User($email, $name);
+            $user->roles = $roles;
+            $user->password = $this->passwordHasher->hashPassword($user, explode('@', $email)[0]);
+            $manager->persist($user);
+        }
+
+        // speakers log in with the identity provider, so they have no password
+        $manager->persist(new User('alice@example.com', 'Alice Martin'));
 
         $manager->persist($open);
         $manager->persist($past);

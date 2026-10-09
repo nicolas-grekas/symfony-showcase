@@ -16,3 +16,10 @@ services:
       MP_SMTP_AUTH_ACCEPT_ANY: 1
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
 ###< symfony/mailer ###
+
+###> keycloak ###
+  keycloak:
+    ports:
+      # a fixed port, as the issuer of the tokens is the URL the browser uses
+      - "8180:8080"
+###< keycloak ###
