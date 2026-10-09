@@ -5,6 +5,8 @@ namespace App\Tests\Controller;
 use App\Entity\Proposal;
 use App\Entity\User;
 use App\Enum\ProposalStatus;
+use App\Message\ProposalSubmitted;
+use Symfony\Component\Mailer\Messenger\SendEmailMessage;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -43,6 +45,17 @@ final class CfpControllerTest extends WebTestCase
 
         $client->submitForm('Finish', ['proposal_flow[review]' => true]);
         $this->assertResponseRedirects();
+
+        // checked before the next request, which resets the in-memory transports:
+        // the event waits in the outbox, which forwards it to RabbitMQ once the transaction commits
+        $this->assertQueuedMessageCount(1, 'outbox', ProposalSubmitted::class);
+        static::consumeQueuedMessages('outbox');
+        $this->assertQueuedMessageCount(1, 'events', ProposalSubmitted::class);
+
+        // its handlers email the three people who review proposals, then the speaker
+        static::consumeQueuedMessages('events');
+        $this->assertQueuedMessageCount(4, 'async', SendEmailMessage::class);
+
         $client->followRedirect();
         $this->assertSelectorTextContains('h1', 'Form flows in practice');
 
@@ -50,6 +63,20 @@ final class CfpControllerTest extends WebTestCase
         $this->assertSame(ProposalStatus::Submitted, $proposal->getStatus());
         $this->assertNotNull($proposal->submittedAt);
         $this->assertCount(2, $proposal->materials);
+    }
+
+    public function testEachStepIsValidated()
+    {
+        $client = static::createClient();
+        $client->loginUser($this->findUser('alice@example.com'));
+        $client->request('GET', '/conferences/symfonylive-lille/cfp');
+        $client->submitForm('Next', [
+            'proposal_flow[speaker][name]' => '',
+            'proposal_flow[speaker][bio]' => 'Alice writes about forms.',
+        ]);
+
+        $this->assertResponseStatusCodeSame(422);
+        $this->assertSelectorTextContains('ol.steps > li.current', 'Speaker');
     }
 
     public function testTheCodeOfConductMustBeAccepted()
