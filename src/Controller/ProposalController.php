@@ -71,8 +71,7 @@ final class ProposalController extends AbstractController
         if (!$workflow->can($proposal, $transition)) {
             $this->addFlash('error', \sprintf('The proposal cannot be %s now.', $transition));
         } else {
-            $workflow->apply($proposal, $transition);
-            $entityManager->flush();
+            $entityManager->wrapInTransaction(static fn () => $workflow->apply($proposal, $transition));
         }
 
         return $this->redirectToRoute('proposal_show', ['id' => $proposal->id]);

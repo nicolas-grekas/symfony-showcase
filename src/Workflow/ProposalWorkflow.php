@@ -4,7 +4,10 @@ namespace App\Workflow;
 
 use App\Entity\Proposal;
 use App\Enum\ProposalStatus;
+use App\Message\ProposalDecided;
+use App\Message\ProposalSubmitted;
 use Symfony\Component\Clock\ClockAwareTrait;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Workflow\Attribute\AsCompletedListener;
 use Symfony\Component\Workflow\Attribute\AsGuardListener;
 use Symfony\Component\Workflow\Attribute\AsWorkflow;
@@ -36,6 +39,11 @@ final class ProposalWorkflow
     #[Transition(from: ProposalStatus::InReview, to: ProposalStatus::Withdrawn)]
     public const WITHDRAW = 'withdraw';
 
+    public function __construct(
+        private readonly MessageBusInterface $bus,
+    ) {
+    }
+
     #[AsGuardListener(transition: self::SUBMIT)]
     public function guardSubmit(GuardEvent $event): void
     {
@@ -53,5 +61,15 @@ final class ProposalWorkflow
         /** @var Proposal $proposal */
         $proposal = $event->getSubject();
         $proposal->markSubmitted($this->now());
+        $this->bus->dispatch(new ProposalSubmitted($proposal->id));
+    }
+
+    #[AsCompletedListener(transition: self::ACCEPT)]
+    #[AsCompletedListener(transition: self::REJECT)]
+    public function onDecided(CompletedEvent $event): void
+    {
+        /** @var Proposal $proposal */
+        $proposal = $event->getSubject();
+        $this->bus->dispatch(new ProposalDecided($proposal->id, self::ACCEPT === $event->getTransition()->getName()));
     }
 }

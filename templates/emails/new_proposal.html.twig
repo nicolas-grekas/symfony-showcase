@@ -1,0 +1,6 @@
+{% extends 'emails/layout.html.twig' %}
+
+{% block content %}
+    <p>A new proposal was submitted to {{ proposal.conference.name }}:</p>
+    <p><strong><a href="{{ url('proposal_show', {id: proposal.id}) }}">{{ proposal.title }}</a></strong>, by {{ proposal.speakers|map(s => s.name)|join(', ') }}</p>
+{% endblock %}

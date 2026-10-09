@@ -1,0 +1,5 @@
+rate_limiter:
+    mailer:
+        policy: sliding_window
+        limit: 60
+        interval: '1 minute'

@@ -1,0 +1,7 @@
+{% extends 'emails/layout.html.twig' %}
+
+{% block content %}
+    <p>Thank you for submitting <strong>{{ proposal.title }}</strong> to {{ proposal.conference.name }}.</p>
+    <p>Reviewers will now read it, and we will tell you about our decision once the call for papers is closed.</p>
+    {% if reference %}<p style="color: #59636e">Reference: {{ reference }}</p>{% endif %}
+{% endblock %}

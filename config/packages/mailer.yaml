@@ -1,2 +1,14 @@
 mailer:
-    dsn: '%env(MAILER_DSN)%'
+    transports:
+        main:
+            dsn: '%env(MAILER_DSN)%'
+            # never more than the provider accepts: over the limit, the async message is retried later
+            rate_limiter: mailer
+    headers:
+        From: 'Conferences <noreply@conferences.example>'
+
+when@test:
+    mailer:
+        transports:
+            main:
+                dsn: 'null://null'

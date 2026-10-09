@@ -35,11 +35,12 @@ final class ProposalSubmitter
             $proposal->addMaterial($material instanceof VideoData ? new Video($material->url, $material->minutes) : new Slides($material->url));
         }
 
-        $this->workflow->apply($proposal, ProposalWorkflow::SUBMIT);
-
-        $this->entityManager->persist($speaker);
-        $this->entityManager->persist($proposal);
-        $this->entityManager->flush();
+        // the ProposalSubmitted event goes to the outbox in the same transaction as the proposal
+        $this->entityManager->wrapInTransaction(function () use ($speaker, $proposal) {
+            $this->workflow->apply($proposal, ProposalWorkflow::SUBMIT);
+            $this->entityManager->persist($speaker);
+            $this->entityManager->persist($proposal);
+        });
 
         return $proposal;
     }

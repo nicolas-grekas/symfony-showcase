@@ -1,0 +1,5 @@
+{% extends 'emails/layout.html.twig' %}
+
+{% block content %}
+    <p>Your travel to {{ proposal.conference.city }} is booked: you arrive on {{ proposal.conference.startsOn|date_modify('-1 day')|date('F j') }} and leave on {{ proposal.conference.endsOn|date_modify('+1 day')|date('F j') }}.</p>
+{% endblock %}

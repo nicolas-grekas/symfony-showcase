@@ -1,0 +1,10 @@
+{% extends 'emails/layout.html.twig' %}
+
+{% block content %}
+    {% if accepted %}
+        <p>Great news: <strong>{{ proposal.title }}</strong> is part of the program of {{ proposal.conference.name }}!</p>
+        <p>We are booking your travel to {{ proposal.conference.city }}, you will receive the details soon.</p>
+    {% else %}
+        <p>Thank you for proposing <strong>{{ proposal.title }}</strong>. We received many great proposals and could not select yours this time.</p>
+    {% endif %}
+{% endblock %}
