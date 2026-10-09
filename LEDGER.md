@@ -17,6 +17,7 @@ What the app exercises, and what building it found.
 | Slice | Features | State |
 |---|---|---|
 | 0. Skeleton | component bundles at their root keys, `lint:yaml --check-schema`, `debug:config`, `config:dump-reference`, `debug:container --env-vars`, sub-commands (`cache pool list`) | done |
+| 3. Async | outbox transport in front of RabbitMQ, identity stamps (correlation id quoted in emails), `#[AsMessageHandler(after:)]`, stamp arguments of handlers, `ChainStamp`, `DispatchOnFailureStamp`, `logging` and `doctrine_dbal_transaction` middleware, `FailedMessageRepository`, `#[AsCronTask(env:)]`, `scheduler.schedules` (stateful, last missed run), `use_messenger_routing`, rate-limited mailer transport, Postgres advisory locks on the Doctrine connection, `Valid(restrictGroups: false)`, `debug:scheduler` "Next Run In", `debug:messenger` routing, `MessengerAssertionsTrait` | done |
 | 2. Security | `oidc_login` against Keycloak (users provisioned from the claims through the entity provider, RP-initiated logout, token refresh, back-channel logout), `form_login`, `recent_authentication_lifetime` + `Vote::requestReAuthentication()` with the login form re-asking the password only, role hierarchy wildcard (`ROLE_REVIEWER_*`), `user_checker_on_refresh`, POST-only `logout_form()`, `impersonation_form()` and `impersonation_exit_form()`, `is_granted_for_user(null, ...)`, `#[IsGranted(statusCode: 404)]`, `#[IsCsrfTokenValid]`, `debug:roles` | done |
 | 1. CFP | `#[AsWorkflow]` with enum places and in-class guard/completed listeners, `#[AsFormType]`/`#[FormField]` data classes, FormFlow with a step group, `PolymorphicCollectionType` with an entry type provider, `choice_help`, enum type guessing, `#[MapEntity]` closure and list, `DatePoint` and `day_point` columns, UUIDv7, Doctrine entity auto-discovery (DoctrineBundle 3.4) | done |
 
@@ -45,4 +46,9 @@ What the app exercises, and what building it found.
 | 20 | A recent-authentication check on a POST action sends the user to the homepage once the password is confirmed (no target path is saved for unsafe methods): guard a GET page instead | doc | noted, done that way in the app |
 | 21 | `re_authentication_entry_point` only takes a service id, while `entry_point` also takes an authenticator key such as `form_login` | DX, 8.2 | open: small fix in `RegisterEntryPointPass` |
 | 22 | `is_granted_for_user(null, 'IS_AUTHENTICATED_FULLY')` throws instead of answering no for a guest | DX, 8.2 | noted |
+| 23 | `AdminRecipientsProviderInterface` has no autowiring alias: sending to `notifier.admin_recipients` needs an `instanceof` check on `NotifierInterface` | DX, 8.2 | open: alias it to the notifier |
+| 24 | The webapp pack routes urgent notifications to email, but `NotificationEmail` throws without `twig/cssinliner-extra` and `twig/inky-extra`, which it does not install | DX, pack | open |
+| 25 | The in-memory transports are reset by the next request of the test client, so `MessengerAssertionsTrait` checks must run before it | doc | noted |
+| 26 | On 8.2 the scheduler recipe could drop its `Schedule` class, which hardcodes `stateful()`/`processOnlyLastMissedRun()`, for `scheduler.schedules` | recipe | open (with symfony/recipes#1573 for `use_messenger_routing`) |
+| 27 | A form flow does not validate the objects of its steps unless the root data class adds `Valid(groups: [<step>], restrictGroups: false)` to each | doc, 8.2 | noted |
 | 17 | In a `#[MapEntity]` closure, `{slug:conference}` exposes the slug as the `conference` request attribute, not `slug` | doc | noted |
