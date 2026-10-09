@@ -1,3 +1,70 @@
 body {
-    background-color: skyblue;
+    font-family: system-ui, sans-serif;
+    margin: 0 auto;
+    max-width: 52rem;
+    padding: 0 1rem 3rem;
+    line-height: 1.5;
+    color: #1f2328;
+}
+
+header nav {
+    padding: 1rem 0;
+    border-bottom: 1px solid #d0d7de;
+    margin-bottom: 1.5rem;
+}
+
+a.button, button {
+    display: inline-block;
+    padding: .4rem .9rem;
+    border: 1px solid #1f6feb;
+    border-radius: .4rem;
+    background: #1f6feb;
+    color: #fff;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+button[type="button"] {
+    background: #fff;
+    color: #1f6feb;
+}
+
+input[type="text"], input[type="email"], input[type="url"], input[type="number"], textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: .4rem;
+}
+
+textarea {
+    min-height: 8rem;
+}
+
+form > div, fieldset {
+    margin-bottom: 1rem;
+}
+
+.help-text, .form-help {
+    color: #59636e;
+    font-size: .9em;
+}
+
+ol.steps > li.current, ol.steps li.current {
+    font-weight: bold;
+}
+
+.flash {
+    padding: .6rem 1rem;
+    border-radius: .4rem;
+    background: #dafbe1;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    text-align: left;
+    padding: .3rem .5rem;
+    border-bottom: 1px solid #d0d7de;
 }

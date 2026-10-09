@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Call for papers: {{ conference.name }}{% endblock %}
+
+{% block body %}
+    <h1>Call for papers: {{ conference.name }}</h1>
+
+    <ol class="steps">
+        {% for step in form.vars.visible_steps %}
+            <li class="{{ step.is_current_step or step.has_current_step_descendant ? 'current' }}">
+                {{ step.name|humanize }}
+                {% if step.visible_children %}
+                    <ol>
+                        {% for child in step.visible_children %}
+                            <li class="{{ child.is_current_step ? 'current' }}">{{ child.name|humanize }}</li>
+                        {% endfor %}
+                    </ol>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ol>
+
+    {{ form_start(form) }}
+        {% if form.materials is defined %}
+            <div data-controller="polymorphic-collection" data-polymorphic-collection-index-value="{{ form.materials|length }}">
+                {{ form_row(form.materials) }}
+                <p>
+                    <button type="button" data-action="polymorphic-collection#add" data-polymorphic-collection-type-param="slides">Add slides</button>
+                    <button type="button" data-action="polymorphic-collection#add" data-polymorphic-collection-type-param="video">Add a video</button>
+                </p>
+            </div>
+        {% endif %}
+        {{ form_rest(form) }}
+    {{ form_end(form) }}
+{% endblock %}

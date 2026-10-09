@@ -1,0 +1,11 @@
+level:
+    beginner: Beginner
+    beginner.help: No prior knowledge of the topic is needed.
+    intermediate: Intermediate
+    intermediate.help: Attendees already use the topic in their projects.
+    advanced: Advanced
+    advanced.help: For people who know the internals of the topic.
+format:
+    talk: Talk (%minutes% minutes)
+    workshop: Workshop (%minutes% minutes)
+    lightning: Lightning talk (%minutes% minutes)
