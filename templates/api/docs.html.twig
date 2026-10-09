@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}API{% endblock %}
+
+{% block body %}
+    <h1>API</h1>
+
+    <dl>
+        <dt><code>GET /api/conferences</code></dt>
+        <dd>The upcoming conferences. The <code>Link-Template</code> header tells the URL of each one.</dd>
+        <dt><code>GET /api/conferences/{slug}</code></dt>
+        <dd>A conference and its accepted talks.</dd>
+        <dt><code>GET /api/conferences/{slug}/talks</code></dt>
+        <dd>The accepted talks of a conference, streamed.</dd>
+        <dt><code>POST /api/conferences/{slug}/proposals</code></dt>
+        <dd>Submits a proposal, with an access token of the identity provider granting the <code>proposals:write</code> scope.</dd>
+    </dl>
+
+    <p>Clients discover these endpoints at <a href="{{ path('api_catalog') }}"><code>/.well-known/api-catalog</code></a>.</p>
+{% endblock %}

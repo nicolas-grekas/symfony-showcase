@@ -1,0 +1,4 @@
+serializer:
+    default_context:
+        # the properties without #[Groups] are in the "Default" group too
+        enable_default_groups: true
