@@ -230,6 +230,15 @@
             "config/packages/notifier.yaml"
         ]
     },
+    "symfony/phpunit-bridge": {
+        "version": "8.2",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "8.2",
+            "ref": "b102b2bf0918131e99e6a7b427d843f7e6c3316c"
+        }
+    },
     "symfony/property-info": {
         "version": "8.2",
         "recipe": {

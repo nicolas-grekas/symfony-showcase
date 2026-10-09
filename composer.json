@@ -122,6 +122,7 @@
         "symfony/css-selector": "8.2.*",
         "symfony/debug-bundle": "8.2.*",
         "symfony/maker-bundle": "^1.0",
+        "symfony/phpunit-bridge": "8.2.*",
         "symfony/stopwatch": "8.2.*",
         "symfony/web-profiler-bundle": "8.2.*"
     },
