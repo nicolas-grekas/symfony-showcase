@@ -145,7 +145,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     https_port?: scalar|Param|null, // Default: 443
  *     strict_requirements?: scalar|Param|null, // set to true to throw an exception when a parameter does not match the requirements set to false to disable exceptions when a parameter does not match the requirements (and return null instead) set to null to disable parameter checks against requirements 'true' is the preferred configuration in development mode, while 'false' or 'null' might be preferred in production // Default: true
  *     utf8?: bool|Param, // Default: true
- *     ...<string, mixed>
  * }
  * @psalm-type CacheConfig = array{
  *     prefix_seed?: scalar|Param|null, // Used to namespace cache keys when using several apps with the same shared backend. // Default: "_%kernel.project_dir%.%kernel.container_class%"
