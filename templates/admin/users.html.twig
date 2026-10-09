@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+{% import '_macros.html.twig' as ui %}
+
+{% block title %}Users{% endblock %}
+
+{% block body %}
+    <h1>Users</h1>
+
+    <table>
+        <thead><tr><th>Name</th><th>Email</th><th>Roles</th><th></th></tr></thead>
+        <tbody>
+            {% for user in users %}
+                <tr>
+                    <td>{{ user.name }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.roles|join(', ') }}</td>
+                    <td>
+                        <form method="post" action="{{ path('admin_user_toggle', {id: user.id}) }}" class="inline">
+                            <input type="hidden" name="_token" value="{{ csrf_token('user-toggle') }}">
+                            <button type="submit">{{ user.enabled ? 'Disable' : 'Enable' }}</button>
+                        </form>
+                        {% if user != app.user %}
+                            {{ ui.post_form(impersonation_form(user.userIdentifier, path('home')), 'Impersonate') }}
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

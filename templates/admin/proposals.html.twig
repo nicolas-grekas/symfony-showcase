@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Proposals{% endblock %}
+
+{% block body %}
+    <h1>Proposals</h1>
+
+    <table>
+        <thead><tr><th>Title</th><th>Speakers</th><th>Status</th><th>Submitted</th><th>Public</th></tr></thead>
+        <tbody>
+            {% for proposal in proposals %}
+                <tr>
+                    <td><a href="{{ path('proposal_show', {id: proposal.id}) }}">{{ proposal.title }}</a></td>
+                    <td>{{ proposal.speakers|map(s => s.name)|join(', ') }}</td>
+                    <td>{{ proposal.status.value|humanize }}</td>
+                    <td>{{ proposal.submittedAt ? proposal.submittedAt|date('Y-m-d H:i') }}</td>
+                    {# what an anonymous visitor would be allowed to see #}
+                    <td>{{ is_granted_for_user(null, 'PROPOSAL_VIEW', proposal) ? 'yes' : 'no' }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

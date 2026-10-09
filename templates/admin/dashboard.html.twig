@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Back office{% endblock %}
+
+{% block body %}
+    <h1>Back office</h1>
+
+    <ul>
+        {% for conference in conferences %}
+            <li><a href="{{ path('admin_proposals', {conference: conference.id}) }}">{{ conference.name }}</a>: proposals</li>
+        {% endfor %}
+    </ul>
+
+    {% if is_granted('ROLE_ADMIN') %}
+        <p><a href="{{ path('admin_users') }}">Users</a></p>
+    {% endif %}
+{% endblock %}
