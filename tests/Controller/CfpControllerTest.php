@@ -1,0 +1,83 @@
+<?php
+
+namespace App\Tests\Controller;
+
+use App\Entity\Proposal;
+use App\Enum\ProposalStatus;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+
+final class CfpControllerTest extends WebTestCase
+{
+    public function testSubmitAProposalStepByStep()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/conferences/symfonylive-lille/cfp');
+        $this->assertResponseIsSuccessful();
+
+        $client->submitForm('Next', [
+            'proposal_flow[speaker][name]' => 'Carol Smith',
+            'proposal_flow[speaker][email]' => 'carol@example.com',
+            'proposal_flow[speaker][bio]' => 'Carol writes about forms.',
+        ]);
+        $this->assertSelectorTextContains('ol.steps li.current li.current', 'Talk');
+
+        $client->submitForm('Next', [
+            'proposal_flow[talk][title]' => 'Form flows in practice',
+            'proposal_flow[talk][abstract]' => str_repeat('Multi-step forms with the FormFlow API. ', 3),
+            'proposal_flow[talk][level]' => 'intermediate',
+            'proposal_flow[talk][format]' => 'talk',
+        ]);
+        $this->assertSelectorTextContains('ol.steps li.current li.current', 'Materials');
+
+        // entries are added by JavaScript from the prototypes, so they are posted by hand
+        $form = $client->getCrawler()->selectButton('Next')->form();
+        $values = $form->getPhpValues();
+        $values['proposal_flow']['materials'] = [
+            ['url' => 'https://speakerdeck.com/carol/forms'],
+            ['url' => 'https://youtube.com/watch?v=abc', 'minutes' => '35'],
+        ];
+        $client->request($form->getMethod(), $form->getUri(), $values);
+        $this->assertSelectorTextContains('ol.steps > li.current', 'Review');
+
+        $client->submitForm('Finish', ['proposal_flow[review]' => true]);
+        $this->assertResponseRedirects();
+        $client->followRedirect();
+        $this->assertSelectorTextContains('h1', 'Form flows in practice');
+
+        $proposal = static::getContainer()->get(EntityManagerInterface::class)->getRepository(Proposal::class)->findOneBy(['title' => 'Form flows in practice']);
+        $this->assertSame(ProposalStatus::Submitted, $proposal->getStatus());
+        $this->assertNotNull($proposal->submittedAt);
+        $this->assertCount(2, $proposal->materials);
+    }
+
+    public function testTheCodeOfConductMustBeAccepted()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/conferences/symfonylive-lille/cfp');
+        $client->submitForm('Next', [
+            'proposal_flow[speaker][name]' => 'Carol Smith',
+            'proposal_flow[speaker][email]' => 'carol@example.com',
+            'proposal_flow[speaker][bio]' => 'Carol writes about forms.',
+        ]);
+        $client->submitForm('Next', [
+            'proposal_flow[talk][title]' => 'Form flows in practice',
+            'proposal_flow[talk][abstract]' => str_repeat('Multi-step forms with the FormFlow API. ', 3),
+            'proposal_flow[talk][level]' => 'beginner',
+            'proposal_flow[talk][format]' => 'lightning',
+        ]);
+        $client->submitForm('Next');
+        $client->submitForm('Finish');
+
+        $this->assertResponseStatusCodeSame(422);
+        $this->assertSelectorTextContains('ol.steps > li.current', 'Review');
+    }
+
+    public function testTheCallForPapersOfAPastConferenceIsClosed()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/conferences/symfonycon-amsterdam/cfp');
+
+        $this->assertResponseStatusCodeSame(410);
+    }
+}
