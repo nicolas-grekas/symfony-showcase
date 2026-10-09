@@ -58,6 +58,7 @@ with `SYMFONY_HTTP_RECORDER=record` while the server runs.
 | Workflow declared with attributes, enum places, in-class listeners | `src/Workflow/ProposalWorkflow.php` |
 | `#[AsFormType]` data classes, multi-step form flow, polymorphic collection | `src/Cfp`, `src/Form/ProposalFlowType.php` |
 | `BoundsType` ranges of `DatePoint` dates | `src/Admin/ConferenceData.php` |
+| Collection entries named with `entry_name`, `Unique` on objects | `src/Admin/ScheduleData.php` |
 | OIDC login, recent authentication, POST logout and impersonation | `config/packages/security.yaml`, `src/Security` |
 | Outbox, identity stamps, chained messages, dispatch on failure | `config/packages/messenger.yaml`, `src/MessageHandler` |
 | Scheduler tasks, stateful schedule | `src/Scheduler`, `config/packages/scheduler.yaml` |
