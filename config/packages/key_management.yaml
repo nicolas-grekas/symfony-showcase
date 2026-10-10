@@ -6,6 +6,6 @@ key_management:
     store:
         key_id: speakers
     # the columns encrypted at rest, declared as Doctrine types when the kernel boots
-    doctrine:
+    doctrine_dbal:
         types:
             encrypted_string: { type: string, key: speaker.contact }

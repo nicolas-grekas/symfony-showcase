@@ -3121,7 +3121,7 @@
                                 "additionalProperties": false,
                                 "description": "Data key store: payloads then refer to a stored data key instead of carrying it, so the KMS is reached once per key and per process, and that key can be rewrapped under another provider without rewriting a payload."
                             },
-                            "doctrine": {
+                            "doctrine_dbal": {
                                 "$ref": "#/$defs/types/object_null",
                                 "properties": {
                                     "types": {
