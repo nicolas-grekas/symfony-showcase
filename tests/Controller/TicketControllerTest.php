@@ -7,7 +7,6 @@ use App\Entity\Ticket;
 use App\Entity\User;
 use App\Enum\TicketStatus;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
@@ -178,12 +177,15 @@ final class TicketControllerTest extends WebTestCase
 
     private function extractTicketLink(): string
     {
-        $emails = array_filter(static::getQueuedMessages('async'), static fn ($envelope) => $envelope->getMessage() instanceof SendEmailMessage);
-        $email = array_pop($emails)->getMessage()->getMessage();
-        $this->assertInstanceOf(TemplatedEmail::class, $email);
+        // the email is rendered when the worker sends it
+        static::consumeQueuedMessages('async');
+        $sent = array_values(array_filter(static::getMailerEvents(), static fn ($event) => !$event->isQueued()));
+        $email = $sent[0]->getMessage();
         $this->assertSame('Your ticket for SymfonyLive Lille', $email->getSubject());
+        $this->assertMatchesRegularExpression('{href="(http://localhost/tickets/[^"]++)"}', $email->getHtmlBody());
+        preg_match('{href="(http://localhost/tickets/[^"]++)"}', $email->getHtmlBody(), $m);
 
-        return $email->getContext()['url'];
+        return html_entity_decode($m[1]);
     }
 
     private function csrfToken(): string

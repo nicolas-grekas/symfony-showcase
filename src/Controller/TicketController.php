@@ -8,7 +8,6 @@ use App\Entity\User;
 use App\Enum\TicketStatus;
 use App\Payment\PaymentGateway;
 use App\Repository\TicketRepository;
-use App\Ticket\TicketLinks;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Clock\ClockAwareTrait;
@@ -76,10 +75,8 @@ final class TicketController extends AbstractController
     }
 
     #[Route('/me/tickets', name: 'me_tickets', methods: ['GET'])]
-    public function mine(#[CurrentUser] User $user, TicketRepository $tickets, TicketLinks $links): Response
+    public function mine(#[CurrentUser] User $user, TicketRepository $tickets): Response
     {
-        return $this->render('ticket/mine.html.twig', [
-            'tickets' => array_map(static fn (Ticket $ticket) => ['ticket' => $ticket, 'url' => $links->url($ticket)], $tickets->findPaidByBuyer($user)),
-        ]);
+        return $this->render('ticket/mine.html.twig', ['tickets' => $tickets->findPaidByBuyer($user)]);
     }
 }

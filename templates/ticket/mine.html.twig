@@ -1,4 +1,5 @@
 {% extends 'base.html.twig' %}
+{% from '_macros.html.twig' import ticket_url %}
 
 {% block title %}My tickets{% endblock %}
 
@@ -6,8 +7,8 @@
     <h1>My tickets</h1>
 
     <ul>
-        {% for item in tickets %}
-            <li><a href="{{ item.url }}">{{ item.ticket.conference.name }}</a>, {{ item.ticket.conference.startsOn|date('F j, Y') }}</li>
+        {% for ticket in tickets %}
+            <li><a href="{{ ticket_url(ticket) }}">{{ ticket.conference.name }}</a>, {{ ticket.conference.startsOn|date('F j, Y') }}</li>
         {% else %}
             <li>No tickets yet.</li>
         {% endfor %}
