@@ -10,8 +10,8 @@ final class ProposalDraft
     #[Ignore]
     public string $currentStep = '';
 
-    // the form flow validates the "Default" group and the one of the current step: each nested object is
-    // validated on its own step only, and then against the "Default" group too (restrictGroups: false)
+    // the API validates the whole draft in the groups of all the steps, while the form flow validates the object
+    // of the current step by itself: scoping each Valid to its step keeps the flow off the other steps
     #[Assert\Valid(groups: ['speaker'], restrictGroups: false)]
     public SpeakerData $speaker;
 
