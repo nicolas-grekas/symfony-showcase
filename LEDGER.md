@@ -44,7 +44,7 @@ What the app exercises, and what building it found.
 | 10 | `composer require`/`remove` of a component fails its own `cache:clear` script: in debug mode the kernel reuses the cached list of bundles while rebuilding a stale container | bug, 8.1 | symfony/symfony#66750 |
 | 11 | The Doctrine bridge maps `Clock\DayPoint` and `Clock\TimePoint` to Doctrine types, but these classes don't exist (the changelog too) | bug, 8.2 | symfony/symfony#66751 |
 | 12 | `#[FormField]` relies on the type guessers, which ignore the declared PHP type: an `?int` property becomes a text field (enums are guessed) | DX, 8.2 | open: a TypeInfo-based guesser would make `#[AsFormType]` classes much shorter |
-| 13 | Neither FrameworkBundle nor DoctrineBundle registers the new `CollectionDenormalizer` | DX, 8.2 | in progress: DoctrineBundle PR, cc @GromNaN |
+| 13 | Neither FrameworkBundle nor DoctrineBundle registers the new `CollectionDenormalizer` | DX, 8.2 | doctrine/DoctrineBundle#2297, opened by the author of the class |
 | 14 | `IterableToArrayCollection` wraps a `MapCollection` that builds its own `new ObjectMapper()` instead of using the app's | bug, 8.2 | symfony/symfony#66755 |
 | 15 | On 8.2 the workflow recipe's `framework.workflows: null` file is useless: WorkflowBundle is enabled by default and `#[AsWorkflow]` needs no YAML | recipe | done in symfony/recipes#1592 |
 | 16 | DomCrawler assertions wrapped in `LogicalAnd` print the exported `Crawler` object on failure (BrowserKit cookie and route assertions dump the response or the client) | DX, all branches | symfony/symfony#66765 (8.2) |
@@ -69,8 +69,8 @@ What the app exercises, and what building it found.
 | 35 | The `oidc` token handler builds the discovery URL relatively to `base_uri`: `http://kc/realms/showcase` fetches `http://kc/realms/.well-known/openid-configuration`, only a trailing slash works around it, even with `check_issuer` (`oidc_user_info` too) | bug, 7.4 | symfony/symfony#66758 |
 | 36 | The Symfony CLI exports `DEFAULT_URI` with a trailing slash, the routing recipe writes it without one: `'%env(DEFAULT_URI)%/path'` is right with one and wrong with the other | DX, CLI or recipe | noted |
 | 37 | JSON errors are RFC 9457 problem documents served as `application/json`, not `application/problem+json` | DX | noted, long-standing |
-| 38 | `new ObjectMapper()` does not convert enums to scalars: only the mapper of the container does, through `EnumMappingMetadataFactory` | DX, 8.2 | noted |
-| 39 | `EnumMappingMetadataFactory::injectMapEnum()` rebuilds the `Mapping` without its `targetClass`: with a class map of several targets, a conversion made for one target may apply to another | to check, 8.2 | open |
+| 38 | `new ObjectMapper()` does not convert enums to scalars: only the mapper of the container does, through `EnumMappingMetadataFactory` | bug, 8.2 | symfony/symfony#66769 (after #66768) |
+| 39 | `EnumMappingMetadataFactory::injectMapEnum()` rebuilds the `Mapping` without its `targetClass`: with a class map of several targets, a conversion made for one target may apply to another; it also overrode the user transforms of enum properties | bug, 8.2 | symfony/symfony#66768 |
 | 40 | Importing a Keycloak realm that declares one client scope replaces all the default ones: the realm file has to list them (`profile`, `email`, `basic`...) | Keycloak | noted |
 | 41 | Console errors are split at the terminal width in the middle of words ("ar e") | DX, all branches | noted |
 | 42 | The help of an option mapped to a list of enum cases does not list the accepted values, which only the error message tells | DX, 8.2 | noted |
