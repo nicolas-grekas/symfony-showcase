@@ -42,7 +42,7 @@ final class ConferenceApiTest extends WebTestCase
         $client->request('GET', '/api/conferences/nope');
 
         $this->assertResponseStatusCodeSame(404);
-        $this->assertResponseHeaderSame('Content-Type', 'application/json');
+        $this->assertResponseHeaderSame('Content-Type', 'application/problem+json');
         $this->assertSame(404, json_decode($client->getResponse()->getContent(), true)['status']);
     }
 
