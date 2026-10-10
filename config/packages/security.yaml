@@ -34,7 +34,8 @@ security:
                 token_handler:
                     oidc:
                         discovery:
-                            base_uri: '%env(OIDC_ISSUER)%'
+                            # with a trailing slash: the discovery path is resolved against it as a relative URL
+                            base_uri: '%env(OIDC_ISSUER)%/'
                             cache: { id: cache.app }
                             # the keys of the discovery document only verify the tokens of the issuer it announces
                             check_issuer: true
