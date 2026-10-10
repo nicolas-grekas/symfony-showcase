@@ -6,7 +6,9 @@ What the app exercises, and what building it found.
 
 - Skeleton: `symfony new --webapp --version=next --docker`, Symfony 8.2.x-dev, PHP 8.5.
 - Symfony sources: `php link` to the `showcase` branch of a symfony/symfony worktree
-  (`~/Code/symfony-worktrees/showcase`), which is 8.2 plus the pending fixes below.
+  (`~/Code/symfony-worktrees/showcase`). All the Symfony fixes below are merged; the branch
+  is 8.2 plus those merged on lower branches and not merged up yet (#66745, #66750, #66756,
+  #66759), the API needs #66756.
 - `composer require` of a non-Symfony package keeps the links; re-run `link` after
   requiring a Symfony package.
 - Linked sources are not a vendor directory, so the dev container tracks every framework
@@ -33,27 +35,27 @@ What the app exercises, and what building it found.
 | # | Finding | Kind | Status |
 |---|---|---|---|
 | 1 | Recipes write `framework.cache`, `framework.messenger`, `framework.validation`... while 8.2 owns these keys at the root | recipe | symfony/recipes#1592 (draft until 8.2 ships); the webapp-pack and third-party recipes (DoctrineBundle...) keep `framework.*` |
-| 2 | `debug:container --env-vars` reports `APP_ENV`, `APP_SHARE_DIR` (and `KERNEL_CLASS` in test) as unused | bug, 8.2 | symfony/symfony#66747 |
+| 2 | `debug:container --env-vars` reports `APP_ENV`, `APP_SHARE_DIR` (and `KERNEL_CLASS` in test) as unused | bug, 8.2 | symfony/symfony#66747 (merged) |
 | 3 | `debug:config framework cache` fails, `config:dump-reference framework` shows `cache: ~` with no hint | DX, 8.2 | symfony/symfony#66748 (merged) |
 | 4 | `lint:yaml config --check-schema` rejects 5 of the 24 files of the skeleton, all valid | bug, 8.2 and 7.4 | symfony/symfony#66746 (merged) (8.2), symfony/symfony#66745 (merged) (7.4) |
-| 5 | `cache:warmup --env=prod` logs a deprecation: DoctrineBundle extends the deprecated FrameworkBundle cache warmer | bug, third party | upstream: doctrine/DoctrineBundle#2289, open since 2026-09-16 |
+| 5 | `cache:warmup --env=prod` logs a deprecation: DoctrineBundle extends the deprecated FrameworkBundle cache warmer | bug, third party | doctrine/DoctrineBundle#2289 (merged) (3.3.x, not merged up into 3.4.x yet) |
 | 6 | Schema validation needs `opis/json-schema`, which the webapp pack does not install, and is opt-in with `--check-schema` | DX, pack | symfony/webapp-pack#23 |
 | 7 | Recipe text: `ux_turbo.yaml` reuses the comment of `csrf.yaml`, `notifier.yaml` mentions `sms/nexmo`, the mailer post-install text says `framework.messenger.routing` and `doc/master` | recipe | symfony/recipes#1591 |
-| 8 | `debug:roles` (new) and `debug:security:role-hierarchy` overlap; `debug:roles` is the only description ending with a period | DX, 8.2 | symfony/symfony#66749 |
-| 9 | `make:auth` is described as "Create a Guard authenticator" | MakerBundle | symfony/maker-bundle#1844 |
+| 8 | `debug:roles` (new) and `debug:security:role-hierarchy` overlap; `debug:roles` is the only description ending with a period | DX, 8.2 | symfony/symfony#66749 (merged) |
+| 9 | `make:auth` is described as "Create a Guard authenticator" | MakerBundle | symfony/maker-bundle#1844 (merged) |
 | 10 | `composer require`/`remove` of a component fails its own `cache:clear` script: in debug mode the kernel reuses the cached list of bundles while rebuilding a stale container | bug, 8.1 | symfony/symfony#66750 (merged) |
 | 11 | The Doctrine bridge maps `Clock\DayPoint` and `Clock\TimePoint` to Doctrine types, but these classes don't exist (the changelog too) | bug, 8.2 | symfony/symfony#66751 (merged) |
 | 12 | `#[FormField]` relies on the type guessers, which ignore the declared PHP type: an `?int` property becomes a text field (enums are guessed) | DX, 8.2 | symfony/symfony#66772 (merged) |
 | 13 | Neither FrameworkBundle nor DoctrineBundle registers the new `CollectionDenormalizer` | DX, 8.2 | doctrine/DoctrineBundle#2297, opened by the author of the class |
 | 14 | `IterableToArrayCollection` wraps a `MapCollection` that builds its own `new ObjectMapper()` instead of using the app's | bug, 8.2 | symfony/symfony#66755 (merged) |
 | 15 | On 8.2 the workflow recipe's `framework.workflows: null` file is useless: WorkflowBundle is enabled by default and `#[AsWorkflow]` needs no YAML | recipe | done in symfony/recipes#1592 |
-| 16 | DomCrawler assertions wrapped in `LogicalAnd` print the exported `Crawler` object on failure (BrowserKit cookie and route assertions dump the response or the client) | DX, all branches | symfony/symfony#66765 (8.2) |
-| 18 | A `User::__serialize()` that hashes the password the MakerBundle way logs out the users who have none (e.g. those of `oidc_login`): `hash('crc32c', '')` never matches a `null` password | app gotcha | symfony/symfony#66763 (merged) (the example of the interface), symfony/maker-bundle#1845 |
+| 16 | DomCrawler assertions wrapped in `LogicalAnd` print the exported `Crawler` object on failure (BrowserKit cookie and route assertions dump the response or the client) | DX, all branches | symfony/symfony#66765 (merged) (8.2) |
+| 18 | A `User::__serialize()` that hashes the password the MakerBundle way logs out the users who have none (e.g. those of `oidc_login`): `hash('crc32c', '')` never matches a `null` password | app gotcha | symfony/symfony#66763 (merged) (the example of the interface), symfony/maker-bundle#1845 (merged) |
 | 19 | `logout_form()`/`impersonation_form()` return `{action, fields}`: every app writes the same macro, and nothing tells which field is the CSRF token the `csrf-protection` Stimulus controller should handle | DX, 8.2 | symfony/symfony-docs#23248 (a macro in the docs), symfony/symfony#66767 (merged) (phpdoc) |
 | 20 | A recent-authentication check on a POST action sends the user to the homepage once the password is confirmed (no target path is saved for unsafe methods): guard a GET page instead | doc | symfony/symfony-docs#23249 |
 | 21 | `re_authentication_entry_point` only takes a service id, while `entry_point` also takes an authenticator key such as `form_login` | DX, 8.2 | symfony/symfony#66754 (merged) |
 | 22 | `is_granted_for_user(null, 'IS_AUTHENTICATED_FULLY')` throws instead of answering no for a guest | bug, 8.2 | symfony/symfony#66764 (merged) |
-| 23 | `AdminRecipientsProviderInterface` has no autowiring alias: sending to `notifier.admin_recipients` needs an `instanceof` check on `NotifierInterface` | DX, 8.2 | symfony/symfony#66752 |
+| 23 | `AdminRecipientsProviderInterface` has no autowiring alias: sending to `notifier.admin_recipients` needs an `instanceof` check on `NotifierInterface` | DX, 8.2 | symfony/symfony#66752 (merged) |
 | 24 | The webapp pack routes urgent notifications to email, but `NotificationEmail` throws without `twig/cssinliner-extra` and `twig/inky-extra`, which it does not install | DX, pack | symfony/webapp-pack#24 |
 | 25 | The in-memory transports are reset by the next request of the test client, so `MessengerAssertionsTrait` checks must run before it | doc | symfony/symfony-docs#23250 (6.4: the reset predates the 8.2 helpers) |
 | 26 | On 8.2 the scheduler recipe could drop its `Schedule` class, which hardcodes `stateful()`/`processOnlyLastMissedRun()`, for `scheduler.schedules` | recipe | symfony/recipes#1593 (draft until 8.2 ships; with symfony/recipes#1573 for `use_messenger_routing`) |
@@ -63,7 +65,7 @@ What the app exercises, and what building it found.
 | 29 | Limiters keep their state in `cache.rate_limiter`, a filesystem pool that outlives the tests: each test has to clear it | doc | symfony/symfony-docs#23250 |
 | 30 | A `TemplatedEmail` queued through Messenger is rendered when the worker sends it: tests of queued emails read `getContext()`, and entities put in the context are serialized into the queue | doc | dropped: mailer.rst already documents the deferred rendering, and the mailer assertions see the rendered body; only emails read back from the transport lack it |
 | 31 | No Twig helper signs a URL: signed links are built in PHP and passed to templates | DX, 8.2 | symfony/symfony#66774 (merged) |
-| 32 | `lint:yaml --check-schema` rejects the documented shorthands `rate_limiter: {<name>: ...}` and `lock: {service_id: ..., advisory: true}`: the dumper cannot see the closures that wrap them into `limiters`/`resources` (`semaphore` too; `workflow: {<name>: ...}` remains) | bug, 8.2 | symfony/symfony#66760 |
+| 32 | `lint:yaml --check-schema` rejects the documented shorthands `rate_limiter: {<name>: ...}` and `lock: {service_id: ..., advisory: true}`: the dumper cannot see the closures that wrap them into `limiters`/`resources` (`semaphore` too; `workflow: {<name>: ...}` remains) | bug, 8.2 | symfony/symfony#66760 (merged) |
 | 33 | With the mapper of the container, a `#[Map(transform:)]` on a property of a `#[Map(source: X)]` target is ignored unless it names its `source`: the reverse class map skips it (a bare `new ObjectMapper()` applies it) | bug, 8.1 | symfony/symfony#66756 (merged) |
 | 34 | With `enable_default_groups`, `groups: ['Default', 'detail']` drops the attributes without `#[Groups]`, and nested objects with none at all serialize as `[]`: the default groups only apply when no custom group is requested, unlike in the Validator | bug, 8.2 | symfony/symfony#66757 (merged) |
 | 35 | The `oidc` token handler builds the discovery URL relatively to `base_uri`: `http://kc/realms/showcase` fetches `http://kc/realms/.well-known/openid-configuration`, only a trailing slash works around it, even with `check_issuer` (`oidc_user_info` too) | doc, 7.4 | symfony/symfony#66758 (the description of `base_uri`) and symfony/symfony-docs#23255 say it must end with a slash; fixing it in code was turned down |
@@ -77,6 +79,6 @@ What the app exercises, and what building it found.
 | 43 | `BoundsType` renders neither the label nor the help of the range, only "From" and "To": two ranges in a form cannot be told apart | bug, 8.2 | symfony/symfony#66761 (merged) |
 | 44 | A cacheable `StreamedResponse` gets `Cache-Status: ...; fwd=miss; stored` on every request: `Store::write()` skips the responses that cannot provide their content, but `HttpCache` traces them as stored | bug, 6.4 (header 8.2) | symfony/symfony#66759 (merged) |
 | 45 | `php -S` with the usual `variables_order = "GPCS"` leaves the env vars out of `$_SERVER`, so the app reads `.env` instead of the vars of the Symfony CLI: run it with `-d variables_order=EGPCS` | environment | noted |
-| 46 | Encrypting a column with KeyManagement needs an `EncryptedTypes` service declared by hand and a `Kernel::boot()` override calling `register()`: the bundle could register the types it is configured with when it boots | DX, 8.2 (experimental) | symfony/symfony#66766 |
+| 46 | Encrypting a column with KeyManagement needs an `EncryptedTypes` service declared by hand and a `Kernel::boot()` override calling `register()`: the bundle could register the types it is configured with when it boots | DX, 8.2 (experimental) | symfony/symfony#66766 (merged) |
 | 47 | `Unique` compares the values it reads with `===`: with `fields` on objects, two equal `DatePoint` never collide, so a `normalizer` has to turn them into strings | DX, 8.2 | symfony/symfony#66771 (merged) (the app keeps its normalizer, which also keeps unscheduled talks from colliding) |
 | 48 | `key_management.clients.<name>.dsn` refuses `%env(KMS_DSN)%`: the node combines `cannotBeEmpty()` with a `validate()` closure, on which Config refuses env vars | bug, 8.2 (experimental) | symfony/symfony#66762 (merged) |
