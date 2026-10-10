@@ -7,12 +7,11 @@ use App\Enum\Room;
 use Symfony\Component\Clock\DatePoint;
 use Symfony\Component\Form\Attribute\AsFormType;
 use Symfony\Component\Form\Attribute\FormField;
-use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 
 #[AsFormType]
 final class SlotData
 {
-    #[FormField(DateTimeType::class, ['input' => 'date_point', 'widget' => 'single_text', 'required' => false])]
+    #[FormField(options: ['widget' => 'single_text'])]
     public ?DatePoint $startsAt = null;
 
     #[FormField(options: ['required' => false, 'placeholder' => 'Not scheduled'])]

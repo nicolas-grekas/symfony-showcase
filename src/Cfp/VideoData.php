@@ -4,7 +4,6 @@ namespace App\Cfp;
 
 use Symfony\Component\Form\Attribute\AsFormType;
 use Symfony\Component\Form\Attribute\FormField;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Serializer\Attribute\DiscriminatorMapType;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -12,7 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[DiscriminatorMapType('video', MaterialData::class)]
 final class VideoData extends MaterialData
 {
-    #[FormField(IntegerType::class, ['required' => false, 'label' => 'Length in minutes'])]
+    #[FormField(options: ['label' => 'Length in minutes'])]
     #[Assert\Positive]
     public ?int $minutes = null;
 }
