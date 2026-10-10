@@ -73,7 +73,7 @@ What the app exercises, and what building it found.
 | 39 | `EnumMappingMetadataFactory::injectMapEnum()` rebuilds the `Mapping` without its `targetClass`: with a class map of several targets, a conversion made for one target may apply to another; it also overrode the user transforms of enum properties | bug, 8.2 | symfony/symfony#66768 |
 | 40 | Importing a Keycloak realm that declares one client scope replaces all the default ones: the realm file has to list them (`profile`, `email`, `basic`...) | Keycloak | noted |
 | 41 | Console errors are split at the terminal width in the middle of words ("ar e") | DX, all branches | noted |
-| 42 | The help of an option mapped to a list of enum cases does not list the accepted values, which only the error message tells | DX, 8.2 | noted |
+| 42 | The help of an option mapped to a list of enum cases does not list the accepted values, which only the error message tells | DX, 8.2 | symfony/symfony#66770 |
 | 43 | `BoundsType` renders neither the label nor the help of the range, only "From" and "To": two ranges in a form cannot be told apart | bug, 8.2 | symfony/symfony#66761 |
 | 44 | A cacheable `StreamedResponse` gets `Cache-Status: ...; fwd=miss; stored` on every request: `Store::write()` skips the responses that cannot provide their content, but `HttpCache` traces them as stored | bug, 6.4 (header 8.2) | symfony/symfony#66759 |
 | 45 | `php -S` with the usual `variables_order = "GPCS"` leaves the env vars out of `$_SERVER`, so the app reads `.env` instead of the vars of the Symfony CLI: run it with `-d variables_order=EGPCS` | environment | noted |
