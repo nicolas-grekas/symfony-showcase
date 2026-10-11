@@ -12,12 +12,13 @@ use App\Ticket\TicketLinks;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Clock\ClockAwareTrait;
-use Symfony\Component\ExpressionLanguage\Expression;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\IsSignatureValid;
-use Symfony\Component\HttpKernel\Attribute\RateLimit;
+use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 use Symfony\Component\Lock\LockFactory;
+use Symfony\Component\RateLimiter\RateLimiterFactoryInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\Requirement\Requirement;
@@ -34,11 +35,22 @@ final class TicketController extends AbstractController
      */
     #[Route('/conferences/{slug:conference}/tickets', name: 'ticket_buy', methods: ['GET', 'POST'])]
     #[IsGranted('IS_AUTHENTICATED')]
-    #[RateLimit('ticket_purchase', key: new Expression('args["user"].getUserIdentifier()'), methods: 'POST', exposeHeaders: true)]
     #[IsCsrfTokenValid('ticket-purchase', methods: 'POST')]
-    public function buy(Conference $conference, Request $request, #[CurrentUser] User $user, TicketRepository $tickets, PaymentGateway $gateway, EntityManagerInterface $entityManager, LockFactory $lockFactory): Response
+    public function buy(Conference $conference, Request $request, #[CurrentUser] User $user, TicketRepository $tickets, PaymentGateway $gateway, EntityManagerInterface $entityManager, LockFactory $lockFactory, RateLimiterFactoryInterface $ticketPurchaseLimiter): Response
     {
+        $headers = [];
+
         if ($request->isMethod('POST')) {
+            $limit = $ticketPurchaseLimiter->create($user->getUserIdentifier())->consume();
+            $headers = [
+                'X-RateLimit-Limit' => $limit->getLimit(),
+                'X-RateLimit-Remaining' => $limit->getRemainingTokens(),
+            ];
+
+            if (!$limit->isAccepted()) {
+                throw new TooManyRequestsHttpException($limit->getRetryAfter()->getTimestamp() - time(), headers: $headers);
+            }
+
             // released when $lock is destroyed, once the action returns
             $lock = $lockFactory->createLock('ticket-sale-'.$conference->slug, 10);
             $lock->acquire(true);
@@ -57,7 +69,7 @@ final class TicketController extends AbstractController
                     $entityManager->flush();
                 }
 
-                return $this->redirect($gateway->checkoutUrl($ticket, $this->generateUrl('ticket_buy', ['slug' => $conference->slug], UrlGeneratorInterface::ABSOLUTE_URL)), Response::HTTP_SEE_OTHER);
+                return new RedirectResponse($gateway->checkoutUrl($ticket, $this->generateUrl('ticket_buy', ['slug' => $conference->slug], UrlGeneratorInterface::ABSOLUTE_URL)), Response::HTTP_SEE_OTHER, $headers);
             }
         }
 
@@ -66,7 +78,7 @@ final class TicketController extends AbstractController
             'ticket' => $ticket,
             'seats_left' => $seatsLeft,
             'on_sale' => $conference->isOnSale($now),
-        ], new Response(status: $request->isMethod('POST') ? Response::HTTP_CONFLICT : Response::HTTP_OK));
+        ], new Response(status: $request->isMethod('POST') ? Response::HTTP_CONFLICT : Response::HTTP_OK, headers: $headers));
     }
 
     #[Route('/tickets/{id}', name: 'ticket_show', requirements: ['id' => Requirement::UUID_V7], methods: ['GET'])]
