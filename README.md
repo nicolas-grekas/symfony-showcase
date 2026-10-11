@@ -3,10 +3,10 @@
 A conference app (call for papers, reviews, tickets, back office and API) written to
 exercise the features of Symfony 8.2 the way an application would use them. What building
 it found, bugs and rough edges of 8.2 included, is listed in [LEDGER.md](LEDGER.md) with
-the pull requests that fix them. The Symfony ones are merged; until symfony/symfony#66756
-reaches 8.2 from 8.1, the API needs it on top of 8.2.x-dev. `composer.json` also takes
-DoctrineBundle from a local checkout of its 3.4 branch with its open pull requests
-(`repositories.doctrine-bundle`); remove that entry to use the published 3.4.x-dev.
+the pull requests that fix them. The Symfony ones are all merged in 8.2.x-dev.
+`composer.json` takes DoctrineBundle from a local checkout of its 3.4 branch with its open
+pull requests (`repositories.doctrine-bundle`); remove that entry to use the published
+3.4.x-dev.
 
 ## Running it
 

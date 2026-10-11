@@ -6,9 +6,8 @@ What the app exercises, and what building it found.
 
 - Skeleton: `symfony new --webapp --version=next --docker`, Symfony 8.2.x-dev, PHP 8.5.
 - Symfony sources: `php link` to the `showcase` branch of a symfony/symfony worktree
-  (`~/Code/symfony-worktrees/showcase`). All the Symfony fixes below are merged; the branch
-  is 8.2 plus those merged on lower branches and not merged up yet (#66745, #66750, #66756,
-  #66759), the API needs #66756. It also carries the open #66776.
+  (`~/Code/symfony-worktrees/showcase`), which is plain 8.2 now that all the Symfony fixes
+  below are merged and merged up.
 - `composer require` of a non-Symfony package keeps the links; re-run `link` after
   requiring a Symfony package.
 - Linked sources are not a vendor directory, so the dev container tracks every framework
@@ -59,7 +58,7 @@ What the app exercises, and what building it found.
 | 24 | The webapp pack routes urgent notifications to email, but `NotificationEmail` throws without `twig/cssinliner-extra` and `twig/inky-extra`, which it does not install | DX, pack | symfony/webapp-pack#24 |
 | 25 | The in-memory transports are reset by the next request of the test client, so `MessengerAssertionsTrait` checks must run before it | doc | symfony/symfony-docs#23250 (6.4: the reset predates the 8.2 helpers) |
 | 26 | On 8.2 the scheduler recipe could drop its `Schedule` class, which hardcodes `stateful()`/`processOnlyLastMissedRun()`, for `scheduler.schedules` | recipe | symfony/recipes#1593 (draft until 8.2 ships; with symfony/recipes#1573 for `use_messenger_routing`) |
-| 27 | A form flow does not validate the objects of its steps unless the root data class adds `Valid(groups: [<step>], restrictGroups: false)` to each | bug, 7.4 | symfony/symfony#66776 (the app keeps the scoped `Valid` constraints for its API) |
+| 27 | A form flow does not validate the objects of its steps unless the root data class adds `Valid(groups: [<step>], restrictGroups: false)` to each | bug, 7.4 | symfony/symfony#66776 (merged) (the app keeps the scoped `Valid` constraints for its API) |
 | 17 | In a `#[MapEntity]` closure, `{slug:conference}` exposes the slug as the `conference` request attribute, not `slug` | doc | symfony/symfony-docs#23249 |
 | 28 | `webhook.routing.<type>.service` is required, even to use the generic `webhook.request_parser`: a routing entry with only a secret could default to it | DX, 8.2 | symfony/symfony#66753 (merged) |
 | 29 | Limiters keep their state in `cache.rate_limiter`, a filesystem pool that outlives the tests: each test has to clear it | doc | symfony/symfony-docs#23250 |
