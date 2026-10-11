@@ -44,8 +44,6 @@ security:
                         algorithms: [RS256]
                         audience: showcase-api
                         claim: email
-                        # Keycloak types its access tokens "JWT", not "at+jwt" (RFC 9068)
-                        enforce_at_jwt_type: false
                 # served at /.well-known/oauth-protected-resource, telling clients where to get a token (RFC 9728)
                 resource_metadata:
                     authorization_servers: ['%env(OIDC_ISSUER)%']
