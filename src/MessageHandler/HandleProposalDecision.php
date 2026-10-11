@@ -2,7 +2,6 @@
 
 namespace App\MessageHandler;
 
-use App\Message\AlertOrganizers;
 use App\Message\BookSpeakerTravel;
 use App\Message\ProposalDecided;
 use App\Message\SendTravelDetails;
@@ -13,7 +12,6 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Stamp\ChainStamp;
-use Symfony\Component\Messenger\Stamp\DispatchOnFailureStamp;
 use Symfony\Component\Mime\Address;
 
 #[AsMessageHandler]
@@ -43,11 +41,7 @@ final class HandleProposalDecision
             return;
         }
 
-        // the travel details are sent once the booking succeeds, and the organizers are alerted if it fails for good
-        $this->bus->dispatch(ChainStamp::envelope(new BookSpeakerTravel($proposal->id), new SendTravelDetails($proposal->id))
-            ->with(new DispatchOnFailureStamp(new AlertOrganizers(
-                'The travel of a speaker could not be booked',
-                \sprintf('Book it by hand for "%s".', $proposal->title),
-            ))));
+        // the travel details are sent once the booking succeeds
+        $this->bus->dispatch(ChainStamp::envelope(new BookSpeakerTravel($proposal->id), new SendTravelDetails($proposal->id)));
     }
 }
