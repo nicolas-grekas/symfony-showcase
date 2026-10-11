@@ -6,13 +6,13 @@ use App\Entity\Conference;
 use App\Entity\Ticket;
 use App\Entity\User;
 use App\Enum\TicketStatus;
+use App\Webhook\StandardWebhooksSignature;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 use Symfony\Component\Mailer\Messenger\SendEmailMessage;
 use Symfony\Component\RemoteEvent\Messenger\ConsumeRemoteEventMessage;
-use Symfony\Component\Webhook\StandardWebhooksSignature;
 
 final class TicketControllerTest extends WebTestCase
 {

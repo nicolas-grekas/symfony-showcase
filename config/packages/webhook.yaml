@@ -4,5 +4,5 @@ webhook:
     signature_format: standard
     routing:
         payments:
-            service: webhook.request_parser
+            service: App\Webhook\StandardWebhooksRequestParser
             secret: '%env(PAYMENTS_WEBHOOK_SECRET)%'
