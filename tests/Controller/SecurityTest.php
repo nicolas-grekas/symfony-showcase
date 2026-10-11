@@ -2,6 +2,7 @@
 
 namespace App\Tests\Controller;
 
+use App\Entity\Conference;
 use App\Entity\Proposal;
 use App\Entity\User;
 use App\Enum\ProposalStatus;
@@ -74,6 +75,50 @@ final class SecurityTest extends WebTestCase
         $this->assertSelectorExists('nav button:contains("Exit impersonation")');
     }
 
+    public function testImpersonatorsSwitchBack()
+    {
+        $this->client->loginUser($this->findUser('admin@example.com'));
+        $crawler = $this->client->request('GET', '/admin/users');
+        $this->client->submit($crawler->filter('tr:contains("organizer@example.com")')->selectButton('Impersonate')->form());
+        $this->client->followRedirect();
+
+        $this->client->submitForm('Exit impersonation');
+        $this->assertResponseRedirects('/admin/users');
+
+        $this->client->followRedirect();
+        $this->assertSelectorTextContains('nav', 'Ada Admin');
+        $this->assertSelectorNotExists('nav button:contains("Exit impersonation")');
+    }
+
+    public function testImpersonationRequiresACsrfToken()
+    {
+        $this->client->loginUser($this->findUser('admin@example.com'));
+        $crawler = $this->client->request('GET', '/admin/users');
+        $form = $crawler->filter('tr:contains("organizer@example.com")')->selectButton('Impersonate')->form();
+        $this->client->request('POST', $form->getUri(), ['_switch_user' => 'organizer@example.com']);
+        $this->assertResponseStatusCodeSame(403);
+
+        $this->client->request('GET', '/');
+        $this->assertSelectorTextContains('nav', 'Ada Admin');
+    }
+
+    public function testUsersLogOutWithAPostRequest()
+    {
+        $this->client->loginUser($this->findUser('organizer@example.com'));
+        $this->client->request('GET', '/logout');
+        $this->assertResponseStatusCodeSame(405);
+        $this->client->request('POST', '/logout');
+        $this->assertResponseStatusCodeSame(403);
+
+        $this->client->request('GET', '/');
+        $this->client->submitForm('Log out');
+        $this->assertResponseRedirects('/');
+
+        $this->client->followRedirect();
+        $this->assertSelectorNotExists('nav button:contains("Log out")');
+        $this->assertSelectorExists('nav a:contains("Log in")');
+    }
+
     public function testDisabledUsersAreLoggedOut()
     {
         $this->client->loginUser($this->findUser('organizer@example.com'));
@@ -85,6 +130,16 @@ final class SecurityTest extends WebTestCase
 
         $this->client->request('GET', '/admin');
         $this->assertResponseRedirects('/login');
+    }
+
+    public function testReviewersSeeWhatVisitorsAreAllowedToSee()
+    {
+        $conference = $this->entityManager()->getRepository(Conference::class)->findOneBy(['slug' => 'symfonycon-amsterdam']);
+        $this->client->loginUser($this->findUser('reviewer@example.com'));
+        $this->client->request('GET', '/admin/conferences/'.$conference->id.'/proposals');
+
+        $this->assertSelectorTextContains('tr:contains("Workflows as code") td:last-child', 'yes');
+        $this->assertSelectorTextContains('tr:contains("Why my cache was cold") td:last-child', 'no');
     }
 
     private function findProposal(string $title): Proposal
