@@ -1,12 +1,11 @@
-# Conferences, a Symfony 8.2 showcase
+# Conferences, the Symfony 8.2 showcase on Symfony 8.1
 
-A conference app (call for papers, reviews, tickets, back office and API) written to
-exercise the features of Symfony 8.2 the way an application would use them. What building
-it found, bugs and rough edges of 8.2 included, is listed in [LEDGER.md](LEDGER.md) with
-the pull requests that fix them. The Symfony ones are all merged in 8.2.x-dev.
-`composer.json` takes DoctrineBundle from a local checkout of its 3.4 branch with its open
-pull requests (`repositories.doctrine-bundle`); remove that entry to use the published
-3.4.x-dev.
+This branch is the app of the `main` branch ported back to Symfony 8.1: same features, same
+tests, plus the tests of the code 8.1 needs and 8.2 provides. Each Symfony 8.2 feature the app
+uses is replaced in its own commit by what one would write on 8.1, so `git log main..` lists
+them and `git diff main` shows what 8.2 saves. `composer.json` takes DoctrineBundle from a
+local checkout of its 3.4 branch with its open pull requests (`repositories.doctrine-bundle`);
+remove that entry to use the published 3.4.x-dev.
 
 ## Running it
 
@@ -56,19 +55,15 @@ with `RECORD_HAR=1` while the server runs.
 
 | Feature | Code |
 |---|---|
-| Component bundles configured at their root keys, schema-checked configuration | `config/packages`, `config/schema.json` |
-| Workflow declared with attributes, enum places, in-class listeners | `src/Workflow/ProposalWorkflow.php` |
-| `#[AsFormType]` data classes, multi-step form flow, polymorphic collection | `src/Cfp`, `src/Form/ProposalFlowType.php` |
-| `BoundsType` ranges of `DatePoint` dates | `src/Admin/ConferenceData.php` |
-| Collection entries named with `entry_name`, `Unique` on objects | `src/Admin/ScheduleData.php` |
-| OIDC login, recent authentication, POST logout and impersonation | `config/packages/security.yaml`, `src/Security` |
-| Outbox, identity stamps, chained messages, dispatch on failure | `config/packages/messenger.yaml`, `src/MessageHandler` |
-| Scheduler tasks, stateful schedule | `src/Scheduler`, `config/packages/scheduler.yaml` |
-| `#[Lock]`, `#[RateLimit]`, signed and expiring links | `src/Controller/TicketController.php`, `src/Ticket` |
-| Standard Webhooks, remote event consumers | `src/RemoteEvent`, `src/Controller/FakePaymentProviderController.php` |
-| ObjectMapper, `#[Serialize]`, JsonStreamer, `Link-Template`, api-catalog | `src/Api`, `src/Controller/Api` |
-| Access tokens with scopes, protected resource metadata | `config/packages/security.yaml`, `src/Controller/Api/ProposalApiController.php` |
-| Sub-commands, `InputFile[]`, enum list options | `src/Command/ConferenceCommands.php` |
-| Columns encrypted with KeyManagement | `src/Entity/Speaker.php`, `config/packages/key_management.yaml` |
-| HTTP cache with `Cache-Status` | `config/packages/framework.yaml` |
-| `configure_container`, recorded HTTP exchanges, `MessengerAssertionsTrait` | `tests` |
+| Workflow declared in the configuration, listeners naming it | `config/packages/workflow.yaml`, `src/Workflow` |
+| Form type classes, multi-step form flow, collection of slides and videos | `src/Form`, `src/Cfp` |
+| Ranges of dates, schedule keyed by proposal | `src/Form/PeriodType.php`, `src/Controller/Admin/ScheduleController.php` |
+| OpenID Connect login, recent authentication, POST logout and impersonation | `config/packages/security.yaml`, `src/Security` |
+| Outbox, correlation ids, follow-up messages, alert on failure | `config/packages/messenger.yaml`, `src/Messenger`, `src/MessageHandler`, `src/EventListener` |
+| Stateful schedule | `src/Schedule.php`, `src/Scheduler` |
+| Lock, rate limit and signed links of the tickets | `src/Controller/TicketController.php`, `src/Ticket`, `config/packages/lock.yaml` |
+| Standard Webhooks, both directions | `src/Webhook`, `src/RemoteEvent` |
+| API resources, api-catalog, problem documents, `Cache-Status` | `src/Api`, `src/Controller/Api`, `src/HttpCache` |
+| Access tokens with scopes, protected resource metadata | `config/packages/security.yaml`, `src/Security/AccessToken*`, `src/Controller/Api/ProtectedResourceMetadataController.php` |
+| Encrypted phone numbers | `src/Encryption`, `src/Entity/Speaker.php` |
+| Messenger assertions, replayed HTTP exchanges | `tests/MessengerAssertionsTrait.php`, `tests/HarRecorder.php` |
