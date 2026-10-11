@@ -32,8 +32,9 @@ final class ConferenceData
     #[Assert\PositiveOrZero]
     public int $ticketCapacity = 0;
 
+    #[Assert\NotNull]
     #[Assert\PositiveOrZero]
-    public int $ticketPrice = 0;
+    public ?int $ticketPrice = 0;
 
     public function __construct()
     {
