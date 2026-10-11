@@ -83,8 +83,9 @@ class TicketRepository extends ServiceEntityRepository
             ->orderBy('t.id');
 
         if ($since) {
-            // UUIDv7 sort by time: the lowest id of a millisecond bounds the tickets ordered since then
-            [$lowest] = UuidV7::createBoundaries($since);
+            // UUIDv7 sort by time: the lowest id of a millisecond, its 48-bit timestamp followed by zeroed random bits, bounds the tickets ordered since then
+            $ms = (int) $since->format('Uv');
+            $lowest = new UuidV7(\sprintf('%08x-%04x-7000-8000-000000000000', $ms >> 16, $ms & 0xFFFF));
             $qb->andWhere('t.id >= :since')->setParameter('since', $lowest, UuidType::NAME);
         }
 
