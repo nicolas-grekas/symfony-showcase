@@ -100,3 +100,27 @@ app. Nothing is filed yet; 1, 2 and 4 matter most, 5 is the cheapest.
 | 9 | Let the security token keep the hash of the password it compares, so `User` needs no `__serialize()` | `User::__serialize()`, written by MakerBundle and wrong for users without a password (finding 18); needs a spike, the token does not own the user | idea |
 | 10 | Recipes adding `# yaml-language-server: $schema=../schema.json` to `config/packages/*.yaml`, `lint:yaml` checking the schema by default when a validator is installed, the `workflow: {<name>: ...}` shorthand accepted by the schema | `config/schema.json` is generated but only `services.yaml` and `routes.yaml` reference a schema (findings 6, 32) | idea |
 | 11 | Once 8.2 ships, move the DoctrineBundle recipe and the `messenger.yaml` of the webapp pack to the root keys, like symfony/recipes#1592 | finding 1 | idea |
+
+## Vision beyond 8.3
+
+The direction 8.2 already takes, pushed further: you write the domain and its rules, Symfony
+derives the rest and checks it. Each area starts from what the app shows.
+
+| # | Area | Seed in 8.2 and in the app | Further |
+|---|---|---|---|
+| A | Classes declare the app, config only holds what differs per deployment | 27 files in `config/packages`, most copied by recipes; the 8.2 `cache.yaml` recipe is only comments; encrypting one column needs a `key_management.doctrine_dbal.types` entry mapping a type name to a key | What belongs to a class sits on it (`#[Encrypted(key: 'speaker.contact')]` on the property); `config/` keeps DSNs, secrets, hosts and the few app-wide choices; an installed package is enabled with its defaults and copies no file. Dropping the `framework.` level was step one, dropping the file is step two: the schema and IDE completion replace the commented examples |
+| B | One typed model, every edge derived from it | `ProposalDraft` feeds the form flow and the API but the step names are repeated as validation groups; `TalkResource` is mapped by the ObjectMapper and streamed by JsonStreamer; enum options come from `@param list<Enum>`; `/api/docs` is a hand-written Twig page; the api-catalog, `Link-Template` and resource metadata are wired by hand | TypeInfo as the spine: from the types and constraints of a class, derive the form, the payload mapping, the response, the command input and a JSON Schema, like 8.2 derives `config/schema.json` from the config tree. An app with JSON routes describes itself by default (catalog, problem details, auth metadata, schema). Core derives the schema of plain classes, API Platform keeps the resource layer |
+| C | Cache warmup compiles everything declarative | The container, the router, the JsonStreamer writers, the ObjectMapper metadata and the `#[MapEntity]` expressions are generated at warmup; builds are reproducible with `SOURCE_DATE_EPOCH`; forms are interpreted on each request, a 3-field form costing 7.6 times a plain route in prod | `#[AsFormType]` classes and validation metadata compiled the same way, the warmup acting as the compiler of the app, with byte-identical output. The form cost is Twig executing blocks, not waste, so this needs a design, not a patch |
+| D | Tests run a simulation of the world | The app ships a fake identity provider and a fake payment provider, uses recorded HTTP and `mockTime()`, places its assertions around transport resets, clears the limiter pool in each test, and drives the queues one `consumeQueuedMessages()` at a time | Every boundary has a double Symfony ships (clock, HTTP, identity provider, webhooks, KMS, mailer, transports); state is isolated per test without asking; `settle()` runs the queues and the scheduler on a controlled clock until nothing is left, so async code is as easy to test as a request |
+| E | The app is a model tools can query | Most bugs of this run came from `lint:yaml --check-schema`, `debug:config`, `debug:container --env-vars` and `lint:container`, not from reading code | One machine-readable description of the app (routes, services, config, messages, workflows, firewalls, schedules), stable JSON output from every debug command, one `lint` command checking it all in CI. Coding agents now write part of the code and work best when conventions can be checked mechanically; an IDE or MCP layer on top is then thin |
+
+What to watch for:
+
+- Too many attributes: attributes for what belongs to the class, config for what differs per
+  deployment, and the debug commands show what each attribute produced.
+- Breaking changes: each step needs a migration path like the `framework.*` aliases, alias first,
+  deprecation in a later minor.
+- Scope: derive the building blocks, don't take over what API Platform or Doctrine provide.
+
+D comes first: it makes every other change safer, and the app had the most friction there. A
+continues the decomposition of FrameworkBundle.
