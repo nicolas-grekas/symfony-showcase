@@ -54,16 +54,8 @@ security:
                 check_path: app_login
                 enable_csrf: true
             # speakers log in with the identity provider of the conference
-            oidc_login:
-                provider_uri: '%env(OIDC_ISSUER)%'
-                client_id: '%env(OIDC_CLIENT_ID)%'
-                client_authentication:
-                    client_secret_basic: '%env(OIDC_CLIENT_SECRET)%'
-                scope: [profile, email]
-                user_identifier_claim: email
-                refresh_access_token: true
-                enable_end_session: true
-                backchannel_logout: true
+            custom_authenticators:
+                - App\Security\OidcAuthenticator
             logout:
                 path: app_logout
                 enable_csrf: true

@@ -27,6 +27,6 @@
     </form>
 
     {% if not re_authentication %}
-        <p>Speakers log in with their <a href="{{ path('_oidc_login_start_main') }}">conference account</a>.</p>
+        <p>Speakers log in with their <a href="{{ path('oidc_login_start') }}">conference account</a>.</p>
     {% endif %}
 {% endblock %}
