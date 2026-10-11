@@ -170,8 +170,8 @@ retry period of round-robin transports (#66817), the replay window of the Mailer
 parsers, the PagerDuty payload (symfony/symfony#66814, 6.4 bug) and the PagerDuty/Pushy options (#66813), data key age and
 references in KeyManagement (symfony/symfony#66812), relative input of the Console and HttpKernel `DateTimeValueResolver`,
 `ThrottlingHttpClient` without `pause_handler` (7.4 bug), `CachingHttpClient` reading the request
-time from `start_time` (7.4 bug), `ArrayAdapter` ignoring its clock in `expiresAfter()` (7.4 bug),
-the MongoDB cache adapters wiring, the session `MetadataBag` (symfony/symfony#66810).
+time from `start_time` (7.4 bug), `ArrayAdapter` ignoring its clock in `expiresAfter()` (symfony/symfony#66818, 7.4 bug),
+the MongoDB cache adapters wiring (#66819), the session `MetadataBag` (symfony/symfony#66810).
 
 Left for later:
 
