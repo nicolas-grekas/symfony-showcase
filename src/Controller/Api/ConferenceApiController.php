@@ -33,14 +33,14 @@ final class ConferenceApiController extends AbstractController
      * @return list<ConferenceResource>
      */
     #[Route('', name: 'api_conferences', methods: ['GET'])]
-    #[Serialize(headers: ['Link-Template' => '"/api/conferences/{slug}"; rel="item"'], context: ['groups' => ['Default']])]
+    #[Serialize(headers: ['Link-Template' => '"/api/conferences/{slug}"; rel="item"'], context: ['groups' => ['list']])]
     public function list(ConferenceRepository $conferences): array
     {
         return array_map(fn (Conference $conference) => $this->objectMapper->map($conference, ConferenceResource::class), $conferences->findUpcoming($this->now()));
     }
 
     #[Route('/{slug:conference}', name: 'api_conference', methods: ['GET'])]
-    #[Serialize(context: ['groups' => ['Default', 'detail']])]
+    #[Serialize(context: ['groups' => ['detail']])]
     public function show(Conference $conference, ProposalRepository $proposals): ConferenceResource
     {
         $resource = $this->objectMapper->map($conference, ConferenceResource::class);

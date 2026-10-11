@@ -9,27 +9,32 @@ use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Uid\Uuid;
 
-/**
- * The properties without #[Groups] are in every group: the serializer is configured with "enable_default_groups".
- */
 #[Map(source: Conference::class)]
+#[Groups('detail')]
 final class ConferenceResource
 {
+    #[Groups('list')]
     public Uuid $id;
+
+    #[Groups('list')]
     public string $name;
+
+    #[Groups('list')]
     public string $slug;
+
+    #[Groups('list')]
     public string $city;
 
+    #[Groups('list')]
     #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
     public \DateTimeImmutable $startsOn;
 
+    #[Groups('list')]
     #[Context([DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'])]
     public \DateTimeImmutable $endsOn;
 
-    #[Groups('detail')]
     public \DateTimeImmutable $cfpClosesAt;
 
     /** @var list<TalkResource> */
-    #[Groups('detail')]
     public array $talks = [];
 }

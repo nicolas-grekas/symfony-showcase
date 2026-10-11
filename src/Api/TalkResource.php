@@ -7,10 +7,12 @@ use App\Entity\Speaker;
 use Symfony\Component\JsonStreamer\Attribute\JsonStreamable;
 use Symfony\Component\JsonStreamer\Attribute\ValueTransformer;
 use Symfony\Component\ObjectMapper\Attribute\Map;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Uid\Uuid;
 
 #[JsonStreamable]
 #[Map(source: Proposal::class)]
+#[Groups('detail')]
 final class TalkResource
 {
     #[ValueTransformer(nativeToStream: 'strval')]
