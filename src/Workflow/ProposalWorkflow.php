@@ -4,22 +4,13 @@ namespace App\Workflow;
 
 use App\Entity\Proposal;
 use App\Enum\ProposalStatus;
-use App\Message\ProposalDecided;
-use App\Message\ProposalSubmitted;
-use Symfony\Component\Clock\ClockAwareTrait;
-use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Workflow\Attribute\AsCompletedListener;
-use Symfony\Component\Workflow\Attribute\AsGuardListener;
 use Symfony\Component\Workflow\Attribute\AsWorkflow;
 use Symfony\Component\Workflow\Attribute\Transition;
-use Symfony\Component\Workflow\Event\CompletedEvent;
-use Symfony\Component\Workflow\Event\GuardEvent;
 use Symfony\Component\Workflow\WorkflowTrait;
 
 #[AsWorkflow(supports: Proposal::class, markingProperty: 'status', places: ProposalStatus::class)]
 final class ProposalWorkflow
 {
-    use ClockAwareTrait;
     use WorkflowTrait;
 
     #[Transition(from: ProposalStatus::Draft, to: ProposalStatus::Submitted)]
@@ -38,38 +29,4 @@ final class ProposalWorkflow
     #[Transition(from: ProposalStatus::Submitted, to: ProposalStatus::Withdrawn)]
     #[Transition(from: ProposalStatus::InReview, to: ProposalStatus::Withdrawn)]
     public const WITHDRAW = 'withdraw';
-
-    public function __construct(
-        private readonly MessageBusInterface $bus,
-    ) {
-    }
-
-    #[AsGuardListener(transition: self::SUBMIT)]
-    public function guardSubmit(GuardEvent $event): void
-    {
-        /** @var Proposal $proposal */
-        $proposal = $event->getSubject();
-
-        if (!$proposal->conference->isCfpOpen($this->now())) {
-            $event->setBlocked(true, 'The call for papers is closed.');
-        }
-    }
-
-    #[AsCompletedListener(transition: self::SUBMIT)]
-    public function onSubmitted(CompletedEvent $event): void
-    {
-        /** @var Proposal $proposal */
-        $proposal = $event->getSubject();
-        $proposal->markSubmitted($this->now());
-        $this->bus->dispatch(new ProposalSubmitted($proposal->id));
-    }
-
-    #[AsCompletedListener(transition: self::ACCEPT)]
-    #[AsCompletedListener(transition: self::REJECT)]
-    public function onDecided(CompletedEvent $event): void
-    {
-        /** @var Proposal $proposal */
-        $proposal = $event->getSubject();
-        $this->bus->dispatch(new ProposalDecided($proposal->id, self::ACCEPT === $event->getTransition()->getName()));
-    }
 }
