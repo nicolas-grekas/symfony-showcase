@@ -5,6 +5,9 @@ mailer:
             dsn: '%env(MAILER_DSN)%'
             # never more than the provider accepts: over the limit, the async message is retried later
             rate_limiter: mailer
+    # the notifications sent by email take their From from the envelope sender, not from the headers below
+    envelope:
+        sender: 'noreply@conferences.example'
     headers:
         From: 'Conferences <noreply@conferences.example>'
 
