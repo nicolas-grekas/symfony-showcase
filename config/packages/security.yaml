@@ -47,9 +47,8 @@ security:
         main:
             lazy: true
             provider: app_users
+            # a user disabled by an admin is logged out on their next request by User::isEqualTo()
             user_checker: App\Security\UserChecker
-            # a user disabled by an admin is logged out on their next request
-            user_checker_on_refresh: true
             entry_point: form_login
             form_login:
                 login_path: app_login
