@@ -7,19 +7,17 @@
 {% block body %}
     <h1>Call for papers: {{ conference.name }}</h1>
 
+    {% set current = form.vars.cursor.currentStep %}
     <ol class="steps">
-        {% for step in form.vars.visible_steps %}
-            <li class="{{ step.is_current_step or step.has_current_step_descendant ? 'current' }}">
-                {{ step.name|humanize }}
-                {% if step.visible_children %}
-                    <ol>
-                        {% for child in step.visible_children %}
-                            <li class="{{ child.is_current_step ? 'current' }}">{{ child.name|humanize }}</li>
-                        {% endfor %}
-                    </ol>
-                {% endif %}
-            </li>
-        {% endfor %}
+        <li class="{{ current == 'speaker' ? 'current' }}">Speaker</li>
+        <li class="{{ current in ['talk', 'materials'] ? 'current' }}">
+            Proposal
+            <ol>
+                <li class="{{ current == 'talk' ? 'current' }}">Talk</li>
+                <li class="{{ current == 'materials' ? 'current' }}">Materials</li>
+            </ol>
+        </li>
+        <li class="{{ current == 'review' ? 'current' }}">Review</li>
     </ol>
 
     {{ form_start(form) }}

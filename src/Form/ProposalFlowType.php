@@ -18,14 +18,11 @@ final class ProposalFlowType extends AbstractFlowType
     {
         $builder
             ->addStep('speaker', SpeakerData::class, ['label' => 'About you'])
-            ->addStep(
-                $builder->createStepGroup('proposal')
-                    ->addStep('talk', TalkData::class, ['label' => 'Your talk'])
-                    ->addStep('materials', MaterialCollectionType::class, [
-                        'label' => 'Material reviewers can look at',
-                        'required' => false,
-                    ])
-            )
+            ->addStep('talk', TalkData::class, ['label' => 'Your talk'])
+            ->addStep('materials', MaterialCollectionType::class, [
+                'label' => 'Material reviewers can look at',
+                'required' => false,
+            ])
             ->addStep('review', CheckboxType::class, [
                 'label' => 'I have read the code of conduct and I agree to follow it.',
                 'mapped' => false,
