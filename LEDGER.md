@@ -33,7 +33,7 @@ What the app exercises, and what building it found.
 
 | # | Finding | Kind | Status |
 |---|---|---|---|
-| 1 | Recipes write `framework.cache`, `framework.messenger`, `framework.validation`... while 8.2 owns these keys at the root | recipe | symfony/recipes#1592 (draft until 8.2 ships); the webapp-pack and third-party recipes (DoctrineBundle...) keep `framework.*` |
+| 1 | Recipes write `framework.cache`, `framework.messenger`, `framework.validation`... while 8.2 owns these keys at the root | recipe | symfony/recipes#1592; the webapp-pack and third-party recipes (DoctrineBundle...) keep `framework.*` |
 | 2 | `debug:container --env-vars` reports `APP_ENV`, `APP_SHARE_DIR` (and `KERNEL_CLASS` in test) as unused | bug, 8.2 | symfony/symfony#66747 (merged) |
 | 3 | `debug:config framework cache` fails, `config:dump-reference framework` shows `cache: ~` with no hint | DX, 8.2 | symfony/symfony#66748 (merged) |
 | 4 | `lint:yaml config --check-schema` rejects 5 of the 24 files of the skeleton, all valid | bug, 8.2 and 7.4 | symfony/symfony#66746 (merged) (8.2), symfony/symfony#66745 (merged) (7.4) |
@@ -57,7 +57,7 @@ What the app exercises, and what building it found.
 | 23 | `AdminRecipientsProviderInterface` has no autowiring alias: sending to `notifier.admin_recipients` needs an `instanceof` check on `NotifierInterface` | DX, 8.2 | symfony/symfony#66752 (merged) |
 | 24 | The webapp pack routes urgent notifications to email, but `NotificationEmail` throws without `twig/cssinliner-extra` and `twig/inky-extra`, which it does not install | DX, pack | symfony/webapp-pack#24 |
 | 25 | The in-memory transports are reset by the next request of the test client, so `MessengerAssertionsTrait` checks must run before it | doc | symfony/symfony-docs#23250 (6.4: the reset predates the 8.2 helpers) |
-| 26 | On 8.2 the scheduler recipe could drop its `Schedule` class, which hardcodes `stateful()`/`processOnlyLastMissedRun()`, for `scheduler.schedules` | recipe | symfony/recipes#1593 (draft until 8.2 ships; with symfony/recipes#1573 for `use_messenger_routing`) |
+| 26 | On 8.2 the scheduler recipe could drop its `Schedule` class, which hardcodes `stateful()`/`processOnlyLastMissedRun()`, for `scheduler.schedules` | recipe | symfony/recipes#1593 (with symfony/recipes#1573 for `use_messenger_routing`) |
 | 27 | A form flow does not validate the objects of its steps unless the root data class adds `Valid(groups: [<step>], restrictGroups: false)` to each | bug, 7.4 | symfony/symfony#66776 (merged) (the app keeps the scoped `Valid` constraints for its API) |
 | 17 | In a `#[MapEntity]` closure, `{slug:conference}` exposes the slug as the `conference` request attribute, not `slug` | doc | symfony/symfony-docs#23249 |
 | 28 | `webhook.routing.<type>.service` is required, even to use the generic `webhook.request_parser`: a routing entry with only a secret could default to it | DX, 8.2 | symfony/symfony#66753 (merged) |
