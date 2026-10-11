@@ -28,7 +28,7 @@ messenger:
         messenger.bus.default:
             middleware:
                 - logging
-                - doctrine_dbal_transaction
+                - doctrine_transaction
 
     routing:
         Symfony\Component\Mailer\Messenger\SendEmailMessage: async
