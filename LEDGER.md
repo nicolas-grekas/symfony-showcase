@@ -6,8 +6,8 @@ What the app exercises, and what building it found.
 
 - Skeleton: `symfony new --webapp --version=next --docker`, Symfony 8.2.x-dev, PHP 8.5.
 - Symfony sources: `php link` to the `showcase` branch of a symfony/symfony worktree
-  (`~/Code/symfony-worktrees/showcase`), which is plain 8.2 now that all the Symfony fixes
-  below are merged and merged up.
+  (`~/Code/symfony-worktrees/showcase`): 8.2 plus the fixes the app needs that are not merged
+  yet, cherry-picked with `-x` (`git log origin/8.2..showcase` lists them).
 - `composer require` of a non-Symfony package keeps the links; re-run `link` after
   requiring a Symfony package.
 - Linked sources are not a vendor directory, so the dev container tracks every framework
