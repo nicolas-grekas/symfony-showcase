@@ -24,6 +24,8 @@ final class ProposalApiTest extends WebTestCase
         $this->client = static::createClient(['configure_container' => static function (ContainerInterface $container) {
             $container->set('http_client.transport', new MockHttpClient(new FakeIdentityProvider($_SERVER['OIDC_ISSUER'])));
         }]);
+        // the discovery document and the keys of the identity provider are cached
+        static::getContainer()->get('cache.app')->clear();
     }
 
     public function testSubmitAProposal()
