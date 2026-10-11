@@ -35,13 +35,15 @@ final class FakePaymentProviderController extends AbstractController
             return $this->render('fake_payment/checkout.html.twig', ['amount' => $amount, 'description' => $description]);
         }
 
-        $paid = $request->getPayload()->has('pay');
+        $event = $request->getPayload()->has('pay') ? 'payment.succeeded' : 'payment.canceled';
         $paymentId = 'pay_'.bin2hex(random_bytes(8));
 
         // sent by a worker, as the provider would, once the buyer is back on the site
         $bus->dispatch(new SendWebhookMessage(
             new Subscriber($this->generateUrl('_webhook_controller', ['type' => 'payments'], UrlGeneratorInterface::ABSOLUTE_URL), $secret),
-            new RemoteEvent($paid ? 'payment.succeeded' : 'payment.canceled', 'msg_'.bin2hex(random_bytes(8)), [
+            new RemoteEvent($event, 'msg_'.bin2hex(random_bytes(8)), [
+                // Standard Webhooks name the event in the payload, which the signature covers
+                'type' => $event,
                 'data' => ['payment' => $paymentId, 'reference' => $reference, 'amount' => $amount],
             ]),
         ));
