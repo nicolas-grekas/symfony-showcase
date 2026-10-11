@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Admin\ConferenceData;
 use App\Entity\Conference;
+use App\Form\ConferenceDataType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,7 +20,7 @@ final class ConferenceController extends AbstractController
     #[Route('/new', name: 'admin_conference_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(ConferenceData::class, new ConferenceData())->handleRequest($request);
+        $form = $this->createForm(ConferenceDataType::class, new ConferenceData())->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
@@ -36,7 +37,7 @@ final class ConferenceController extends AbstractController
     #[Route('/{id}/edit', name: 'admin_conference_edit', requirements: ['id' => Requirement::UUID_V7], methods: ['GET', 'POST'])]
     public function edit(Conference $conference, Request $request, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(ConferenceData::class, ConferenceData::fromConference($conference))->handleRequest($request);
+        $form = $this->createForm(ConferenceDataType::class, ConferenceData::fromConference($conference))->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();

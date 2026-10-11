@@ -3,8 +3,6 @@
 namespace App\Form;
 
 use App\Cfp\ProposalDraft;
-use App\Cfp\SpeakerData;
-use App\Cfp\TalkData;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Flow\AbstractFlowType;
 use Symfony\Component\Form\Flow\FormFlowBuilderInterface;
@@ -17,8 +15,8 @@ final class ProposalFlowType extends AbstractFlowType
     public function buildFormFlow(FormFlowBuilderInterface $builder, array $options): void
     {
         $builder
-            ->addStep('speaker', SpeakerData::class, ['label' => 'About you'])
-            ->addStep('talk', TalkData::class, ['label' => 'Your talk'])
+            ->addStep('speaker', SpeakerDataType::class, ['label' => 'About you'])
+            ->addStep('talk', TalkDataType::class, ['label' => 'Your talk'])
             ->addStep('materials', MaterialCollectionType::class, [
                 'label' => 'Material reviewers can look at',
                 'required' => false,

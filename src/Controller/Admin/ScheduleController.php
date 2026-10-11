@@ -5,6 +5,7 @@ namespace App\Controller\Admin;
 use App\Admin\ScheduleData;
 use App\Admin\SlotData;
 use App\Entity\Conference;
+use App\Form\ScheduleDataType;
 use App\Repository\ProposalRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -27,7 +28,7 @@ final class ScheduleController extends AbstractController
             $schedule->slots[(string) $proposal->id] = SlotData::fromProposal($proposal);
         }
 
-        $form = $this->createForm(ScheduleData::class, $schedule)->handleRequest($request);
+        $form = $this->createForm(ScheduleDataType::class, $schedule)->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             foreach ($schedule->slots as $slot) {
