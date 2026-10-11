@@ -27,7 +27,7 @@ messenger:
     buses:
         messenger.bus.default:
             middleware:
-                - logging
+                - App\Messenger\LoggingMiddleware
                 - doctrine_transaction
 
     routing:
