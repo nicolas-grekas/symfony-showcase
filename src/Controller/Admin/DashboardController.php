@@ -27,7 +27,7 @@ final class DashboardController extends AbstractController
      * @param list<Proposal> $proposals
      */
     #[Route('/conferences/{conference}/proposals', name: 'admin_proposals', requirements: ['conference' => Requirement::UUID_V7])]
-    public function proposals(#[MapEntity(class: Proposal::class, mapping: ['conference' => 'conference'])] array $proposals): Response
+    public function proposals(#[MapEntity(class: Proposal::class, expr: 'repository.findBy({conference: conference})')] array $proposals): Response
     {
         return $this->render('admin/proposals.html.twig', ['proposals' => $proposals]);
     }
