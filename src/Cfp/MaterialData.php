@@ -8,8 +8,8 @@ use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Serializer\Attribute\DiscriminatorMap;
 use Symfony\Component\Validator\Constraints as Assert;
 
-// the API tells the kind of each material with a "type" key, mapped by the subclasses
-#[DiscriminatorMap(typeProperty: 'type')]
+// the API tells the kind of each material with a "type" key
+#[DiscriminatorMap(typeProperty: 'type', mapping: ['slides' => SlidesData::class, 'video' => VideoData::class])]
 #[AsFormType]
 abstract class MaterialData
 {
