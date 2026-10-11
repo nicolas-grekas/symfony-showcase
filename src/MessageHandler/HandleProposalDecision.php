@@ -4,14 +4,12 @@ namespace App\MessageHandler;
 
 use App\Message\BookSpeakerTravel;
 use App\Message\ProposalDecided;
-use App\Message\SendTravelDetails;
 use App\Repository\ProposalRepository;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Messenger\Stamp\ChainStamp;
 use Symfony\Component\Mime\Address;
 
 #[AsMessageHandler]
@@ -41,7 +39,6 @@ final class HandleProposalDecision
             return;
         }
 
-        // the travel details are sent once the booking succeeds
-        $this->bus->dispatch(ChainStamp::envelope(new BookSpeakerTravel($proposal->id), new SendTravelDetails($proposal->id)));
+        $this->bus->dispatch(new BookSpeakerTravel($proposal->id));
     }
 }

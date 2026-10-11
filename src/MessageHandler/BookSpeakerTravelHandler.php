@@ -3,11 +3,13 @@
 namespace App\MessageHandler;
 
 use App\Message\BookSpeakerTravel;
+use App\Message\SendTravelDetails;
 use App\Repository\ProposalRepository;
 use App\Travel\TravelAgency;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 #[AsMessageHandler]
 final class BookSpeakerTravelHandler
@@ -15,6 +17,7 @@ final class BookSpeakerTravelHandler
     public function __construct(
         private readonly ProposalRepository $proposals,
         private readonly TravelAgency $travelAgency,
+        private readonly MessageBusInterface $bus,
         private readonly LoggerInterface $logger,
     ) {
     }
@@ -27,5 +30,7 @@ final class BookSpeakerTravelHandler
             'title' => $proposal->title,
             'reference' => $this->travelAgency->book($proposal),
         ]);
+
+        $this->bus->dispatch(new SendTravelDetails($proposal->id));
     }
 }
