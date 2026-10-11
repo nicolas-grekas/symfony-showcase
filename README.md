@@ -1,7 +1,9 @@
 # Conferences, a Symfony 8.2 showcase
 
 A conference app (call for papers, reviews, tickets, back office and API) written to
-exercise the features of Symfony 8.2 the way an application would use them. What building
+exercise the features of Symfony 8.2 the way an application would use them. The
+`symfony-8.1` branch is the same app on Symfony 8.1, and [docs/8.2-vs-8.1.md](docs/8.2-vs-8.1.md)
+shows what 8.2 saves, feature by feature. What building
 it found, bugs and rough edges of 8.2 included, is listed in [LEDGER.md](LEDGER.md) with
 the pull requests that fix them. The Symfony ones are all merged in 8.2.x-dev.
 `composer.json` takes DoctrineBundle from a local checkout of its 3.4 branch with its open
