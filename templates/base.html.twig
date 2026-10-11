@@ -28,7 +28,7 @@
                     <span>{{ app.user.name ?? app.user.userIdentifier }}</span>
                     <a href="{{ path('speaker_proposals') }}">My proposals</a>
                     <a href="{{ path('me_tickets') }}">My tickets</a>
-                    {{ ui.post_form(logout_form(), 'Log out') }}
+                    {{ ui.logout_button() }}
                 {% else %}
                     <a href="{{ path('app_login') }}">Log in</a>
                 {% endif %}

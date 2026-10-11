@@ -75,6 +75,23 @@ final class SecurityTest extends WebTestCase
         $this->assertSelectorExists('nav button:contains("Exit impersonation")');
     }
 
+    public function testUsersLogOutWithAPostRequest()
+    {
+        $this->client->loginUser($this->findUser('organizer@example.com'));
+        $this->client->request('GET', '/logout');
+        $this->assertResponseStatusCodeSame(405);
+        $this->client->request('POST', '/logout');
+        $this->assertResponseStatusCodeSame(403);
+
+        $this->client->request('GET', '/');
+        $this->client->submitForm('Log out');
+        $this->assertResponseRedirects('/');
+
+        $this->client->followRedirect();
+        $this->assertSelectorNotExists('nav button:contains("Log out")');
+        $this->assertSelectorExists('nav a:contains("Log in")');
+    }
+
     public function testDisabledUsersAreLoggedOut()
     {
         $this->client->loginUser($this->findUser('organizer@example.com'));

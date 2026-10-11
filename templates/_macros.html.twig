@@ -1,4 +1,12 @@
-{# Renders the {action, fields} returned by logout_form(), impersonation_form() and impersonation_exit_form() #}
+{# The firewall only logs out on a POST request carrying a CSRF token #}
+{% macro logout_button() %}
+    <form method="post" action="{{ path('app_logout') }}" class="inline">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+        <button type="submit">Log out</button>
+    </form>
+{% endmacro %}
+
+{# Renders the {action, fields} returned by impersonation_form() and impersonation_exit_form() #}
 {% macro post_form(form, label, class = '') %}
     <form method="post" action="{{ form.action }}" class="inline {{ class }}">
         {% for name, value in form.fields %}
