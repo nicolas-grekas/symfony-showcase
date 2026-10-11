@@ -5,6 +5,7 @@ namespace App\Api;
 use App\Entity\Proposal;
 use App\Entity\Speaker;
 use Symfony\Component\JsonStreamer\Attribute\JsonStreamable;
+use Symfony\Component\JsonStreamer\Attribute\ValueTransformer;
 use Symfony\Component\ObjectMapper\Attribute\Map;
 use Symfony\Component\Uid\Uuid;
 
@@ -12,7 +13,9 @@ use Symfony\Component\Uid\Uuid;
 #[Map(source: Proposal::class)]
 final class TalkResource
 {
+    #[ValueTransformer(nativeToStream: 'strval')]
     public Uuid $id;
+
     public string $title;
     public string $abstract;
 
