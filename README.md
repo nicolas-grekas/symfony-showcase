@@ -28,6 +28,10 @@ exposes the containers to the app and starts the Messenger worker declared in
 `.symfony.local.yaml`; run the commands through it (`symfony console`, `symfony php`).
 Mailpit shows the emails at the URL `symfony open:local:webmail` opens.
 
+In the dev environment, the "Symfony 8.2" panel of the web profiler lists the 8.2 features each
+request uses, with links to their code, to their documentation and to the commits of the
+`symfony-8.1` branch that do without them.
+
 | Who | Logs in with | Can |
 |---|---|---|
 | `admin@example.com` / `admin` | the login form | everything, impersonate users |

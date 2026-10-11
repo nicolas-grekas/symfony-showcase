@@ -1,0 +1,98 @@
+{% extends '@WebProfiler/Profiler/layout.html.twig' %}
+
+{% block toolbar %}
+    {% if collector.used|length %}
+        {% set icon %}
+            {{ _self.icon() }}
+            <span class="sf-toolbar-value">{{ collector.used|length }}</span>
+            <span class="sf-toolbar-label">8.2</span>
+        {% endset %}
+
+        {% set text %}
+            <div class="sf-toolbar-info-group">
+                {% for feature in collector.used %}
+                    <div class="sf-toolbar-info-piece">
+                        <span>{{ feature.title }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endset %}
+
+        {{ include('@WebProfiler/Profiler/toolbar_item.html.twig', {link: profiler_url}) }}
+    {% endif %}
+{% endblock %}
+
+{% block menu %}
+    <span class="label {{ collector.used is empty ? 'disabled' }}">
+        <span class="icon">{{ _self.icon() }}</span>
+        <strong>Symfony 8.2</strong>
+        {% if collector.used|length %}
+            <span class="count"><span>{{ collector.used|length }}</span></span>
+        {% endif %}
+    </span>
+{% endblock %}
+
+{% block panel %}
+    <h2>Symfony 8.2 in this request</h2>
+
+    <p>
+        What this request used of Symfony 8.2, where the app uses it, and what the same app does on Symfony 8.1.
+        <a href="{{ constant('App\\Showcase\\FeatureCollector::REPOSITORY') }}/blob/main/docs/8.2-vs-8.1.md">Compare the two versions</a>.
+    </p>
+
+    {% if collector.used is empty %}
+        <div class="empty">
+            <p>This request used no feature of Symfony 8.2 that the app knows of.</p>
+        </div>
+    {% else %}
+        {{ _self.features(collector.used) }}
+    {% endif %}
+
+    <h2>Everywhere in the app</h2>
+
+    <p>These features are not tied to a request: the configuration, the workers, the console and the tests use them.</p>
+
+    {{ _self.features(collector.appWide) }}
+{% endblock %}
+
+{% macro features(features) %}
+    <table>
+        <thead>
+            <tr>
+                <th scope="col">Feature</th>
+                <th scope="col">Code</th>
+                <th scope="col">On 8.1</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for feature in features %}
+                <tr id="feature-{{ feature.id }}">
+                    <td class="font-normal">
+                        <strong>{{ feature.title }}</strong>
+                        {% if feature.docs %}
+                            <a href="{{ feature.docs }}" class="text-small">docs</a>
+                        {% endif %}
+                        <br><span class="text-muted">{{ feature.summary }}</span>
+                    </td>
+                    <td class="font-normal">
+                        {% for code in feature.code %}
+                            <a href="{{ code.file|file_link(code.line ?? 1) }}" title="Open in your editor">{{ code.path }}{{ code.line ? ':' ~ code.line }}</a>
+                            (<a href="{{ code.url }}">GitHub</a>){% if not loop.last %}<br>{% endif %}
+                        {% else %}
+                            <span class="text-muted">built in</span>
+                        {% endfor %}
+                    </td>
+                    <td class="font-normal">
+                        {% for change in feature.symfony81 %}
+                            <a href="{{ change.url }}">{{ change.commit }}</a>{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endmacro %}
+
+{% macro icon() %}
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.6 6.6 19.5l1.2-6-4.5-4.2 6.1-.7z"/></svg>
+{% endmacro %}
