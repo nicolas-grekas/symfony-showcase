@@ -87,14 +87,11 @@ final class ConferenceCommands
         return Command::SUCCESS;
     }
 
-    /**
-     * @param list<TicketStatus> $status
-     */
     #[AsCommand('tickets', description: 'List the tickets of a conference')]
     public function tickets(
         SymfonyStyle $io,
         #[Argument(description: 'The slug of the conference')] string $slug,
-        #[Option(description: 'Only the tickets with these statuses')] array $status = [],
+        #[Option(description: 'Only the tickets with these statuses: pending, paid or expired')] TicketStatus ...$status,
     ): int {
         if (!$conference = $this->conferences->findOneBy(['slug' => $slug])) {
             $io->error(\sprintf('No conference has the slug "%s".', $slug));
