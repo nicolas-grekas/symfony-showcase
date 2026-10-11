@@ -167,7 +167,7 @@ remember-me cookies (symfony/symfony#66809), the MongoDB transport wiring, `--fa
 Postgres NOTIFY listener in UTC (8.1), relative `from`/`until` of the Scheduler and
 `debug:scheduler --date` (symfony/symfony#66815), the `Date` header and DKIM timestamp of Mime (symfony/symfony#66816), Mailer throttling and the
 retry period of round-robin transports (#66817), the replay window of the Mailer and Notifier webhook
-parsers, the PagerDuty payload (symfony/symfony#66814, 6.4 bug) and the PagerDuty/Pushy options (#66813), data key age and
+parsers (symfony/symfony#66821), the PagerDuty payload (symfony/symfony#66814, 6.4 bug) and the PagerDuty/Pushy options (#66813), data key age and
 references in KeyManagement (symfony/symfony#66812), relative input of the Console and HttpKernel `DateTimeValueResolver`,
 `ThrottlingHttpClient` without `pause_handler` (7.4 bug), `CachingHttpClient` reading the request
 time from `start_time` (7.4 bug), `ArrayAdapter` ignoring its clock in `expiresAfter()` (symfony/symfony#66818, 7.4 bug),
