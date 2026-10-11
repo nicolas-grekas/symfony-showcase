@@ -25,10 +25,10 @@ class Proposal
     #[ORM\Column(enumType: ProposalStatus::class)]
     private ProposalStatus $status = ProposalStatus::Draft;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(type: 'date_point', nullable: true)]
     public private(set) ?DatePoint $submittedAt = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(type: 'date_point', nullable: true)]
     public private(set) ?DatePoint $scheduledAt = null;
 
     #[ORM\Column(enumType: Room::class, nullable: true)]

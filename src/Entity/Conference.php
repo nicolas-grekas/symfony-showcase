@@ -31,10 +31,10 @@ class Conference
         #[ORM\Column(type: 'day_point')]
         public private(set) DatePoint $endsOn,
 
-        #[ORM\Column]
+        #[ORM\Column(type: 'date_point')]
         public private(set) DatePoint $cfpOpensAt,
 
-        #[ORM\Column]
+        #[ORM\Column(type: 'date_point')]
         public private(set) DatePoint $cfpClosesAt,
 
         #[ORM\Column]

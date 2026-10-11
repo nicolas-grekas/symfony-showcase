@@ -28,13 +28,13 @@ class Ticket
     public private(set) int $price;
 
     /** The seat is kept for the buyer until then, while the payment is pending. */
-    #[ORM\Column]
+    #[ORM\Column(type: 'date_point')]
     public private(set) DatePoint $heldUntil;
 
     #[ORM\Column(nullable: true)]
     public private(set) ?string $paymentReference = null;
 
-    #[ORM\Column(nullable: true)]
+    #[ORM\Column(type: 'date_point', nullable: true)]
     public private(set) ?DatePoint $paidAt = null;
 
     public function __construct(
