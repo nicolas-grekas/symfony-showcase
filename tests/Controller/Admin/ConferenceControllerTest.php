@@ -58,6 +58,16 @@ final class ConferenceControllerTest extends WebTestCase
         $this->assertSelectorTextContains('main', 'This value is already used.');
     }
 
+    public function testThePriceIsRequired()
+    {
+        $conference = $this->entityManager()->getRepository(Conference::class)->findOneBy(['slug' => 'symfonylive-lille']);
+        $this->client->request('GET', '/admin/conferences/'.$conference->id.'/edit');
+        $this->client->submitForm('Save', ['conference_data[ticketPrice]' => '']);
+
+        $this->assertResponseStatusCodeSame(422);
+        $this->assertSelectorTextContains('main', 'This value should not be null.');
+    }
+
     public function testEditAConference()
     {
         $conference = $this->entityManager()->getRepository(Conference::class)->findOneBy(['slug' => 'symfonylive-lille']);

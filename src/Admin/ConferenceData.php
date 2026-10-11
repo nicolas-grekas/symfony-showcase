@@ -47,8 +47,9 @@ final class ConferenceData
     public int $ticketCapacity = 0;
 
     #[FormField(MoneyType::class, ['currency' => 'EUR', 'divisor' => 100])]
+    #[Assert\NotNull]
     #[Assert\PositiveOrZero]
-    public int $ticketPrice = 0;
+    public ?int $ticketPrice = 0;
 
     public function __construct()
     {
