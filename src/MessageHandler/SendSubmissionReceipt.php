@@ -12,9 +12,9 @@ use Symfony\Component\Messenger\Stamp\CorrelationStamp;
 use Symfony\Component\Mime\Address;
 
 /**
- * Runs once the reviewers are notified, so that a speaker never hears of a proposal they have not.
+ * Runs after NotifyReviewersOfNewProposal, which has the default priority, so that a speaker never hears of a proposal the reviewers have not.
  */
-#[AsMessageHandler(after: NotifyReviewersOfNewProposal::class)]
+#[AsMessageHandler(priority: -1)]
 final class SendSubmissionReceipt
 {
     public function __construct(
