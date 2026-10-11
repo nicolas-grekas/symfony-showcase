@@ -16,8 +16,8 @@ use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\IsSignatureValid;
-use Symfony\Component\HttpKernel\Attribute\Lock;
 use Symfony\Component\HttpKernel\Attribute\RateLimit;
+use Symfony\Component\Lock\LockFactory;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\Requirement\Requirement;
@@ -35,10 +35,15 @@ final class TicketController extends AbstractController
     #[Route('/conferences/{slug:conference}/tickets', name: 'ticket_buy', methods: ['GET', 'POST'])]
     #[IsGranted('IS_AUTHENTICATED')]
     #[RateLimit('ticket_purchase', key: new Expression('args["user"].getUserIdentifier()'), methods: 'POST', exposeHeaders: true)]
-    #[Lock(new Expression('"ticket-sale-" ~ request.attributes.get("conference")'), blocking: true, ttl: 10, methods: 'POST')]
     #[IsCsrfTokenValid('ticket-purchase', methods: 'POST')]
-    public function buy(Conference $conference, Request $request, #[CurrentUser] User $user, TicketRepository $tickets, PaymentGateway $gateway, EntityManagerInterface $entityManager): Response
+    public function buy(Conference $conference, Request $request, #[CurrentUser] User $user, TicketRepository $tickets, PaymentGateway $gateway, EntityManagerInterface $entityManager, LockFactory $lockFactory): Response
     {
+        if ($request->isMethod('POST')) {
+            // released when $lock is destroyed, once the action returns
+            $lock = $lockFactory->createLock('ticket-sale-'.$conference->slug, 10);
+            $lock->acquire(true);
+        }
+
         $now = $this->now();
         $ticket = $tickets->findCurrent($conference, $user, $now);
         $seatsLeft = max(0, $conference->ticketCapacity - $tickets->countTaken($conference, $now));
