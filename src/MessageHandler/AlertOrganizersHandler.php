@@ -3,17 +3,18 @@
 namespace App\MessageHandler;
 
 use App\Message\AlertOrganizers;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
-use Symfony\Component\Notifier\AdminRecipientsProviderInterface;
 use Symfony\Component\Notifier\Notification\Notification;
-use Symfony\Component\Notifier\NotifierInterface;
+use Symfony\Component\Notifier\Notifier;
 
 #[AsMessageHandler]
 final class AlertOrganizersHandler
 {
     public function __construct(
-        private readonly NotifierInterface $notifier,
-        private readonly AdminRecipientsProviderInterface $adminRecipients,
+        // NotifierInterface does not give the admin recipients of the configuration
+        #[Autowire(service: 'notifier')]
+        private readonly Notifier $notifier,
     ) {
     }
 
@@ -21,7 +22,7 @@ final class AlertOrganizersHandler
     {
         $this->notifier->send(
             (new Notification($alert->subject, ['email']))->content($alert->details)->importance(Notification::IMPORTANCE_HIGH),
-            ...$this->adminRecipients->getAdminRecipients(),
+            ...$this->notifier->getAdminRecipients(),
         );
     }
 }
