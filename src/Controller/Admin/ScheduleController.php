@@ -24,7 +24,7 @@ final class ScheduleController extends AbstractController
         $schedule = new ScheduleData();
         foreach ($proposals->findAcceptedForConference($conference->slug) as $proposal) {
             $talks[(string) $proposal->id] = $proposal;
-            $schedule->slots[] = SlotData::fromProposal($proposal);
+            $schedule->slots[(string) $proposal->id] = SlotData::fromProposal($proposal);
         }
 
         $form = $this->createForm(ScheduleData::class, $schedule)->handleRequest($request);

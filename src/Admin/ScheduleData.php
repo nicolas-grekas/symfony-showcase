@@ -11,11 +11,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 final class ScheduleData
 {
     /**
-     * Each entry is named after its proposal, so a submitted form maps to the right talks whatever their order.
+     * Keyed by the ids of the proposals, which name the entries, so a submitted form maps to the right talks whatever their order.
      *
      * @var array<string, SlotData>
      */
-    #[FormField(CollectionType::class, ['entry_type' => SlotData::class, 'entry_name' => 'proposalId', 'entry_options' => ['label' => false]])]
+    #[FormField(CollectionType::class, ['entry_type' => SlotData::class, 'entry_options' => ['label' => false]])]
     #[Assert\Valid]
     #[Assert\Unique(message: 'Two talks are in the same room at the same time.', normalizer: [SlotData::class, 'place'])]
     public array $slots = [];
