@@ -1,5 +1,12 @@
 # yaml-language-server: $schema=../schema.json
 # Postgres advisory locks taken on the connection of Doctrine: no table, no other server
-lock:
-    service_id: doctrine.dbal.default_connection
-    advisory: true
+lock: ~
+
+services:
+    # the lock configuration turns a connection into a table-based store, so the advisory store is wired here
+    lock.default.factory:
+        parent: lock.factory.abstract
+        arguments:
+            index_0: !service
+                class: Symfony\Component\Lock\Store\DoctrineDbalPostgreSqlStore
+                arguments: ['@doctrine.dbal.default_connection']
