@@ -50,7 +50,7 @@ symfony php bin/phpunit
 ```
 
 The exchanges with the travel agency are replayed from `tests/Travel`; record them again
-with `SYMFONY_HTTP_RECORDER=record` while the server runs.
+with `RECORD_HAR=1` while the server runs.
 
 ## Where to look
 

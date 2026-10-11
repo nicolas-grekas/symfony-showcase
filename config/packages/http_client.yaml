@@ -5,8 +5,3 @@ http_client:
             base_uri: '%env(TRAVEL_AGENCY_URL)%'
             headers:
                 Accept: application/json
-
-when@test:
-    http_client:
-        # replays the HTTP exchanges recorded by the tests that have the #[UseRecord] attribute
-        recorder: true
