@@ -152,3 +152,44 @@ Proposal:
 - Point to them from `AGENTS.md` and keep them in plain markdown: there is no common skills
   format across tools yet.
 - Reconsider MakerBundle once the guides cover what its makers do.
+
+## Clock audit (vision D, step 2)
+
+Audit of origin/8.2 on 2026-10-11: what `mockTime()` of `ClockSensitiveTrait` moves. The
+`clock` service, `new Clock()`, `Clock::get()` and `DatePoint` follow it. Already on the clock:
+recent authentication, the OIDC, OAuth2 and DPoP checks, `oidc_login`, `UriSigner` (expiring
+links, `#[IsSignatureValid]`, `sign_url`), the Messenger worker, `DelayStamp`, the in-memory
+transport, the Scheduler, the Standard Webhooks signatures, the HTTP recorder.
+
+Being fixed now (easy, or about features new in 8.2): `security:oidc-token:generate
+--not-before` (7.4), the DPoP replay and JWKS cache lifetimes, login links and signature
+remember-me cookies, the MongoDB transport wiring, `--failed-after`/`--failed-before`, the
+Postgres NOTIFY listener in UTC (8.1), relative `from`/`until` of the Scheduler and
+`debug:scheduler --date`, the `Date` header and DKIM timestamp of Mime, Mailer throttling and the
+retry period of round-robin transports, the replay window of the Mailer and Notifier webhook
+parsers, the PagerDuty payload (6.4 bug) and the PagerDuty/Pushy options, data key age and
+references in KeyManagement, relative input of the Console and HttpKernel `DateTimeValueResolver`,
+`ThrottlingHttpClient` without `pause_handler` (7.4 bug), `CachingHttpClient` reading the request
+time from `start_time` (7.4 bug), `ArrayAdapter` ignoring its clock in `expiresAfter()` (7.4 bug),
+the MongoDB cache adapters wiring, the session `MetadataBag`.
+
+Left for later:
+
+| Area | What reads the time | Why it waits |
+|---|---|---|
+| HTTP | `Date` and `Age` of responses (`isFresh()`, `getTtl()`, the 8.2 `Cache-Status ttl=`), cookies of HttpFoundation and of the BrowserKit cookie jar, the session cookie expiry, `#[Cache(expires:)]`, `HttpCache` | one coherent change across HttpFoundation, HttpKernel and BrowserKit: with only some of them on the clock, a cookie or a freshness mixes two clocks |
+| RateLimiter | every strategy, `RateLimit::wait()`, `Reservation`, month lengths; then the `Retry-After` of `#[RateLimit]`, the login throttling minutes and the Mailer retry delay | feature; making `getExpirationTime()` time-independent (`2 * interval`, `periodEnd - periodStart`) keeps the storages unchanged, which answers the blocker of #65077 |
+| HttpClient | freshness of `CachingHttpClient`, HTTP-date `Retry-After` of `RetryableHttpClient`, the pause fallbacks | after the RateLimiter change and the two 7.4 fixes |
+| Cache | `CacheItem::expiresAfter()`, lifetimes sent to backends, filesystem, PHP files, DBAL and PDO adapters, early expiration; wiring the clock of `ArrayAdapter` | hot path: a hit goes from 522 ns to 2409 ns with the clock service; decide between wiring it in the test env only and a fast path for the native clock |
+| Security | persistent remember-me tokens (`PersistentRememberMeHandler`, the 60 s rotation window of `DoctrineTokenProvider`) | needs the cookies of the HTTP row first |
+| Messenger | delays and redelivery of the Doctrine and Redis transports | feature, with the Postgres NOTIFY listener |
+| Uid | `UuidFactory`, `TimeBasedUuidFactory`, `UlidFactory` (the app builds its UUIDv7 from `$orderedAt` because of this), message ids, `--time` of the Uid commands | feature; +2.7 µs per id |
+| Misc | outbound auth timestamps and token caches (Azure mailer, Firebase, LightSms, Twitter, the KMS token providers), AMQP timestamp, year ranges of `BirthdayType`/`DateType`/`WeekType`, `CurrencyType` and Intl dates, the database session handlers | low value |
+
+Real time on purpose: Lock and Semaphore TTLs (the backend enforces them), the idle connection
+middleware of Doctrine, SMTP and AMQP keepalives, the worker restart signal, broker-side delays,
+memcached absolute TTLs, process timeouts, mtime comparisons. Traps worth documenting:
+`$clock ?? Clock::get()` binds the clock that is global when the object is built (`new Clock()`
+does not); `$container->set('clock', new MockClock())` moves the injected users only, not
+`Clock::get()` or `DatePoint`; `ClockMock` of the PHPUnit bridge is a separate mechanism;
+`mockTime()` does not reach other processes.
