@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=../schema.json
 http_client:
     scoped_clients:
         travel_agency.client:

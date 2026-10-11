@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=../schema.json
 key_management:
     clients:
         # a local key in development; a KMS of the hosting provider in production, e.g. aws://...

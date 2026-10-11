@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=../schema.json
 webhook:
     # https://www.standardwebhooks.com signatures, for the webhooks received and the ones the fake provider sends
     signature_format: standard

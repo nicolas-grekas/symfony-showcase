@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=../schema.json
 # Postgres advisory locks taken on the connection of Doctrine: no table, no other server
 lock:
     service_id: doctrine.dbal.default_connection
