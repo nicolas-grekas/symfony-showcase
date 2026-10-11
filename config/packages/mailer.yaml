@@ -2,6 +2,9 @@ framework:
     mailer:
         transports:
             main: '%env(MAILER_DSN)%'
+        # the notifications sent by email take their From from the envelope sender, not from the headers below
+        envelope:
+            sender: 'noreply@conferences.example'
         headers:
             From: 'Conferences <noreply@conferences.example>'
 
