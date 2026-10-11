@@ -1,4 +1,3 @@
-# yaml-language-server: $schema=../schema.json
 doctrine:
     dbal:
         url: '%env(resolve:DATABASE_URL)%'

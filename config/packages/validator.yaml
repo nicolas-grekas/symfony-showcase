@@ -1,4 +1,3 @@
-# yaml-language-server: $schema=../schema.json
 framework:
     validation:
         # Enables validator auto-mapping support.

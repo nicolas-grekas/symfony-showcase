@@ -1,4 +1,3 @@
-# yaml-language-server: $schema=../schema.json
 framework:
     notifier:
         chatter_transports:

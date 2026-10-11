@@ -1,4 +1,3 @@
-# yaml-language-server: $schema=../schema.json
 # Enable stateless CSRF protection for forms and logins/logouts
 framework:
     form:

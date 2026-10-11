@@ -1,4 +1,3 @@
-# yaml-language-server: $schema=../schema.json
 framework:
     messenger:
         failure_transport: failed
