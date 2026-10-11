@@ -22,7 +22,7 @@ final class TalkData
     #[Assert\Length(min: 50)]
     public ?string $abstract = null;
 
-    #[FormField(options: ['expanded' => true, 'choice_help' => 'help'])]
+    #[FormField(options: ['expanded' => true])]
     #[Assert\NotNull]
     public ?Level $level = null;
 
