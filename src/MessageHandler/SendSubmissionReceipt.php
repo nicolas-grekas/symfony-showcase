@@ -8,7 +8,6 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
-use Symfony\Component\Messenger\Stamp\CorrelationStamp;
 use Symfony\Component\Mime\Address;
 
 /**
@@ -23,7 +22,7 @@ final class SendSubmissionReceipt
     ) {
     }
 
-    public function __invoke(ProposalSubmitted $event, ?CorrelationStamp $correlation = null): void
+    public function __invoke(ProposalSubmitted $event, ?string $correlationId = null): void
     {
         $proposal = $this->proposals->find($event->proposalId) ?? throw new UnrecoverableMessageHandlingException(\sprintf('Proposal "%s" not found.', $event->proposalId));
 
@@ -32,7 +31,7 @@ final class SendSubmissionReceipt
                 ->to(new Address($speaker->email, $speaker->name))
                 ->subject('We received your proposal')
                 ->htmlTemplate('emails/submission_receipt.html.twig')
-                ->context(['proposal' => $proposal, 'reference' => $correlation?->getId()])
+                ->context(['proposal' => $proposal, 'reference' => $correlationId])
             );
         }
     }

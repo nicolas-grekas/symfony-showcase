@@ -2,9 +2,6 @@
 messenger:
     failure_transport: failed
 
-    # every message gets a MessageId, and the messages dispatched while handling one share its Correlation
-    identity_stamps: true
-
     transports:
         # https://symfony.com/doc/current/messenger.html#transport-configuration
         async:
@@ -27,6 +24,7 @@ messenger:
     buses:
         messenger.bus.default:
             middleware:
+                - App\Messenger\CorrelationMiddleware
                 - App\Messenger\LoggingMiddleware
                 - doctrine_transaction
 

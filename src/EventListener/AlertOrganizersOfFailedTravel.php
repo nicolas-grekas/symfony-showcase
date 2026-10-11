@@ -4,6 +4,7 @@ namespace App\EventListener;
 
 use App\Message\AlertOrganizers;
 use App\Message\TravelCommand;
+use App\Messenger\CorrelationStamp;
 use App\Repository\ProposalRepository;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
@@ -36,7 +37,7 @@ final class AlertOrganizersOfFailedTravel
             $this->bus->dispatch(new AlertOrganizers(
                 'The travel of a speaker could not be booked',
                 \sprintf('Book it by hand for "%s".', $this->proposals->find($command->proposalId)?->title),
-            ));
+            ), $event->getEnvelope()->all(CorrelationStamp::class));
         } catch (\Throwable $e) {
             // the failure transport keeps the command when the organizers cannot be alerted
             $this->logger->error('Failed alerting the organizers after message {class} failed.', ['class' => $command::class, 'exception' => $e]);
