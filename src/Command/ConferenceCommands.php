@@ -52,13 +52,13 @@ final class ConferenceCommands
     }
 
     /**
-     * @param InputFile[] $files
+     * @param string[] $files
      */
     #[AsCommand('import', description: 'Import conferences from JSON files', usages: ['conferences.json', '2027/*.json'])]
     public function import(SymfonyStyle $io, #[Argument(description: 'JSON files holding a list of conferences')] array $files): int
     {
         $imported = 0;
-        foreach ($files as $file) {
+        foreach (array_map(InputFile::fromPath(...), $files) as $file) {
             foreach (json_decode($file->getContents(), true, flags: \JSON_THROW_ON_ERROR) as $data) {
                 if ($this->conferences->findOneBy(['slug' => $data['slug']])) {
                     $io->note(\sprintf('Skipping "%s", which exists already.', $data['slug']));
