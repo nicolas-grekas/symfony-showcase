@@ -35,7 +35,7 @@ final class ProposalApiController extends AbstractController
      * Takes the same data as the form of the call for papers, validated as a whole.
      */
     #[Route('/api/conferences/{slug:conference}/proposals', name: 'api_proposal_submit', methods: ['POST'])]
-    #[IsGranted('OAUTH2_SCOPE(proposals:write)')]
+    #[IsGranted('SCOPE_proposals:write')]
     public function submit(
         Conference $conference,
         #[MapRequestPayload(validationGroups: ['Default', 'speaker', 'talk', 'materials'])] ProposalDraft $draft,

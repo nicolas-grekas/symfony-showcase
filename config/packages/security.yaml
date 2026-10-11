@@ -31,8 +31,9 @@ security:
             stateless: true
             provider: app_users
             user_checker: App\Security\UserChecker
-            # the challenge answering a missing or invalid token tells where to get one (RFC 9728)
+            # the challenges answering a missing, invalid or insufficient token tell where to get one (RFC 9728)
             entry_point: App\Security\AccessTokenChallenge
+            access_denied_handler: App\Security\AccessTokenChallenge
             access_token:
                 failure_handler: App\Security\AccessTokenChallenge
                 token_handler:
