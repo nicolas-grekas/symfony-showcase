@@ -162,7 +162,7 @@ links, `#[IsSignatureValid]`, `sign_url`), the Messenger worker, `DelayStamp`, t
 transport, the Scheduler, the Standard Webhooks signatures, the HTTP recorder.
 
 Being fixed now (easy, or about features new in 8.2): `security:oidc:generate-token
---not-before` (symfony/symfony#66808, 7.4), the DPoP replay and JWKS cache lifetimes, login links and signature
+--not-before` (symfony/symfony#66808, 7.4), the DPoP replay and JWKS cache lifetimes (symfony/symfony#66811), login links and signature
 remember-me cookies (symfony/symfony#66809), the MongoDB transport wiring, `--failed-after`/`--failed-before`, the
 Postgres NOTIFY listener in UTC (8.1), relative `from`/`until` of the Scheduler and
 `debug:scheduler --date`, the `Date` header and DKIM timestamp of Mime, Mailer throttling and the
@@ -171,7 +171,7 @@ parsers, the PagerDuty payload (6.4 bug) and the PagerDuty/Pushy options, data k
 references in KeyManagement, relative input of the Console and HttpKernel `DateTimeValueResolver`,
 `ThrottlingHttpClient` without `pause_handler` (7.4 bug), `CachingHttpClient` reading the request
 time from `start_time` (7.4 bug), `ArrayAdapter` ignoring its clock in `expiresAfter()` (7.4 bug),
-the MongoDB cache adapters wiring, the session `MetadataBag`.
+the MongoDB cache adapters wiring, the session `MetadataBag` (symfony/symfony#66810).
 
 Left for later:
 
