@@ -2,11 +2,8 @@
 
 namespace App\Enum;
 
-use Symfony\Component\Workflow\Attribute\Place;
-
 enum ProposalStatus: string
 {
-    #[Place(initial: true)]
     case Draft = 'draft';
     case Submitted = 'submitted';
     case InReview = 'in_review';

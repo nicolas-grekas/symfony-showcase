@@ -4,14 +4,15 @@ namespace App\Controller;
 
 use App\Entity\Proposal;
 use App\Security\ProposalVoter;
-use App\Workflow\ProposalWorkflow;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\Security\Http\Attribute\IsCsrfTokenValid;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Workflow\WorkflowInterface;
 
 #[Route('/proposals/{id}', requirements: ['id' => Requirement::UUID_V7])]
 final class ProposalController extends AbstractController
@@ -37,36 +38,36 @@ final class ProposalController extends AbstractController
     #[Route('/withdraw', name: 'proposal_withdraw', methods: ['POST'])]
     #[IsGranted(ProposalVoter::WITHDRAW, 'proposal')]
     #[IsCsrfTokenValid('proposal-transition')]
-    public function withdraw(Proposal $proposal, ProposalWorkflow $workflow, EntityManagerInterface $entityManager): Response
+    public function withdraw(Proposal $proposal, #[Target('proposal')] WorkflowInterface $workflow, EntityManagerInterface $entityManager): Response
     {
-        return $this->applyTransition($proposal, $workflow, $entityManager, ProposalWorkflow::WITHDRAW);
+        return $this->applyTransition($proposal, $workflow, $entityManager, 'withdraw');
     }
 
     #[Route('/review', name: 'proposal_start_review', methods: ['POST'])]
     #[IsGranted(ProposalVoter::REVIEW, 'proposal')]
     #[IsCsrfTokenValid('proposal-transition')]
-    public function startReview(Proposal $proposal, ProposalWorkflow $workflow, EntityManagerInterface $entityManager): Response
+    public function startReview(Proposal $proposal, #[Target('proposal')] WorkflowInterface $workflow, EntityManagerInterface $entityManager): Response
     {
-        return $this->applyTransition($proposal, $workflow, $entityManager, ProposalWorkflow::START_REVIEW);
+        return $this->applyTransition($proposal, $workflow, $entityManager, 'start_review');
     }
 
     #[Route('/accept', name: 'proposal_accept', methods: ['POST'])]
     #[IsGranted(ProposalVoter::DECIDE, 'proposal')]
     #[IsCsrfTokenValid('proposal-transition')]
-    public function accept(Proposal $proposal, ProposalWorkflow $workflow, EntityManagerInterface $entityManager): Response
+    public function accept(Proposal $proposal, #[Target('proposal')] WorkflowInterface $workflow, EntityManagerInterface $entityManager): Response
     {
-        return $this->applyTransition($proposal, $workflow, $entityManager, ProposalWorkflow::ACCEPT);
+        return $this->applyTransition($proposal, $workflow, $entityManager, 'accept');
     }
 
     #[Route('/reject', name: 'proposal_reject', methods: ['POST'])]
     #[IsGranted(ProposalVoter::DECIDE, 'proposal')]
     #[IsCsrfTokenValid('proposal-transition')]
-    public function reject(Proposal $proposal, ProposalWorkflow $workflow, EntityManagerInterface $entityManager): Response
+    public function reject(Proposal $proposal, #[Target('proposal')] WorkflowInterface $workflow, EntityManagerInterface $entityManager): Response
     {
-        return $this->applyTransition($proposal, $workflow, $entityManager, ProposalWorkflow::REJECT);
+        return $this->applyTransition($proposal, $workflow, $entityManager, 'reject');
     }
 
-    private function applyTransition(Proposal $proposal, ProposalWorkflow $workflow, EntityManagerInterface $entityManager, string $transition): Response
+    private function applyTransition(Proposal $proposal, WorkflowInterface $workflow, EntityManagerInterface $entityManager, string $transition): Response
     {
         if (!$workflow->can($proposal, $transition)) {
             $this->addFlash('error', \sprintf('The proposal cannot be %s now.', $transition));

@@ -9,15 +9,17 @@ use App\Entity\Proposal;
 use App\Entity\Speaker;
 use App\Entity\User;
 use App\Repository\SpeakerRepository;
-use App\Workflow\ProposalWorkflow;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Target;
+use Symfony\Component\Workflow\WorkflowInterface;
 
 final class ProposalSubmitter
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly SpeakerRepository $speakers,
-        private readonly ProposalWorkflow $workflow,
+        #[Target('proposal')]
+        private readonly WorkflowInterface $workflow,
     ) {
     }
 
@@ -38,7 +40,7 @@ final class ProposalSubmitter
 
         // the ProposalSubmitted event goes to the outbox in the same transaction as the proposal
         $this->entityManager->wrapInTransaction(function () use ($speaker, $proposal) {
-            $this->workflow->apply($proposal, ProposalWorkflow::SUBMIT);
+            $this->workflow->apply($proposal, 'submit');
             $this->entityManager->persist($speaker);
             $this->entityManager->persist($proposal);
         });

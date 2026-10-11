@@ -1,0 +1,30 @@
+framework:
+    workflows:
+        proposal:
+            type: state_machine
+            marking_store:
+                type: method
+                property: status
+            supports:
+                - App\Entity\Proposal
+            initial_marking: !php/enum App\Enum\ProposalStatus::Draft
+            places: !php/enum App\Enum\ProposalStatus
+            transitions:
+                submit:
+                    from: !php/enum App\Enum\ProposalStatus::Draft
+                    to: !php/enum App\Enum\ProposalStatus::Submitted
+                start_review:
+                    from: !php/enum App\Enum\ProposalStatus::Submitted
+                    to: !php/enum App\Enum\ProposalStatus::InReview
+                accept:
+                    from: !php/enum App\Enum\ProposalStatus::InReview
+                    to: !php/enum App\Enum\ProposalStatus::Accepted
+                reject:
+                    from: !php/enum App\Enum\ProposalStatus::InReview
+                    to: !php/enum App\Enum\ProposalStatus::Rejected
+                withdraw:
+                    from:
+                        - !php/enum App\Enum\ProposalStatus::Draft
+                        - !php/enum App\Enum\ProposalStatus::Submitted
+                        - !php/enum App\Enum\ProposalStatus::InReview
+                    to: !php/enum App\Enum\ProposalStatus::Withdrawn
