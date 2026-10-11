@@ -16,7 +16,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 final class UserController extends AbstractController
 {
-    #[Route('', name: 'admin_users', methods: ['GET'])]
+    // the "Exit impersonation" button posts here, for the firewall to switch back to the admin
+    #[Route('', name: 'admin_users', methods: ['GET', 'POST'])]
     public function index(UserRepository $users): Response
     {
         return $this->render('admin/users.html.twig', ['users' => $users->findBy([], ['email' => 'ASC'])]);

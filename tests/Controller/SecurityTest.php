@@ -75,6 +75,33 @@ final class SecurityTest extends WebTestCase
         $this->assertSelectorExists('nav button:contains("Exit impersonation")');
     }
 
+    public function testImpersonatorsSwitchBack()
+    {
+        $this->client->loginUser($this->findUser('admin@example.com'));
+        $crawler = $this->client->request('GET', '/admin/users');
+        $this->client->submit($crawler->filter('tr:contains("organizer@example.com")')->selectButton('Impersonate')->form());
+        $this->client->followRedirect();
+
+        $this->client->submitForm('Exit impersonation');
+        $this->assertResponseRedirects('/admin/users');
+
+        $this->client->followRedirect();
+        $this->assertSelectorTextContains('nav', 'Ada Admin');
+        $this->assertSelectorNotExists('nav button:contains("Exit impersonation")');
+    }
+
+    public function testImpersonationRequiresACsrfToken()
+    {
+        $this->client->loginUser($this->findUser('admin@example.com'));
+        $crawler = $this->client->request('GET', '/admin/users');
+        $form = $crawler->filter('tr:contains("organizer@example.com")')->selectButton('Impersonate')->form();
+        $this->client->request('POST', $form->getUri(), ['_switch_user' => 'organizer@example.com']);
+        $this->assertResponseStatusCodeSame(403);
+
+        $this->client->request('GET', '/');
+        $this->assertSelectorTextContains('nav', 'Ada Admin');
+    }
+
     public function testUsersLogOutWithAPostRequest()
     {
         $this->client->loginUser($this->findUser('organizer@example.com'));

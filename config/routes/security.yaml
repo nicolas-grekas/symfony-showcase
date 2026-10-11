@@ -9,11 +9,3 @@ _security_oidc_login:
 app_logout:
     path: /logout
     methods: [POST]
-
-# reached only when the impersonation form misses its "_switch_user" field
-switch_user:
-    path: /switch-user
-    methods: [POST]
-    controller: Symfony\Component\Routing\Controller\RedirectController::urlRedirectAction
-    defaults:
-        path: /

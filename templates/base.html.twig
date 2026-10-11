@@ -22,7 +22,7 @@
                     <a href="{{ path('admin_dashboard') }}">Back office</a>
                 {% endif %}
                 {% if is_granted('IS_IMPERSONATOR') %}
-                    {{ ui.post_form(impersonation_exit_form(path('admin_users')), 'Exit impersonation') }}
+                    {{ ui.exit_impersonation_button(path('admin_users')) }}
                 {% endif %}
                 {% if app.user %}
                     <span>{{ app.user.name ?? app.user.userIdentifier }}</span>

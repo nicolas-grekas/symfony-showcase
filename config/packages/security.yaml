@@ -68,9 +68,8 @@ security:
             logout:
                 path: app_logout
                 enable_csrf: true
-            switch_user:
-                path: switch_user
-                enable_csrf: true
+            # App\Security\SwitchUserCsrfListener requires a POST request with a CSRF token
+            switch_user: true
 
     # Note: Only the *first* matching rule is applied
     access_control:

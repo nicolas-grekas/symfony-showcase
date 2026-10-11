@@ -20,7 +20,7 @@
                             <button type="submit">{{ user.enabled ? 'Disable' : 'Enable' }}</button>
                         </form>
                         {% if user != app.user %}
-                            {{ ui.post_form(impersonation_form(user.userIdentifier, path('home')), 'Impersonate') }}
+                            {{ ui.impersonate_button(user, path('home')) }}
                         {% endif %}
                     </td>
                 </tr>

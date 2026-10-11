@@ -6,13 +6,20 @@
     </form>
 {% endmacro %}
 
-{# Renders the {action, fields} returned by impersonation_form() and impersonation_exit_form() #}
-{% macro post_form(form, label, class = '') %}
-    <form method="post" action="{{ form.action }}" class="inline {{ class }}">
-        {% for name, value in form.fields %}
-            <input type="hidden" name="{{ name }}" value="{{ value }}">
-        {% endfor %}
-        <button type="submit">{{ label }}</button>
+{# The firewall switches the user on a POST request to the page to go to, carrying a CSRF token #}
+{% macro impersonate_button(user, target_path) %}
+    <form method="post" action="{{ target_path }}" class="inline">
+        <input type="hidden" name="_switch_user" value="{{ user.userIdentifier }}">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('switch_user') }}">
+        <button type="submit">Impersonate</button>
+    </form>
+{% endmacro %}
+
+{% macro exit_impersonation_button(target_path) %}
+    <form method="post" action="{{ target_path }}" class="inline">
+        <input type="hidden" name="_switch_user" value="_exit">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('switch_user') }}">
+        <button type="submit">Exit impersonation</button>
     </form>
 {% endmacro %}
 
