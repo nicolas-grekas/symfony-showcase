@@ -1,46 +1,48 @@
 # yaml-language-server: $schema=../schema.json
-messenger:
-    failure_transport: failed
+framework:
+    messenger:
+        failure_transport: failed
 
-    transports:
-        # https://symfony.com/doc/current/messenger.html#transport-configuration
-        async:
-            dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
-            retry_strategy:
-                max_retries: 3
-                multiplier: 2
-        events:
-            dsn: '%env(RABBITMQ_DSN)%/%%2f/events'
-            retry_strategy:
-                max_retries: 2
-                delay: 500
-        # domain events go to RabbitMQ only once the database transaction that recorded them commits:
-        # they are stored here, and App\MessageHandler\ForwardFromOutbox sends them to the events transport
-        outbox: 'doctrine://default?queue_name=outbox'
-        failed: 'doctrine://default?queue_name=failed'
+        transports:
+            # https://symfony.com/doc/current/messenger.html#transport-configuration
+            async:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                retry_strategy:
+                    max_retries: 3
+                    multiplier: 2
+            events:
+                dsn: '%env(RABBITMQ_DSN)%/%%2f/events'
+                retry_strategy:
+                    max_retries: 2
+                    delay: 500
+            # domain events go to RabbitMQ only once the database transaction that recorded them commits:
+            # they are stored here, and App\MessageHandler\ForwardFromOutbox sends them to the events transport
+            outbox: 'doctrine://default?queue_name=outbox'
+            failed: 'doctrine://default?queue_name=failed'
 
-    default_bus: messenger.bus.default
+        default_bus: messenger.bus.default
 
-    buses:
-        messenger.bus.default:
-            middleware:
-                - App\Messenger\CorrelationMiddleware
-                - App\Messenger\LoggingMiddleware
-                - doctrine_transaction
+        buses:
+            messenger.bus.default:
+                middleware:
+                    - App\Messenger\CorrelationMiddleware
+                    - App\Messenger\LoggingMiddleware
+                    - doctrine_transaction
 
-    routing:
-        Symfony\Component\Mailer\Messenger\SendEmailMessage: async
-        Symfony\Component\Notifier\Message\ChatMessage: async
-        Symfony\Component\Notifier\Message\SmsMessage: async
-        # webhooks are acknowledged right away and consumed by a worker
-        Symfony\Component\RemoteEvent\Messenger\ConsumeRemoteEventMessage: async
-        Symfony\Component\Webhook\Messenger\SendWebhookMessage: async
-        App\Message\DomainEvent: outbox
-        App\Message\TravelCommand: outbox
+        routing:
+            Symfony\Component\Mailer\Messenger\SendEmailMessage: async
+            Symfony\Component\Notifier\Message\ChatMessage: async
+            Symfony\Component\Notifier\Message\SmsMessage: async
+            # webhooks are acknowledged right away and consumed by a worker
+            Symfony\Component\RemoteEvent\Messenger\ConsumeRemoteEventMessage: async
+            Symfony\Component\Webhook\Messenger\SendWebhookMessage: async
+            App\Message\DomainEvent: outbox
+            App\Message\TravelCommand: outbox
 
 when@test:
-    messenger:
-        transports:
-            async: 'in-memory://'
-            events: 'in-memory://'
-            outbox: 'in-memory://'
+    framework:
+        messenger:
+            transports:
+                async: 'in-memory://'
+                events: 'in-memory://'
+                outbox: 'in-memory://'

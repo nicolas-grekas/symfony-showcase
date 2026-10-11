@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../schema.json
-webhook:
-    routing:
-        payments:
-            service: App\Webhook\StandardWebhooksRequestParser
-            secret: '%env(PAYMENTS_WEBHOOK_SECRET)%'
+framework:
+    webhook:
+        routing:
+            payments:
+                service: App\Webhook\StandardWebhooksRequestParser
+                secret: '%env(PAYMENTS_WEBHOOK_SECRET)%'

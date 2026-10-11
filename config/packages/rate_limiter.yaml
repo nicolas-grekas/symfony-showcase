@@ -1,10 +1,11 @@
 # yaml-language-server: $schema=../schema.json
-rate_limiter:
-    mailer:
-        policy: sliding_window
-        limit: 60
-        interval: '1 minute'
-    ticket_purchase:
-        policy: fixed_window
-        limit: 5
-        interval: '10 minutes'
+framework:
+    rate_limiter:
+        mailer:
+            policy: sliding_window
+            limit: 60
+            interval: '1 minute'
+        ticket_purchase:
+            policy: fixed_window
+            limit: 5
+            interval: '10 minutes'

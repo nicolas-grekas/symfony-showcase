@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=../schema.json
 # Postgres advisory locks taken on the connection of Doctrine: no table, no other server
-lock: ~
+framework:
+    lock: ~
 
 services:
     # the lock configuration turns a connection into a table-based store, so the advisory store is wired here

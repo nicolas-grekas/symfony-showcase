@@ -1,11 +1,13 @@
 # yaml-language-server: $schema=../schema.json
-mailer:
-    transports:
-        main: '%env(MAILER_DSN)%'
-    headers:
-        From: 'Conferences <noreply@conferences.example>'
-
-when@test:
+framework:
     mailer:
         transports:
-            main: 'null://null'
+            main: '%env(MAILER_DSN)%'
+        headers:
+            From: 'Conferences <noreply@conferences.example>'
+
+when@test:
+    framework:
+        mailer:
+            transports:
+                main: 'null://null'

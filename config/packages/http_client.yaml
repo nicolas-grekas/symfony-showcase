@@ -1,7 +1,8 @@
 # yaml-language-server: $schema=../schema.json
-http_client:
-    scoped_clients:
-        travel_agency.client:
-            base_uri: '%env(TRAVEL_AGENCY_URL)%'
-            headers:
-                Accept: application/json
+framework:
+    http_client:
+        scoped_clients:
+            travel_agency.client:
+                base_uri: '%env(TRAVEL_AGENCY_URL)%'
+                headers:
+                    Accept: application/json
