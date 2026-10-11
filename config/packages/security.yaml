@@ -41,6 +41,7 @@ security:
                             # the keys of the discovery document only verify the tokens of the issuer it announces
                             check_issuer: true
                         issuers: ['%env(OIDC_ISSUER)%']
+                        algorithms: [RS256]
                         audience: showcase-api
                         claim: email
                         # Keycloak types its access tokens "JWT", not "at+jwt" (RFC 9068)
