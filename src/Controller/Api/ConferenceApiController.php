@@ -61,10 +61,7 @@ final class ConferenceApiController extends AbstractController
             }
         })();
 
-        $response = new StreamedResponse($streamWriter->write($talks, Type::iterable(Type::object(TalkResource::class), Type::int())), headers: ['Content-Type' => 'application/json']);
         // CDNs keep the program longer than browsers do
-        $response->cacheControl('CDN')->setMaxAge(3600);
-
-        return $response;
+        return new StreamedResponse($streamWriter->write($talks, Type::iterable(Type::object(TalkResource::class), Type::int())), headers: ['Content-Type' => 'application/json', 'CDN-Cache-Control' => 'max-age=3600']);
     }
 }
