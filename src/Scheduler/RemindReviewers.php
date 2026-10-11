@@ -4,6 +4,7 @@ namespace App\Scheduler;
 
 use App\Enum\ProposalStatus;
 use App\Repository\ProposalRepository;
+use Symfony\Component\DependencyInjection\Attribute\When;
 use Symfony\Component\Notifier\Notification\Notification;
 use Symfony\Component\Notifier\NotifierInterface;
 use Symfony\Component\Notifier\Recipient\Recipient;
@@ -14,7 +15,8 @@ use Symfony\Component\Security\Core\Role\RoleHierarchyInterface;
 /**
  * Tells the reviewers how many proposals wait for them, on Monday mornings in production only.
  */
-#[AsCronTask('0 9 * * 1', env: 'prod')]
+#[When('prod')]
+#[AsCronTask('0 9 * * 1')]
 final class RemindReviewers
 {
     public function __construct(
