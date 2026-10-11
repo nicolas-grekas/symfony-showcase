@@ -31,7 +31,10 @@ security:
             stateless: true
             provider: app_users
             user_checker: App\Security\UserChecker
+            # the challenge answering a missing or invalid token tells where to get one (RFC 9728)
+            entry_point: App\Security\AccessTokenChallenge
             access_token:
+                failure_handler: App\Security\AccessTokenChallenge
                 token_handler:
                     oidc:
                         discovery:
@@ -42,10 +45,6 @@ security:
                         algorithms: [RS256]
                         audience: showcase-api
                         claim: email
-                # served at /.well-known/oauth-protected-resource, telling clients where to get a token (RFC 9728)
-                resource_metadata:
-                    authorization_servers: ['%env(OIDC_ISSUER)%']
-                    scopes_supported: ['proposals:write']
         main:
             lazy: true
             provider: app_users
