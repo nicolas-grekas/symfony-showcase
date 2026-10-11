@@ -13,8 +13,7 @@ security:
     role_hierarchy:
         ROLE_ADMIN: [ROLE_ORGANIZER, ROLE_ALLOWED_TO_SWITCH]
         ROLE_ORGANIZER: [ROLE_REVIEWER]
-        # reviewers of a single conference, e.g. ROLE_REVIEWER_LILLE
-        ROLE_REVIEWER_*: [ROLE_REVIEWER]
+        # the reviewers of a single conference, e.g. ROLE_REVIEWER_LILLE, reach ROLE_REVIEWER through App\Security\ReviewerRoleHierarchy
 
     # accepting or rejecting a proposal requires having typed one's password in the last 15 minutes
     recent_authentication_lifetime: 900
