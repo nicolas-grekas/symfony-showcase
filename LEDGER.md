@@ -168,7 +168,7 @@ Postgres NOTIFY listener in UTC (#66825, 8.1), relative `from`/`until` of the Sc
 `debug:scheduler --date` (symfony/symfony#66815), the `Date` header and DKIM timestamp of Mime (symfony/symfony#66816), Mailer throttling and the
 retry period of round-robin transports (#66817), the replay window of the Mailer and Notifier webhook
 parsers (symfony/symfony#66821), the PagerDuty payload (symfony/symfony#66814, 6.4 bug) and the PagerDuty/Pushy options (#66813), data key age and
-references in KeyManagement (symfony/symfony#66812), relative input of the Console and HttpKernel `DateTimeValueResolver`,
+references in KeyManagement (symfony/symfony#66812), relative input of the HttpKernel (symfony/symfony#66826, 6.4) and Console (#66827, 8.1) `DateTimeValueResolver`,
 `ThrottlingHttpClient` without `pause_handler` (#66822, 7.4 bug), `CachingHttpClient` reading the request
 time from `start_time` (#66823, 7.4 bug), `ArrayAdapter` ignoring its clock in `expiresAfter()` (symfony/symfony#66818, 7.4 bug),
 the MongoDB cache adapters wiring (#66819), the session `MetadataBag` (symfony/symfony#66810).
@@ -184,6 +184,7 @@ Left for later:
 | Security | persistent remember-me tokens (`PersistentRememberMeHandler`, the 60 s rotation window of `DoctrineTokenProvider`) | needs the cookies of the HTTP row first |
 | Messenger | delays and redelivery of the Doctrine and Redis transports | feature, with the Postgres NOTIFY listener |
 | Uid | `UuidFactory`, `TimeBasedUuidFactory`, `UlidFactory` (the app builds its UUIDv7 from `$orderedAt` because of this), message ids, `--time` of the Uid commands | feature; +2.7 µs per id |
+| Clock | `DatePoint` with a reference resolves a date plus a relative time (`2016-09-08 +1 hour`) against the time of day of the reference, unlike PHP; the clock-aware Validator comparisons of 8.1 use it | a Clock bug fix of its own |
 | Misc | outbound auth timestamps and token caches (Azure mailer, Firebase, LightSms, Twitter, the KMS token providers), AMQP timestamp, year ranges of `BirthdayType`/`DateType`/`WeekType`, `CurrencyType` and Intl dates, the database session handlers | low value |
 
 Real time on purpose: Lock and Semaphore TTLs (the backend enforces them), the idle connection
