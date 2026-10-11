@@ -18,7 +18,6 @@ when@test:
 when@prod:
     framework:
         # the public pages and API responses are served from the cache of the kernel,
-        # which tells what it did in an RFC 9211 Cache-Status header
+        # which tells what it did in an RFC 9211 Cache-Status header (see App\HttpCache\CacheStatusHttpCache)
         http_cache:
             enabled: true
-            cache_status: Symfony
