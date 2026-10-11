@@ -12,7 +12,6 @@ use App\Tests\Security\FakeIdentityProvider;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpClient\MockHttpClient;
 
 final class ProposalApiTest extends WebTestCase
@@ -23,10 +22,10 @@ final class ProposalApiTest extends WebTestCase
 
     protected function setUp(): void
     {
-        // the replaced transport survives the reboots of the kernel between requests
-        $this->client = static::createClient(['configure_container' => static function (ContainerInterface $container) {
-            $container->set('http_client.transport', new MockHttpClient(new FakeIdentityProvider($_SERVER['OIDC_ISSUER'])));
-        }]);
+        $this->client = static::createClient();
+        // the kernel is reset instead of rebooted between requests, so that the replaced transport stays
+        $this->client->disableReboot();
+        static::getContainer()->set('http_client.transport', new MockHttpClient(new FakeIdentityProvider($_SERVER['OIDC_ISSUER'])));
     }
 
     public function testSubmitAProposal()
