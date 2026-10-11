@@ -81,6 +81,12 @@ What the app exercises, and what building it found.
 | 46 | Encrypting a column with KeyManagement needs an `EncryptedTypes` service declared by hand and a `Kernel::boot()` override calling `register()`: the bundle could register the types it is configured with when it boots | DX, 8.2 (experimental) | symfony/symfony#66766 (merged) |
 | 47 | `Unique` compares the values it reads with `===`: with `fields` on objects, two equal `DatePoint` never collide, so a `normalizer` has to turn them into strings | DX, 8.2 | symfony/symfony#66771 (merged) (the app keeps its normalizer, which also keeps unscheduled talks from colliding) |
 | 48 | `key_management.clients.<name>.dsn` refuses `%env(KMS_DSN)%`: the node combines `cannotBeEmpty()` with a `validate()` closure, on which Config refuses env vars | bug, 8.2 (experimental) | symfony/symfony#66762 (merged) |
+| 49 | With a `data_class`, `BoundsType` replaces the object with `null` when both bounds are empty: a non-nullable property fails with a 500 instead of reporting a violation on each bound | bug, 8.2 | symfony/symfony#66794 |
+| 50 | A middleware passing a stamp to a handler with `HandlerArgumentsStamp`, which works on 8.1, fails on 8.2 with "Named parameter overwrites previous argument": stamp-typed handler arguments are now filled from the envelope too | bug (BC break), 8.2 | symfony/symfony#66795, found by the 8.1 port |
+| 51 | The email channel of the Notifier takes its sender from the envelope of the mailer, not from `mailer.headers.From`: without an envelope sender, the alerts to the admin recipients threw | app bug, DX | fixed in the app (`mailer.envelope.sender`); the channel could fall back to the global From header |
+| 52 | With an explicit type such as `MoneyType`, `#[FormField]` guesses no `empty_data`: an empty price was written as `null` to an `int` property | app bug | fixed in the app (`?int` and `NotNull`) |
+| 53 | The `oidc` token handler caches the keys of the discovery forever when the JWKS response has no `max-age`, and fetches no new keys for an unknown `kid`: a key rotation at the identity provider gives 401s until the cache is cleared | bug, 7.4 | symfony/symfony#66796 |
+| 54 | `ChainStamp` and `DispatchOnFailureStamp` have no documentation; `sign_url`, `#[AsFormType]`, `PolymorphicCollectionType`, `#[Lock]`, `#[AsWorkflow]` and the identity stamps are documented in open pull requests only | doc, 8.2 | symfony/symfony-docs#23264, #22909, #22695, #23265, #23214, #23147; none for the two stamps |
 
 ## Ideas for 8.3
 
