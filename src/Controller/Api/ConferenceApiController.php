@@ -13,7 +13,7 @@ use Symfony\Component\Clock\ClockAwareTrait;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\HttpKernel\Attribute\Serialize;
-use Symfony\Component\JsonStreamer\StreamWriterInterface;
+use Symfony\Component\JsonStreamer\JsonStreamWriter;
 use Symfony\Component\ObjectMapper\ObjectMapperInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\TypeInfo\Type;
@@ -53,7 +53,7 @@ final class ConferenceApiController extends AbstractController
      * Streams the talks as they are read from the database, with code generated for TalkResource at cache warmup.
      */
     #[Route('/{slug:conference}/talks', name: 'api_conference_talks', methods: ['GET'])]
-    public function talks(Conference $conference, ProposalRepository $proposals, StreamWriterInterface $streamWriter): StreamedResponse
+    public function talks(Conference $conference, ProposalRepository $proposals, JsonStreamWriter $streamWriter): StreamedResponse
     {
         $talks = (function () use ($conference, $proposals) {
             foreach ($proposals->findAcceptedForConference($conference->slug) as $proposal) {
