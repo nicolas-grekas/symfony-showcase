@@ -12,7 +12,7 @@ use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Security\Core\Role\RoleHierarchyInterface;
 
-#[AsMessageHandler]
+#[AsMessageHandler(fromTransport: 'events')]
 final class NotifyReviewersOfNewProposal
 {
     public function __construct(

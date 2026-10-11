@@ -9,13 +9,13 @@ messenger:
             retry_strategy:
                 max_retries: 3
                 multiplier: 2
-        # domain events go to RabbitMQ only once the database transaction that recorded them commits
         events:
             dsn: '%env(RABBITMQ_DSN)%/%%2f/events'
-            outbox: outbox
             retry_strategy:
                 max_retries: 2
                 delay: 500
+        # domain events go to RabbitMQ only once the database transaction that recorded them commits:
+        # they are stored here, and App\MessageHandler\ForwardFromOutbox sends them to the events transport
         outbox: 'doctrine://default?queue_name=outbox'
         failed: 'doctrine://default?queue_name=failed'
 
@@ -35,8 +35,8 @@ messenger:
         # webhooks are acknowledged right away and consumed by a worker
         Symfony\Component\RemoteEvent\Messenger\ConsumeRemoteEventMessage: async
         Symfony\Component\Webhook\Messenger\SendWebhookMessage: async
-        App\Message\DomainEvent: events
-        App\Message\TravelCommand: events
+        App\Message\DomainEvent: outbox
+        App\Message\TravelCommand: outbox
 
 when@test:
     messenger:

@@ -12,7 +12,7 @@ use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Mime\Address;
 
-#[AsMessageHandler]
+#[AsMessageHandler(fromTransport: 'events')]
 final class HandleProposalDecision
 {
     public function __construct(

@@ -10,7 +10,7 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\Exception\UnrecoverableMessageHandlingException;
 use Symfony\Component\Mime\Address;
 
-#[AsMessageHandler]
+#[AsMessageHandler(fromTransport: 'events')]
 final class SendTravelDetailsHandler
 {
     public function __construct(

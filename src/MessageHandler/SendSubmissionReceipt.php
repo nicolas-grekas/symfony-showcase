@@ -13,7 +13,7 @@ use Symfony\Component\Mime\Address;
 /**
  * Runs after NotifyReviewersOfNewProposal, which has the default priority, so that a speaker never hears of a proposal the reviewers have not.
  */
-#[AsMessageHandler(priority: -1)]
+#[AsMessageHandler(fromTransport: 'events', priority: -1)]
 final class SendSubmissionReceipt
 {
     public function __construct(
