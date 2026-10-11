@@ -37,9 +37,6 @@
             <method>Doctrine\Deprecations\Deprecation::delegateTriggerToBackend</method>
             <function>trigger_deprecation</function>
         </deprecationTrigger>
-        <issueTriggerResolvers>
-            <issueTriggerResolver className="Symfony\Bridge\PhpUnit\DebugClassLoaderIssueTriggerResolver" />
-        </issueTriggerResolvers>
     </source>
 
     <extensions>
