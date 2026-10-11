@@ -2,12 +2,10 @@
 
 namespace App\Form;
 
-use App\Cfp\MaterialTypeProvider;
 use App\Cfp\ProposalDraft;
 use App\Cfp\SpeakerData;
 use App\Cfp\TalkData;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\PolymorphicCollectionType;
 use Symfony\Component\Form\Flow\AbstractFlowType;
 use Symfony\Component\Form\Flow\FormFlowBuilderInterface;
 use Symfony\Component\Form\Flow\Type\NavigatorFlowType;
@@ -23,14 +21,8 @@ final class ProposalFlowType extends AbstractFlowType
             ->addStep(
                 $builder->createStepGroup('proposal')
                     ->addStep('talk', TalkData::class, ['label' => 'Your talk'])
-                    ->addStep('materials', PolymorphicCollectionType::class, [
+                    ->addStep('materials', MaterialCollectionType::class, [
                         'label' => 'Material reviewers can look at',
-                        'entry_types' => MaterialTypeProvider::TYPES,
-                        'entry_type_provider' => new MaterialTypeProvider(),
-                        'entry_options' => MaterialTypeProvider::LABELS,
-                        'prototype_options' => MaterialTypeProvider::LABELS,
-                        'allow_add' => true,
-                        'allow_delete' => true,
                         'required' => false,
                     ])
             )

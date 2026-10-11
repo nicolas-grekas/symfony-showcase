@@ -1,5 +1,7 @@
 {% extends 'base.html.twig' %}
 
+{% form_theme form _self %}
+
 {% block title %}Call for papers: {{ conference.name }}{% endblock %}
 
 {% block body %}
@@ -32,4 +34,12 @@
         {% endif %}
         {{ form_rest(form) }}
     {{ form_end(form) }}
+{% endblock %}
+
+{# the polymorphic-collection controller adds the entries from these prototypes #}
+{% block material_collection_widget %}
+    {%- for kind, prototype in prototypes -%}
+        {%- set attr = attr|merge({('data-prototype-' ~ kind): form_row(prototype)}) -%}
+    {%- endfor -%}
+    {{- block('form_widget') -}}
 {% endblock %}

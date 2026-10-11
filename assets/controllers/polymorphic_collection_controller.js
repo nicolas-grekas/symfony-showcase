@@ -1,7 +1,7 @@
 import { Controller } from '@hotwired/stimulus';
 
 /*
- * Adds an entry to a PolymorphicCollectionType from the prototype of the requested type,
+ * Adds an entry to a collection from the prototype of the requested type,
  * which the form theme renders in a data-prototype-<type> attribute of the collection widget.
  */
 export default class extends Controller {
