@@ -7,6 +7,7 @@ use App\Entity\Material\Video;
 use App\Entity\Proposal;
 use App\Enum\ProposalStatus;
 use App\Message\ProposalSubmitted;
+use App\Tests\MessengerAssertionsTrait;
 use App\Tests\Security\FakeIdentityProvider;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -16,6 +17,8 @@ use Symfony\Component\HttpClient\MockHttpClient;
 
 final class ProposalApiTest extends WebTestCase
 {
+    use MessengerAssertionsTrait;
+
     private KernelBrowser $client;
 
     protected function setUp(): void

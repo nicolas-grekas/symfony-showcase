@@ -6,12 +6,15 @@ use App\Entity\Proposal;
 use App\Entity\User;
 use App\Enum\ProposalStatus;
 use App\Message\ProposalSubmitted;
+use App\Tests\MessengerAssertionsTrait;
 use Symfony\Component\Mailer\Messenger\SendEmailMessage;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 final class CfpControllerTest extends WebTestCase
 {
+    use MessengerAssertionsTrait;
+
     public function testSubmitAProposalStepByStep()
     {
         $client = static::createClient();

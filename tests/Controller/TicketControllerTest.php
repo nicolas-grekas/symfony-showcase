@@ -6,6 +6,7 @@ use App\Entity\Conference;
 use App\Entity\Ticket;
 use App\Entity\User;
 use App\Enum\TicketStatus;
+use App\Tests\MessengerAssertionsTrait;
 use App\Webhook\StandardWebhooksSignature;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -17,6 +18,7 @@ use Symfony\Component\RemoteEvent\Messenger\ConsumeRemoteEventMessage;
 final class TicketControllerTest extends WebTestCase
 {
     use ClockSensitiveTrait;
+    use MessengerAssertionsTrait;
 
     private KernelBrowser $client;
 
