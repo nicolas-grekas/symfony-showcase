@@ -23,6 +23,7 @@ final class ProposalVoter extends Voter
 
     public function __construct(
         private readonly AccessDecisionManagerInterface $accessDecisionManager,
+        private readonly RecentAuthentication $recentAuthentication,
     ) {
     }
 
@@ -49,9 +50,10 @@ final class ProposalVoter extends Voter
             return false;
         }
 
-        if (!$this->accessDecisionManager->decide($token, ['IS_AUTHENTICATED_RECENTLY'])) {
+        // accepting or rejecting a proposal requires a recent login
+        if (!$this->recentAuthentication->isRecent($token)) {
             // the firewall asks for the password again instead of denying access
-            $vote?->requestReAuthentication(self::DECIDE);
+            $this->recentAuthentication->requestReAuthentication($vote);
 
             return false;
         }

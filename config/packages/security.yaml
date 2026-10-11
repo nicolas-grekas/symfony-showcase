@@ -15,9 +15,6 @@ security:
         ROLE_ORGANIZER: [ROLE_REVIEWER]
         # the reviewers of a single conference, e.g. ROLE_REVIEWER_LILLE, reach ROLE_REVIEWER through App\Security\ReviewerRoleHierarchy
 
-    # accepting or rejecting a proposal requires having typed one's password in the last 15 minutes
-    recent_authentication_lifetime: 900
-
     firewalls:
         dev:
             # Ensure dev tools and static assets are always allowed
@@ -50,6 +47,8 @@ security:
             # a user disabled by an admin is logged out on their next request by User::isEqualTo()
             user_checker: App\Security\UserChecker
             entry_point: form_login
+            # asks for the password again when a voter denied access for lack of a recent login
+            access_denied_handler: App\Security\RecentAuthentication
             form_login:
                 login_path: app_login
                 check_path: app_login
