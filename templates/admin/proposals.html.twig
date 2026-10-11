@@ -15,7 +15,7 @@
                     <td>{{ proposal.status.value|humanize }}</td>
                     <td>{{ proposal.submittedAt ? proposal.submittedAt|date('Y-m-d H:i') }}</td>
                     {# what an anonymous visitor would be allowed to see #}
-                    <td>{{ is_granted_for_user(null, 'PROPOSAL_VIEW', proposal) ? 'yes' : 'no' }}</td>
+                    <td>{{ is_granted_for_guest('PROPOSAL_VIEW', proposal) ? 'yes' : 'no' }}</td>
                 </tr>
             {% endfor %}
         </tbody>

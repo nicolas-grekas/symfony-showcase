@@ -2,6 +2,7 @@
 
 namespace App\Tests\Controller;
 
+use App\Entity\Conference;
 use App\Entity\Proposal;
 use App\Entity\User;
 use App\Enum\ProposalStatus;
@@ -85,6 +86,16 @@ final class SecurityTest extends WebTestCase
 
         $this->client->request('GET', '/admin');
         $this->assertResponseRedirects('/login');
+    }
+
+    public function testReviewersSeeWhatVisitorsAreAllowedToSee()
+    {
+        $conference = $this->entityManager()->getRepository(Conference::class)->findOneBy(['slug' => 'symfonycon-amsterdam']);
+        $this->client->loginUser($this->findUser('reviewer@example.com'));
+        $this->client->request('GET', '/admin/conferences/'.$conference->id.'/proposals');
+
+        $this->assertSelectorTextContains('tr:contains("Workflows as code") td:last-child', 'yes');
+        $this->assertSelectorTextContains('tr:contains("Why my cache was cold") td:last-child', 'no');
     }
 
     private function findProposal(string $title): Proposal
