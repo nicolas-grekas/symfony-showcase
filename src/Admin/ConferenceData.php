@@ -3,12 +3,11 @@
 namespace App\Admin;
 
 use App\Entity\Conference;
+use App\Form\PeriodType;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Form\Attribute\AsFormType;
 use Symfony\Component\Form\Attribute\FormField;
-use Symfony\Component\Form\Extension\Core\Type\BoundsType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Uid\Uuid;
@@ -34,12 +33,11 @@ final class ConferenceData
     #[Assert\NotBlank]
     public ?string $city = null;
 
-    // both bounds are rendered as one field, which checks that they are in order
-    #[FormField(BoundsType::class, ['type' => DateType::class, 'options' => ['input' => 'date_point', 'widget' => 'single_text'], 'compare' => true, 'data_class' => Period::class])]
+    #[FormField(PeriodType::class)]
     #[Assert\Valid]
     public Period $dates;
 
-    #[FormField(BoundsType::class, ['type' => DateTimeType::class, 'options' => ['input' => 'date_point', 'widget' => 'single_text'], 'compare' => true, 'data_class' => Period::class, 'label' => 'Call for papers'])]
+    #[FormField(PeriodType::class, ['type' => DateTimeType::class, 'label' => 'Call for papers'])]
     #[Assert\Valid]
     public Period $cfp;
 

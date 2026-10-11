@@ -9,6 +9,7 @@ final class Period
 {
     public function __construct(
         #[Assert\NotNull]
+        #[Assert\LessThanOrEqual(propertyPath: 'to', message: 'The lower bound must not be greater than the upper bound.')]
         public ?DatePoint $from = null,
 
         #[Assert\NotNull]
