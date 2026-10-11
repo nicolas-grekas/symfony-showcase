@@ -32,6 +32,6 @@ final class SpeakerTest extends KernelTestCase
         $entityManager->flush();
 
         // the payloads refer to the data key of their scope, kept wrapped in a table
-        $this->assertSame(1, (int) $entityManager->getConnection()->fetchOne("SELECT COUNT(*) FROM key_management_data_keys WHERE scope = 'speaker.contact'"));
+        $this->assertSame(1, (int) $entityManager->getConnection()->fetchOne("SELECT COUNT(*) FROM data_keys WHERE scope = 'speaker.contact'"));
     }
 }
