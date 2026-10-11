@@ -161,8 +161,8 @@ recent authentication, the OIDC, OAuth2 and DPoP checks, `oidc_login`, `UriSigne
 links, `#[IsSignatureValid]`, `sign_url`), the Messenger worker, `DelayStamp`, the in-memory
 transport, the Scheduler, the Standard Webhooks signatures, the HTTP recorder.
 
-Being fixed now (easy, or about features new in 8.2): `security:oidc-token:generate
---not-before` (7.4), the DPoP replay and JWKS cache lifetimes, login links and signature
+Being fixed now (easy, or about features new in 8.2): `security:oidc:generate-token
+--not-before` (symfony/symfony#66808, 7.4), the DPoP replay and JWKS cache lifetimes, login links and signature
 remember-me cookies, the MongoDB transport wiring, `--failed-after`/`--failed-before`, the
 Postgres NOTIFY listener in UTC (8.1), relative `from`/`until` of the Scheduler and
 `debug:scheduler --date`, the `Date` header and DKIM timestamp of Mime, Mailer throttling and the
