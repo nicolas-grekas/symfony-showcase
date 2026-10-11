@@ -17,9 +17,9 @@ use Symfony\Component\Console\Input\File\InputFile;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
- * Groups the commands run as "conference <command>", or "conference:<command>".
+ * The class-level name prefixes the method-level ones: "list" runs as "conference:list".
  */
-#[AsCommand('conference', description: 'Manage the conferences')]
+#[AsCommand('conference')]
 final class ConferenceCommands
 {
     use ClockAwareTrait;

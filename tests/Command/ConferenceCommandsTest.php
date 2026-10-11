@@ -19,9 +19,9 @@ final class ConferenceCommandsTest extends KernelTestCase
         $this->tester = new ApplicationTester($application);
     }
 
-    public function testListAsASubCommand()
+    public function testList()
     {
-        $this->tester->run(['command' => 'conference', 'list']);
+        $this->tester->run(['command' => 'conference:list']);
 
         $this->tester->assertCommandIsSuccessful();
         $this->assertMatchesRegularExpression('/symfonycon-amsterdam +SymfonyCon Amsterdam .+ closed +2 \/ 2/', $this->tester->getDisplay());
