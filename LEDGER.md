@@ -163,14 +163,14 @@ transport, the Scheduler, the Standard Webhooks signatures, the HTTP recorder.
 
 Being fixed now (easy, or about features new in 8.2): `security:oidc:generate-token
 --not-before` (symfony/symfony#66808, 7.4), the DPoP replay and JWKS cache lifetimes (symfony/symfony#66811), login links and signature
-remember-me cookies (symfony/symfony#66809), the MongoDB transport wiring, `--failed-after`/`--failed-before`, the
-Postgres NOTIFY listener in UTC (8.1), relative `from`/`until` of the Scheduler and
+remember-me cookies (symfony/symfony#66809), the MongoDB transport wiring and `--failed-after`/`--failed-before` (symfony/symfony#66824), the
+Postgres NOTIFY listener in UTC (#66825, 8.1), relative `from`/`until` of the Scheduler and
 `debug:scheduler --date` (symfony/symfony#66815), the `Date` header and DKIM timestamp of Mime (symfony/symfony#66816), Mailer throttling and the
 retry period of round-robin transports (#66817), the replay window of the Mailer and Notifier webhook
 parsers (symfony/symfony#66821), the PagerDuty payload (symfony/symfony#66814, 6.4 bug) and the PagerDuty/Pushy options (#66813), data key age and
 references in KeyManagement (symfony/symfony#66812), relative input of the Console and HttpKernel `DateTimeValueResolver`,
-`ThrottlingHttpClient` without `pause_handler` (7.4 bug), `CachingHttpClient` reading the request
-time from `start_time` (7.4 bug), `ArrayAdapter` ignoring its clock in `expiresAfter()` (symfony/symfony#66818, 7.4 bug),
+`ThrottlingHttpClient` without `pause_handler` (#66822, 7.4 bug), `CachingHttpClient` reading the request
+time from `start_time` (#66823, 7.4 bug), `ArrayAdapter` ignoring its clock in `expiresAfter()` (symfony/symfony#66818, 7.4 bug),
 the MongoDB cache adapters wiring (#66819), the session `MetadataBag` (symfony/symfony#66810).
 
 Left for later:
