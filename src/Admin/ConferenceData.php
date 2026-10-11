@@ -9,6 +9,7 @@ use Symfony\Component\Form\Attribute\FormField;
 use Symfony\Component\Form\Extension\Core\Type\BoundsType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -42,7 +43,7 @@ final class ConferenceData
     #[Assert\Valid]
     public Period $cfp;
 
-    #[FormField(options: ['help' => 'No tickets are sold when it is 0.'])]
+    #[FormField(IntegerType::class, ['help' => 'No tickets are sold when it is 0.', 'required' => false, 'empty_data' => '0'])]
     #[Assert\PositiveOrZero]
     public int $ticketCapacity = 0;
 
