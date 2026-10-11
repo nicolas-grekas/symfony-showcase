@@ -1,15 +1,11 @@
 # yaml-language-server: $schema=../schema.json
 mailer:
     transports:
-        main:
-            dsn: '%env(MAILER_DSN)%'
-            # never more than the provider accepts: over the limit, the async message is retried later
-            rate_limiter: mailer
+        main: '%env(MAILER_DSN)%'
     headers:
         From: 'Conferences <noreply@conferences.example>'
 
 when@test:
     mailer:
         transports:
-            main:
-                dsn: 'null://null'
+            main: 'null://null'
