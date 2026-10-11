@@ -124,3 +124,24 @@ What to watch for:
 
 D comes first: it makes every other change safer, and the app had the most friction there. A
 continues the decomposition of FrameworkBundle.
+
+## MakerBundle next
+
+Coding agents adapt a good example to the context better than a template with options can, and
+the templates of MakerBundle fall behind every release: `make:form` and `make:schedule` still
+generate pre-8.2 code (idea 5), and symfony/maker-bundle#1844 and #1845 had to fix stale output.
+Every new feature needs its own maker.
+
+What makers still do well: steps that edit existing files predictably (`make:entity` adding
+fields, `make:user` wiring `security.yaml`, `make:registration-form`), and serving people who
+don't use an agent.
+
+Proposal:
+
+- Stop adding makers for new features; keep MakerBundle in maintenance for the existing ones.
+- Ship short guides (skills) per component, with example code tested in CI so it cannot fall
+  behind like the templates did. The code of this app could be that tested example set.
+- Version them with the component, and let Flex install them the way recipes install config.
+- Point to them from `AGENTS.md` and keep them in plain markdown: there is no common skills
+  format across tools yet.
+- Reconsider MakerBundle once the guides cover what its makers do.
