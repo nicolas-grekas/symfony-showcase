@@ -81,3 +81,22 @@ What the app exercises, and what building it found.
 | 46 | Encrypting a column with KeyManagement needs an `EncryptedTypes` service declared by hand and a `Kernel::boot()` override calling `register()`: the bundle could register the types it is configured with when it boots | DX, 8.2 (experimental) | symfony/symfony#66766 (merged) |
 | 47 | `Unique` compares the values it reads with `===`: with `fields` on objects, two equal `DatePoint` never collide, so a `normalizer` has to turn them into strings | DX, 8.2 | symfony/symfony#66771 (merged) (the app keeps its normalizer, which also keeps unscheduled talks from colliding) |
 | 48 | `key_management.clients.<name>.dsn` refuses `%env(KMS_DSN)%`: the node combines `cannotBeEmpty()` with a `validate()` closure, on which Config refuses env vars | bug, 8.2 (experimental) | symfony/symfony#66762 (merged) |
+
+## Ideas for 8.3
+
+What would remove the workarounds, the "remember to" comments and the boilerplate still in the
+app. Nothing is filed yet; 1, 2 and 4 matter most, 5 is the cheapest.
+
+| # | Idea | Seen in | Status |
+|---|---|---|---|
+| 1 | Keep the in-memory transports across the kernel reboots of the test client and reset them between tests; store the rate limiters in an in-memory pool in the test env | `CfpControllerTest` asserts before following the redirect, `TicketControllerTest::setUp()` clears `cache.rate_limiter` (findings 25, 29) | idea |
+| 2 | `$client->loginUser($user, 'api')` on an `access_token` firewall, sending a bearer token the firewall accepts (`OidcTokenGenerator` already exists) | `tests/Security/FakeIdentityProvider.php`: discovery, JWKS and token signing, wired with `configure_container` | idea |
+| 3 | A DomCrawler helper to add a collection entry from its `data-prototype` | `CfpControllerTest` posts the materials by hand with `getPhpValues()` | idea |
+| 4 | Let a form flow validate only the object of its current step, so a plain `#[Assert\Valid]` works for both the flow and the API | `ProposalDraft` scopes each `Valid` to its step with `restrictGroups: false`, the API lists every step in `validationGroups` (finding 27) | idea |
+| 5 | MakerBundle: `#[AsFormType]` data classes in `make:form`, `scheduler.schedules` instead of a `Schedule` class in `make:schedule` | `make:form` generates an `AbstractType` only, `make:schedule` the class symfony/recipes#1593 drops | idea |
+| 6 | `#[Serialize]` mapping the returned entities to a resource class with the ObjectMapper, and streaming a returned generator of `#[JsonStreamable]` objects | `ConferenceApiController` and `ProposalApiController` map by hand; `talks()` builds the `StreamedResponse`, the `StreamWriter` call and its `Type` | idea |
+| 7 | Placeholders from the controller arguments in the keys of `#[Lock]` and `#[RateLimit]`, e.g. `key: 'ticket-sale-{conference}'` | `TicketController` needs an `Expression` for both | idea |
+| 8 | Twig helpers rendering the POST-only logout and impersonation buttons, e.g. `logout_button('Log out')` | the `post_form` macro of `templates/_macros.html.twig` (finding 19); `transition_button` is the same pattern with a CSRF token | idea |
+| 9 | Let the security token keep the hash of the password it compares, so `User` needs no `__serialize()` | `User::__serialize()`, written by MakerBundle and wrong for users without a password (finding 18); needs a spike, the token does not own the user | idea |
+| 10 | Recipes adding `# yaml-language-server: $schema=../schema.json` to `config/packages/*.yaml`, `lint:yaml` checking the schema by default when a validator is installed, the `workflow: {<name>: ...}` shorthand accepted by the schema | `config/schema.json` is generated but only `services.yaml` and `routes.yaml` reference a schema (findings 6, 32) | idea |
+| 11 | Once 8.2 ships, move the DoctrineBundle recipe and the `messenger.yaml` of the webapp pack to the root keys, like symfony/recipes#1592 | finding 1 | idea |
