@@ -10,7 +10,6 @@ use App\Repository\ConferenceRepository;
 use App\Repository\ProposalRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Clock\ClockAwareTrait;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\HttpKernel\Attribute\Serialize;
@@ -18,7 +17,6 @@ use Symfony\Component\JsonStreamer\StreamWriterInterface;
 use Symfony\Component\ObjectMapper\ObjectMapperInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\TypeInfo\Type;
-use Symfony\Component\WebLink\Link;
 
 #[Route('/api/conferences', format: 'json')]
 #[Cache(maxage: 300, public: true)]
@@ -35,12 +33,9 @@ final class ConferenceApiController extends AbstractController
      * @return list<ConferenceResource>
      */
     #[Route('', name: 'api_conferences', methods: ['GET'])]
-    #[Serialize(context: ['groups' => ['Default']])]
-    public function list(Request $request, ConferenceRepository $conferences): array
+    #[Serialize(headers: ['Link-Template' => '"/api/conferences/{slug}"; rel="item"'], context: ['groups' => ['Default']])]
+    public function list(ConferenceRepository $conferences): array
     {
-        // sent as an RFC 9652 Link-Template header, since the link is a URI template
-        $this->addLink($request, new Link('item', '/api/conferences/{slug}'));
-
         return array_map(fn (Conference $conference) => $this->objectMapper->map($conference, ConferenceResource::class), $conferences->findUpcoming($this->now()));
     }
 
