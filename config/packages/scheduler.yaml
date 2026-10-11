@@ -1,4 +1,0 @@
-# yaml-language-server: $schema=../schema.json
-scheduler:
-    # scheduled messages follow the routing of Messenger, as they will by default in 9.0
-    use_messenger_routing: true
