@@ -1,8 +1,7 @@
 {% extends 'emails/layout.html.twig' %}
-{% from '_macros.html.twig' import ticket_url %}
 
 {% block content %}
     <p>Thank you {{ ticket.buyer.name }}, your payment is confirmed.</p>
-    <p><a href="{{ ticket_url(ticket) }}">Show your ticket for {{ ticket.conference.name }}</a> at the entrance, on {{ ticket.conference.startsOn|date('F j, Y') }} in {{ ticket.conference.city }}.</p>
+    <p><a href="{{ url }}">Show your ticket for {{ ticket.conference.name }}</a> at the entrance, on {{ ticket.conference.startsOn|date('F j, Y') }} in {{ ticket.conference.city }}.</p>
     <p style="color: #59636e">Anyone with this link can see your ticket: do not share it.</p>
 {% endblock %}

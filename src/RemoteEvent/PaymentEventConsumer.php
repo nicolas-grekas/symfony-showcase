@@ -4,6 +4,7 @@ namespace App\RemoteEvent;
 
 use App\Entity\Ticket;
 use App\Repository\TicketRepository;
+use App\Ticket\TicketLinks;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -27,6 +28,7 @@ final class PaymentEventConsumer implements ConsumerInterface
     public function __construct(
         private readonly TicketRepository $tickets,
         private readonly EntityManagerInterface $entityManager,
+        private readonly TicketLinks $links,
         private readonly MailerInterface $mailer,
         private readonly LoggerInterface $logger,
     ) {
@@ -63,7 +65,7 @@ final class PaymentEventConsumer implements ConsumerInterface
             ->to(new Address($ticket->buyer->email, $ticket->buyer->name))
             ->subject('Your ticket for '.$ticket->conference->name)
             ->htmlTemplate('emails/ticket.html.twig')
-            ->context(['ticket' => $ticket])
+            ->context(['ticket' => $ticket, 'url' => $this->links->url($ticket)])
         );
     }
 }

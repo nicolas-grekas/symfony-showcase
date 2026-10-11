@@ -14,8 +14,3 @@
         <button type="submit">{{ label }}</button>
     </form>
 {% endmacro %}
-
-{# A ticket is shown to whoever has this link, signed until the day after the conference #}
-{% macro ticket_url(ticket) %}
-    {{- url('ticket_show', {id: ticket.id})|sign_url(ticket.conference.endsOn|date_modify('+1 day')) -}}
-{% endmacro %}
