@@ -7197,7 +7197,7 @@
                                                         },
                                                         "cache": {
                                                             "$ref": "#/$defs/types/scalar",
-                                                            "default": "cache.app",
+                                                            "default": "cache.security",
                                                             "description": "Id of the cache pool remembering the ended provider sessions, shared by every server of the application."
                                                         },
                                                         "lifetime": {
@@ -7218,7 +7218,7 @@
                                             "default": {
                                                 "enabled": false,
                                                 "path": "/oidc/backchannel-logout",
-                                                "cache": "cache.app",
+                                                "cache": "cache.security",
                                                 "lifetime": 86400
                                             },
                                             "description": "Accept the logout tokens the OIDC provider posts when one of its sessions ends."
@@ -7959,13 +7959,13 @@
                                                                                                             "properties": {
                                                                                                                 "id": {
                                                                                                                     "$ref": "#/$defs/types/scalar",
-                                                                                                                    "default": "cache.app",
+                                                                                                                    "default": "cache.security.discovery",
                                                                                                                     "description": "Cache service id the metadata document and the keys it points at are stored in."
                                                                                                                 }
                                                                                                             },
                                                                                                             "additionalProperties": false,
                                                                                                             "default": {
-                                                                                                                "id": "cache.app"
+                                                                                                                "id": "cache.security.discovery"
                                                                                                             }
                                                                                                         }
                                                                                                     },
@@ -7980,7 +7980,7 @@
                                                                                             "default": {
                                                                                                 "enabled": false,
                                                                                                 "cache": {
-                                                                                                    "id": "cache.app"
+                                                                                                    "id": "cache.security.discovery"
                                                                                                 }
                                                                                             },
                                                                                             "description": "Read the keys the introspection response is verified against from the RFC 8414 metadata of the authorization server, whose URL is derived from the \"issuer\" this handler already declares. Only the \"jwks_uri\" is read from it: which algorithms are accepted stays declared here, so that an authorization server cannot widen it by announcing more."
@@ -8028,7 +8028,7 @@
                                                                                 "discovery": {
                                                                                     "enabled": false,
                                                                                     "cache": {
-                                                                                        "id": "cache.app"
+                                                                                        "id": "cache.security.discovery"
                                                                                     }
                                                                                 },
                                                                                 "keyset": null
@@ -8273,7 +8273,7 @@
                                                         },
                                                         "cache": {
                                                             "$ref": "#/$defs/types/scalar",
-                                                            "default": "cache.app",
+                                                            "default": "cache.security",
                                                             "description": "The cache pool proofs are remembered in to refuse a replay, shared by all the instances of the application."
                                                         },
                                                         "proof_lifetime": {
@@ -8326,7 +8326,7 @@
                                                     "PS256",
                                                     "RS256"
                                                 ],
-                                                "cache": "cache.app",
+                                                "cache": "cache.security",
                                                 "proof_lifetime": 60,
                                                 "allowed_time_drift": 5
                                             },
@@ -10791,10 +10791,177 @@
                                                 {
                                                     "$ref": "#/$defs/types/array_null",
                                                     "items": {
+                                                        "anyOf": [
+                                                            {
+                                                                "$ref": "#/$defs/types/object_null",
+                                                                "properties": {
+                                                                    "name": {
+                                                                        "$ref": "#/$defs/types/scalar"
+                                                                    },
+                                                                    "metadata": {
+                                                                        "$ref": "#/$defs/types/object_null",
+                                                                        "additionalProperties": {
+                                                                            "$ref": "#/$defs/types/variable"
+                                                                        },
+                                                                        "examples": [
+                                                                            {
+                                                                                "color": "blue",
+                                                                                "description": "Workflow to manage article."
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                },
+                                                                "required": [
+                                                                    "name"
+                                                                ],
+                                                                "additionalProperties": false
+                                                            },
+                                                            {
+                                                                "type": [
+                                                                    "string"
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                {
+                                                    "$ref": "#/$defs/types/object_null",
+                                                    "additionalProperties": {
+                                                        "anyOf": [
+                                                            {
+                                                                "$ref": "#/$defs/types/object_null",
+                                                                "properties": {
+                                                                    "name": {
+                                                                        "$ref": "#/$defs/types/scalar"
+                                                                    },
+                                                                    "metadata": {
+                                                                        "$ref": "#/$defs/types/object_null",
+                                                                        "additionalProperties": {
+                                                                            "$ref": "#/$defs/types/variable"
+                                                                        },
+                                                                        "examples": [
+                                                                            {
+                                                                                "color": "blue",
+                                                                                "description": "Workflow to manage article."
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                },
+                                                                "additionalProperties": false
+                                                            },
+                                                            {
+                                                                "type": [
+                                                                    "string"
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                {
+                                                    "type": [
+                                                        "string"
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        "transitions": {
+                                            "anyOf": [
+                                                {
+                                                    "$ref": "#/$defs/types/array_null",
+                                                    "items": {
                                                         "$ref": "#/$defs/types/object_null",
                                                         "properties": {
                                                             "name": {
-                                                                "$ref": "#/$defs/types/scalar"
+                                                                "$ref": "#/$defs/types/string_null"
+                                                            },
+                                                            "guard": {
+                                                                "$ref": "#/$defs/types/string_null",
+                                                                "description": "An expression to block the transition.",
+                                                                "examples": [
+                                                                    "is_fully_authenticated() and is_granted('ROLE_JOURNALIST') and subject.getTitle() == 'My first article'"
+                                                                ]
+                                                            },
+                                                            "from": {
+                                                                "anyOf": [
+                                                                    {
+                                                                        "$ref": "#/$defs/types/array_null",
+                                                                        "items": {
+                                                                            "anyOf": [
+                                                                                {
+                                                                                    "$ref": "#/$defs/types/object_null",
+                                                                                    "properties": {
+                                                                                        "place": {
+                                                                                            "$ref": "#/$defs/types/string_null"
+                                                                                        },
+                                                                                        "weight": {
+                                                                                            "$ref": "#/$defs/types/integer",
+                                                                                            "minimum": 1,
+                                                                                            "default": 1
+                                                                                        }
+                                                                                    },
+                                                                                    "required": [
+                                                                                        "place"
+                                                                                    ],
+                                                                                    "additionalProperties": false
+                                                                                },
+                                                                                {
+                                                                                    "type": [
+                                                                                        "string"
+                                                                                    ]
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        "minItems": 1
+                                                                    },
+                                                                    {
+                                                                        "type": [
+                                                                            "string"
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "to": {
+                                                                "anyOf": [
+                                                                    {
+                                                                        "$ref": "#/$defs/types/array_null",
+                                                                        "items": {
+                                                                            "anyOf": [
+                                                                                {
+                                                                                    "$ref": "#/$defs/types/object_null",
+                                                                                    "properties": {
+                                                                                        "place": {
+                                                                                            "$ref": "#/$defs/types/string_null"
+                                                                                        },
+                                                                                        "weight": {
+                                                                                            "$ref": "#/$defs/types/integer",
+                                                                                            "minimum": 1,
+                                                                                            "default": 1
+                                                                                        }
+                                                                                    },
+                                                                                    "required": [
+                                                                                        "place"
+                                                                                    ],
+                                                                                    "additionalProperties": false
+                                                                                },
+                                                                                {
+                                                                                    "type": [
+                                                                                        "string"
+                                                                                    ]
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        "minItems": 1
+                                                                    },
+                                                                    {
+                                                                        "type": [
+                                                                            "string"
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "weight": {
+                                                                "$ref": "#/$defs/types/integer",
+                                                                "default": 1
                                                             },
                                                             "metadata": {
                                                                 "$ref": "#/$defs/types/object_null",
@@ -10813,113 +10980,124 @@
                                                             "name"
                                                         ],
                                                         "additionalProperties": false
-                                                    }
+                                                    },
+                                                    "minItems": 1
                                                 },
                                                 {
-                                                    "type": [
-                                                        "string"
-                                                    ]
+                                                    "$ref": "#/$defs/types/object_null",
+                                                    "additionalProperties": {
+                                                        "$ref": "#/$defs/types/object_null",
+                                                        "properties": {
+                                                            "name": {
+                                                                "$ref": "#/$defs/types/string_null"
+                                                            },
+                                                            "guard": {
+                                                                "$ref": "#/$defs/types/string_null",
+                                                                "description": "An expression to block the transition.",
+                                                                "examples": [
+                                                                    "is_fully_authenticated() and is_granted('ROLE_JOURNALIST') and subject.getTitle() == 'My first article'"
+                                                                ]
+                                                            },
+                                                            "from": {
+                                                                "anyOf": [
+                                                                    {
+                                                                        "$ref": "#/$defs/types/array_null",
+                                                                        "items": {
+                                                                            "anyOf": [
+                                                                                {
+                                                                                    "$ref": "#/$defs/types/object_null",
+                                                                                    "properties": {
+                                                                                        "place": {
+                                                                                            "$ref": "#/$defs/types/string_null"
+                                                                                        },
+                                                                                        "weight": {
+                                                                                            "$ref": "#/$defs/types/integer",
+                                                                                            "minimum": 1,
+                                                                                            "default": 1
+                                                                                        }
+                                                                                    },
+                                                                                    "required": [
+                                                                                        "place"
+                                                                                    ],
+                                                                                    "additionalProperties": false
+                                                                                },
+                                                                                {
+                                                                                    "type": [
+                                                                                        "string"
+                                                                                    ]
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        "minItems": 1
+                                                                    },
+                                                                    {
+                                                                        "type": [
+                                                                            "string"
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "to": {
+                                                                "anyOf": [
+                                                                    {
+                                                                        "$ref": "#/$defs/types/array_null",
+                                                                        "items": {
+                                                                            "anyOf": [
+                                                                                {
+                                                                                    "$ref": "#/$defs/types/object_null",
+                                                                                    "properties": {
+                                                                                        "place": {
+                                                                                            "$ref": "#/$defs/types/string_null"
+                                                                                        },
+                                                                                        "weight": {
+                                                                                            "$ref": "#/$defs/types/integer",
+                                                                                            "minimum": 1,
+                                                                                            "default": 1
+                                                                                        }
+                                                                                    },
+                                                                                    "required": [
+                                                                                        "place"
+                                                                                    ],
+                                                                                    "additionalProperties": false
+                                                                                },
+                                                                                {
+                                                                                    "type": [
+                                                                                        "string"
+                                                                                    ]
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        "minItems": 1
+                                                                    },
+                                                                    {
+                                                                        "type": [
+                                                                            "string"
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "weight": {
+                                                                "$ref": "#/$defs/types/integer",
+                                                                "default": 1
+                                                            },
+                                                            "metadata": {
+                                                                "$ref": "#/$defs/types/object_null",
+                                                                "additionalProperties": {
+                                                                    "$ref": "#/$defs/types/variable"
+                                                                },
+                                                                "examples": [
+                                                                    {
+                                                                        "color": "blue",
+                                                                        "description": "Workflow to manage article."
+                                                                    }
+                                                                ]
+                                                            }
+                                                        },
+                                                        "additionalProperties": false
+                                                    },
+                                                    "minProperties": 1
                                                 }
                                             ]
-                                        },
-                                        "transitions": {
-                                            "$ref": "#/$defs/types/array_null",
-                                            "items": {
-                                                "$ref": "#/$defs/types/object_null",
-                                                "properties": {
-                                                    "name": {
-                                                        "$ref": "#/$defs/types/string_null"
-                                                    },
-                                                    "guard": {
-                                                        "$ref": "#/$defs/types/string_null",
-                                                        "description": "An expression to block the transition.",
-                                                        "examples": [
-                                                            "is_fully_authenticated() and is_granted('ROLE_JOURNALIST') and subject.getTitle() == 'My first article'"
-                                                        ]
-                                                    },
-                                                    "from": {
-                                                        "anyOf": [
-                                                            {
-                                                                "$ref": "#/$defs/types/array_null",
-                                                                "items": {
-                                                                    "$ref": "#/$defs/types/object_null",
-                                                                    "properties": {
-                                                                        "place": {
-                                                                            "$ref": "#/$defs/types/string_null"
-                                                                        },
-                                                                        "weight": {
-                                                                            "$ref": "#/$defs/types/integer",
-                                                                            "minimum": 1,
-                                                                            "default": 1
-                                                                        }
-                                                                    },
-                                                                    "required": [
-                                                                        "place"
-                                                                    ],
-                                                                    "additionalProperties": false
-                                                                },
-                                                                "minItems": 1
-                                                            },
-                                                            {
-                                                                "type": [
-                                                                    "string"
-                                                                ]
-                                                            }
-                                                        ]
-                                                    },
-                                                    "to": {
-                                                        "anyOf": [
-                                                            {
-                                                                "$ref": "#/$defs/types/array_null",
-                                                                "items": {
-                                                                    "$ref": "#/$defs/types/object_null",
-                                                                    "properties": {
-                                                                        "place": {
-                                                                            "$ref": "#/$defs/types/string_null"
-                                                                        },
-                                                                        "weight": {
-                                                                            "$ref": "#/$defs/types/integer",
-                                                                            "minimum": 1,
-                                                                            "default": 1
-                                                                        }
-                                                                    },
-                                                                    "required": [
-                                                                        "place"
-                                                                    ],
-                                                                    "additionalProperties": false
-                                                                },
-                                                                "minItems": 1
-                                                            },
-                                                            {
-                                                                "type": [
-                                                                    "string"
-                                                                ]
-                                                            }
-                                                        ]
-                                                    },
-                                                    "weight": {
-                                                        "$ref": "#/$defs/types/integer",
-                                                        "default": 1
-                                                    },
-                                                    "metadata": {
-                                                        "$ref": "#/$defs/types/object_null",
-                                                        "additionalProperties": {
-                                                            "$ref": "#/$defs/types/variable"
-                                                        },
-                                                        "examples": [
-                                                            {
-                                                                "color": "blue",
-                                                                "description": "Workflow to manage article."
-                                                            }
-                                                        ]
-                                                    }
-                                                },
-                                                "required": [
-                                                    "name"
-                                                ],
-                                                "additionalProperties": false
-                                            },
-                                            "minItems": 1
                                         },
                                         "metadata": {
                                             "$ref": "#/$defs/types/object_null",
@@ -10994,56 +11172,107 @@
                                         "^place$": {
                                             "anyOf": [
                                                 {
-                                                    "$ref": "#/$defs/types/object_null",
-                                                    "properties": {
-                                                        "name": {
-                                                            "$ref": "#/$defs/types/scalar"
-                                                        },
-                                                        "metadata": {
+                                                    "anyOf": [
+                                                        {
                                                             "$ref": "#/$defs/types/object_null",
-                                                            "additionalProperties": {
-                                                                "$ref": "#/$defs/types/variable"
-                                                            },
-                                                            "examples": [
-                                                                {
-                                                                    "color": "blue",
-                                                                    "description": "Workflow to manage article."
+                                                            "properties": {
+                                                                "name": {
+                                                                    "$ref": "#/$defs/types/scalar"
+                                                                },
+                                                                "metadata": {
+                                                                    "$ref": "#/$defs/types/object_null",
+                                                                    "additionalProperties": {
+                                                                        "$ref": "#/$defs/types/variable"
+                                                                    },
+                                                                    "examples": [
+                                                                        {
+                                                                            "color": "blue",
+                                                                            "description": "Workflow to manage article."
+                                                                        }
+                                                                    ]
                                                                 }
+                                                            },
+                                                            "required": [
+                                                                "name"
+                                                            ],
+                                                            "additionalProperties": false
+                                                        },
+                                                        {
+                                                            "type": [
+                                                                "string"
                                                             ]
                                                         }
-                                                    },
-                                                    "required": [
-                                                        "name"
-                                                    ],
-                                                    "additionalProperties": false
+                                                    ]
                                                 },
                                                 {
                                                     "anyOf": [
                                                         {
                                                             "$ref": "#/$defs/types/array_null",
                                                             "items": {
-                                                                "$ref": "#/$defs/types/object_null",
-                                                                "properties": {
-                                                                    "name": {
-                                                                        "$ref": "#/$defs/types/scalar"
-                                                                    },
-                                                                    "metadata": {
+                                                                "anyOf": [
+                                                                    {
                                                                         "$ref": "#/$defs/types/object_null",
-                                                                        "additionalProperties": {
-                                                                            "$ref": "#/$defs/types/variable"
-                                                                        },
-                                                                        "examples": [
-                                                                            {
-                                                                                "color": "blue",
-                                                                                "description": "Workflow to manage article."
+                                                                        "properties": {
+                                                                            "name": {
+                                                                                "$ref": "#/$defs/types/scalar"
+                                                                            },
+                                                                            "metadata": {
+                                                                                "$ref": "#/$defs/types/object_null",
+                                                                                "additionalProperties": {
+                                                                                    "$ref": "#/$defs/types/variable"
+                                                                                },
+                                                                                "examples": [
+                                                                                    {
+                                                                                        "color": "blue",
+                                                                                        "description": "Workflow to manage article."
+                                                                                    }
+                                                                                ]
                                                                             }
+                                                                        },
+                                                                        "required": [
+                                                                            "name"
+                                                                        ],
+                                                                        "additionalProperties": false
+                                                                    },
+                                                                    {
+                                                                        "type": [
+                                                                            "string"
                                                                         ]
                                                                     }
-                                                                },
-                                                                "required": [
-                                                                    "name"
-                                                                ],
-                                                                "additionalProperties": false
+                                                                ]
+                                                            }
+                                                        },
+                                                        {
+                                                            "$ref": "#/$defs/types/object_null",
+                                                            "additionalProperties": {
+                                                                "anyOf": [
+                                                                    {
+                                                                        "$ref": "#/$defs/types/object_null",
+                                                                        "properties": {
+                                                                            "name": {
+                                                                                "$ref": "#/$defs/types/scalar"
+                                                                            },
+                                                                            "metadata": {
+                                                                                "$ref": "#/$defs/types/object_null",
+                                                                                "additionalProperties": {
+                                                                                    "$ref": "#/$defs/types/variable"
+                                                                                },
+                                                                                "examples": [
+                                                                                    {
+                                                                                        "color": "blue",
+                                                                                        "description": "Workflow to manage article."
+                                                                                    }
+                                                                                ]
+                                                                            }
+                                                                        },
+                                                                        "additionalProperties": false
+                                                                    },
+                                                                    {
+                                                                        "type": [
+                                                                            "string"
+                                                                        ]
+                                                                    }
+                                                                ]
                                                             }
                                                         },
                                                         {
@@ -11075,21 +11304,30 @@
                                                                 {
                                                                     "$ref": "#/$defs/types/array_null",
                                                                     "items": {
-                                                                        "$ref": "#/$defs/types/object_null",
-                                                                        "properties": {
-                                                                            "place": {
-                                                                                "$ref": "#/$defs/types/string_null"
+                                                                        "anyOf": [
+                                                                            {
+                                                                                "$ref": "#/$defs/types/object_null",
+                                                                                "properties": {
+                                                                                    "place": {
+                                                                                        "$ref": "#/$defs/types/string_null"
+                                                                                    },
+                                                                                    "weight": {
+                                                                                        "$ref": "#/$defs/types/integer",
+                                                                                        "minimum": 1,
+                                                                                        "default": 1
+                                                                                    }
+                                                                                },
+                                                                                "required": [
+                                                                                    "place"
+                                                                                ],
+                                                                                "additionalProperties": false
                                                                             },
-                                                                            "weight": {
-                                                                                "$ref": "#/$defs/types/integer",
-                                                                                "minimum": 1,
-                                                                                "default": 1
+                                                                            {
+                                                                                "type": [
+                                                                                    "string"
+                                                                                ]
                                                                             }
-                                                                        },
-                                                                        "required": [
-                                                                            "place"
-                                                                        ],
-                                                                        "additionalProperties": false
+                                                                        ]
                                                                     },
                                                                     "minItems": 1
                                                                 },
@@ -11105,21 +11343,30 @@
                                                                 {
                                                                     "$ref": "#/$defs/types/array_null",
                                                                     "items": {
-                                                                        "$ref": "#/$defs/types/object_null",
-                                                                        "properties": {
-                                                                            "place": {
-                                                                                "$ref": "#/$defs/types/string_null"
+                                                                        "anyOf": [
+                                                                            {
+                                                                                "$ref": "#/$defs/types/object_null",
+                                                                                "properties": {
+                                                                                    "place": {
+                                                                                        "$ref": "#/$defs/types/string_null"
+                                                                                    },
+                                                                                    "weight": {
+                                                                                        "$ref": "#/$defs/types/integer",
+                                                                                        "minimum": 1,
+                                                                                        "default": 1
+                                                                                    }
+                                                                                },
+                                                                                "required": [
+                                                                                    "place"
+                                                                                ],
+                                                                                "additionalProperties": false
                                                                             },
-                                                                            "weight": {
-                                                                                "$ref": "#/$defs/types/integer",
-                                                                                "minimum": 1,
-                                                                                "default": 1
+                                                                            {
+                                                                                "type": [
+                                                                                    "string"
+                                                                                ]
                                                                             }
-                                                                        },
-                                                                        "required": [
-                                                                            "place"
-                                                                        ],
-                                                                        "additionalProperties": false
+                                                                        ]
                                                                     },
                                                                     "minItems": 1
                                                                 },
@@ -11153,6 +11400,988 @@
                                                     "additionalProperties": false
                                                 },
                                                 {
+                                                    "anyOf": [
+                                                        {
+                                                            "$ref": "#/$defs/types/array_null",
+                                                            "items": {
+                                                                "$ref": "#/$defs/types/object_null",
+                                                                "properties": {
+                                                                    "name": {
+                                                                        "$ref": "#/$defs/types/string_null"
+                                                                    },
+                                                                    "guard": {
+                                                                        "$ref": "#/$defs/types/string_null",
+                                                                        "description": "An expression to block the transition.",
+                                                                        "examples": [
+                                                                            "is_fully_authenticated() and is_granted('ROLE_JOURNALIST') and subject.getTitle() == 'My first article'"
+                                                                        ]
+                                                                    },
+                                                                    "from": {
+                                                                        "anyOf": [
+                                                                            {
+                                                                                "$ref": "#/$defs/types/array_null",
+                                                                                "items": {
+                                                                                    "anyOf": [
+                                                                                        {
+                                                                                            "$ref": "#/$defs/types/object_null",
+                                                                                            "properties": {
+                                                                                                "place": {
+                                                                                                    "$ref": "#/$defs/types/string_null"
+                                                                                                },
+                                                                                                "weight": {
+                                                                                                    "$ref": "#/$defs/types/integer",
+                                                                                                    "minimum": 1,
+                                                                                                    "default": 1
+                                                                                                }
+                                                                                            },
+                                                                                            "required": [
+                                                                                                "place"
+                                                                                            ],
+                                                                                            "additionalProperties": false
+                                                                                        },
+                                                                                        {
+                                                                                            "type": [
+                                                                                                "string"
+                                                                                            ]
+                                                                                        }
+                                                                                    ]
+                                                                                },
+                                                                                "minItems": 1
+                                                                            },
+                                                                            {
+                                                                                "type": [
+                                                                                    "string"
+                                                                                ]
+                                                                            }
+                                                                        ]
+                                                                    },
+                                                                    "to": {
+                                                                        "anyOf": [
+                                                                            {
+                                                                                "$ref": "#/$defs/types/array_null",
+                                                                                "items": {
+                                                                                    "anyOf": [
+                                                                                        {
+                                                                                            "$ref": "#/$defs/types/object_null",
+                                                                                            "properties": {
+                                                                                                "place": {
+                                                                                                    "$ref": "#/$defs/types/string_null"
+                                                                                                },
+                                                                                                "weight": {
+                                                                                                    "$ref": "#/$defs/types/integer",
+                                                                                                    "minimum": 1,
+                                                                                                    "default": 1
+                                                                                                }
+                                                                                            },
+                                                                                            "required": [
+                                                                                                "place"
+                                                                                            ],
+                                                                                            "additionalProperties": false
+                                                                                        },
+                                                                                        {
+                                                                                            "type": [
+                                                                                                "string"
+                                                                                            ]
+                                                                                        }
+                                                                                    ]
+                                                                                },
+                                                                                "minItems": 1
+                                                                            },
+                                                                            {
+                                                                                "type": [
+                                                                                    "string"
+                                                                                ]
+                                                                            }
+                                                                        ]
+                                                                    },
+                                                                    "weight": {
+                                                                        "$ref": "#/$defs/types/integer",
+                                                                        "default": 1
+                                                                    },
+                                                                    "metadata": {
+                                                                        "$ref": "#/$defs/types/object_null",
+                                                                        "additionalProperties": {
+                                                                            "$ref": "#/$defs/types/variable"
+                                                                        },
+                                                                        "examples": [
+                                                                            {
+                                                                                "color": "blue",
+                                                                                "description": "Workflow to manage article."
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                },
+                                                                "required": [
+                                                                    "name"
+                                                                ],
+                                                                "additionalProperties": false
+                                                            },
+                                                            "minItems": 1
+                                                        },
+                                                        {
+                                                            "$ref": "#/$defs/types/object_null",
+                                                            "additionalProperties": {
+                                                                "$ref": "#/$defs/types/object_null",
+                                                                "properties": {
+                                                                    "name": {
+                                                                        "$ref": "#/$defs/types/string_null"
+                                                                    },
+                                                                    "guard": {
+                                                                        "$ref": "#/$defs/types/string_null",
+                                                                        "description": "An expression to block the transition.",
+                                                                        "examples": [
+                                                                            "is_fully_authenticated() and is_granted('ROLE_JOURNALIST') and subject.getTitle() == 'My first article'"
+                                                                        ]
+                                                                    },
+                                                                    "from": {
+                                                                        "anyOf": [
+                                                                            {
+                                                                                "$ref": "#/$defs/types/array_null",
+                                                                                "items": {
+                                                                                    "anyOf": [
+                                                                                        {
+                                                                                            "$ref": "#/$defs/types/object_null",
+                                                                                            "properties": {
+                                                                                                "place": {
+                                                                                                    "$ref": "#/$defs/types/string_null"
+                                                                                                },
+                                                                                                "weight": {
+                                                                                                    "$ref": "#/$defs/types/integer",
+                                                                                                    "minimum": 1,
+                                                                                                    "default": 1
+                                                                                                }
+                                                                                            },
+                                                                                            "required": [
+                                                                                                "place"
+                                                                                            ],
+                                                                                            "additionalProperties": false
+                                                                                        },
+                                                                                        {
+                                                                                            "type": [
+                                                                                                "string"
+                                                                                            ]
+                                                                                        }
+                                                                                    ]
+                                                                                },
+                                                                                "minItems": 1
+                                                                            },
+                                                                            {
+                                                                                "type": [
+                                                                                    "string"
+                                                                                ]
+                                                                            }
+                                                                        ]
+                                                                    },
+                                                                    "to": {
+                                                                        "anyOf": [
+                                                                            {
+                                                                                "$ref": "#/$defs/types/array_null",
+                                                                                "items": {
+                                                                                    "anyOf": [
+                                                                                        {
+                                                                                            "$ref": "#/$defs/types/object_null",
+                                                                                            "properties": {
+                                                                                                "place": {
+                                                                                                    "$ref": "#/$defs/types/string_null"
+                                                                                                },
+                                                                                                "weight": {
+                                                                                                    "$ref": "#/$defs/types/integer",
+                                                                                                    "minimum": 1,
+                                                                                                    "default": 1
+                                                                                                }
+                                                                                            },
+                                                                                            "required": [
+                                                                                                "place"
+                                                                                            ],
+                                                                                            "additionalProperties": false
+                                                                                        },
+                                                                                        {
+                                                                                            "type": [
+                                                                                                "string"
+                                                                                            ]
+                                                                                        }
+                                                                                    ]
+                                                                                },
+                                                                                "minItems": 1
+                                                                            },
+                                                                            {
+                                                                                "type": [
+                                                                                    "string"
+                                                                                ]
+                                                                            }
+                                                                        ]
+                                                                    },
+                                                                    "weight": {
+                                                                        "$ref": "#/$defs/types/integer",
+                                                                        "default": 1
+                                                                    },
+                                                                    "metadata": {
+                                                                        "$ref": "#/$defs/types/object_null",
+                                                                        "additionalProperties": {
+                                                                            "$ref": "#/$defs/types/variable"
+                                                                        },
+                                                                        "examples": [
+                                                                            {
+                                                                                "color": "blue",
+                                                                                "description": "Workflow to manage article."
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                },
+                                                                "additionalProperties": false
+                                                            },
+                                                            "minProperties": 1
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "additionalProperties": false
+                                }
+                            }
+                        },
+                        "patternProperties": {
+                            "^workflow$": {
+                                "$ref": "#/$defs/types/variable"
+                            }
+                        },
+                        "additionalProperties": false
+                    },
+                    {
+                        "$ref": "#/$defs/types/object_null",
+                        "additionalProperties": {
+                            "$ref": "#/$defs/types/object_null",
+                            "properties": {
+                                "audit_trail": {
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/$defs/types/object_null",
+                                            "properties": {
+                                                "enabled": {
+                                                    "$ref": "#/$defs/types/boolean",
+                                                    "default": false
+                                                }
+                                            },
+                                            "additionalProperties": false
+                                        },
+                                        {
+                                            "type": [
+                                                "boolean"
+                                            ]
+                                        }
+                                    ],
+                                    "default": {
+                                        "enabled": false
+                                    }
+                                },
+                                "type": {
+                                    "anyOf": [
+                                        {
+                                            "enum": [
+                                                "workflow",
+                                                "state_machine"
+                                            ]
+                                        },
+                                        {
+                                            "$ref": "#/$defs/types/param"
+                                        }
+                                    ],
+                                    "default": "state_machine"
+                                },
+                                "marking_store": {
+                                    "$ref": "#/$defs/types/object_null",
+                                    "properties": {
+                                        "type": {
+                                            "anyOf": [
+                                                {
+                                                    "enum": [
+                                                        "method"
+                                                    ]
+                                                },
+                                                {
+                                                    "$ref": "#/$defs/types/param"
+                                                }
+                                            ]
+                                        },
+                                        "property": {
+                                            "$ref": "#/$defs/types/scalar"
+                                        },
+                                        "service": {
+                                            "$ref": "#/$defs/types/scalar"
+                                        }
+                                    },
+                                    "additionalProperties": false
+                                },
+                                "supports": {
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/$defs/types/array_null",
+                                            "items": {
+                                                "$ref": "#/$defs/types/scalar"
+                                            }
+                                        },
+                                        {
+                                            "type": [
+                                                "string"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "definition_validators": {
+                                    "$ref": "#/$defs/types/array_null",
+                                    "items": {
+                                        "$ref": "#/$defs/types/scalar"
+                                    }
+                                },
+                                "support_strategy": {
+                                    "$ref": "#/$defs/types/scalar"
+                                },
+                                "initial_marking": {
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/$defs/types/array_null",
+                                            "items": {
+                                                "$ref": "#/$defs/types/scalar"
+                                            }
+                                        },
+                                        {
+                                            "type": [
+                                                "string"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "events_to_dispatch": {
+                                    "$ref": "#/$defs/types/array_null",
+                                    "items": {
+                                        "$ref": "#/$defs/types/string_null"
+                                    },
+                                    "default": null,
+                                    "description": "Select which Transition events should be dispatched for this Workflow. Prefix an event with \"!\" to disable it (e.g. [\"!workflow.announce\"]); future events are dispatched by default in block-list mode.",
+                                    "examples": [
+                                        [
+                                            "workflow.enter",
+                                            "workflow.transition"
+                                        ]
+                                    ]
+                                },
+                                "places": {
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/$defs/types/array_null",
+                                            "items": {
+                                                "anyOf": [
+                                                    {
+                                                        "$ref": "#/$defs/types/object_null",
+                                                        "properties": {
+                                                            "name": {
+                                                                "$ref": "#/$defs/types/scalar"
+                                                            },
+                                                            "metadata": {
+                                                                "$ref": "#/$defs/types/object_null",
+                                                                "additionalProperties": {
+                                                                    "$ref": "#/$defs/types/variable"
+                                                                },
+                                                                "examples": [
+                                                                    {
+                                                                        "color": "blue",
+                                                                        "description": "Workflow to manage article."
+                                                                    }
+                                                                ]
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "name"
+                                                        ],
+                                                        "additionalProperties": false
+                                                    },
+                                                    {
+                                                        "type": [
+                                                            "string"
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "$ref": "#/$defs/types/object_null",
+                                            "additionalProperties": {
+                                                "anyOf": [
+                                                    {
+                                                        "$ref": "#/$defs/types/object_null",
+                                                        "properties": {
+                                                            "name": {
+                                                                "$ref": "#/$defs/types/scalar"
+                                                            },
+                                                            "metadata": {
+                                                                "$ref": "#/$defs/types/object_null",
+                                                                "additionalProperties": {
+                                                                    "$ref": "#/$defs/types/variable"
+                                                                },
+                                                                "examples": [
+                                                                    {
+                                                                        "color": "blue",
+                                                                        "description": "Workflow to manage article."
+                                                                    }
+                                                                ]
+                                                            }
+                                                        },
+                                                        "additionalProperties": false
+                                                    },
+                                                    {
+                                                        "type": [
+                                                            "string"
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "type": [
+                                                "string"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "transitions": {
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/$defs/types/array_null",
+                                            "items": {
+                                                "$ref": "#/$defs/types/object_null",
+                                                "properties": {
+                                                    "name": {
+                                                        "$ref": "#/$defs/types/string_null"
+                                                    },
+                                                    "guard": {
+                                                        "$ref": "#/$defs/types/string_null",
+                                                        "description": "An expression to block the transition.",
+                                                        "examples": [
+                                                            "is_fully_authenticated() and is_granted('ROLE_JOURNALIST') and subject.getTitle() == 'My first article'"
+                                                        ]
+                                                    },
+                                                    "from": {
+                                                        "anyOf": [
+                                                            {
+                                                                "$ref": "#/$defs/types/array_null",
+                                                                "items": {
+                                                                    "anyOf": [
+                                                                        {
+                                                                            "$ref": "#/$defs/types/object_null",
+                                                                            "properties": {
+                                                                                "place": {
+                                                                                    "$ref": "#/$defs/types/string_null"
+                                                                                },
+                                                                                "weight": {
+                                                                                    "$ref": "#/$defs/types/integer",
+                                                                                    "minimum": 1,
+                                                                                    "default": 1
+                                                                                }
+                                                                            },
+                                                                            "required": [
+                                                                                "place"
+                                                                            ],
+                                                                            "additionalProperties": false
+                                                                        },
+                                                                        {
+                                                                            "type": [
+                                                                                "string"
+                                                                            ]
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "minItems": 1
+                                                            },
+                                                            {
+                                                                "type": [
+                                                                    "string"
+                                                                ]
+                                                            }
+                                                        ]
+                                                    },
+                                                    "to": {
+                                                        "anyOf": [
+                                                            {
+                                                                "$ref": "#/$defs/types/array_null",
+                                                                "items": {
+                                                                    "anyOf": [
+                                                                        {
+                                                                            "$ref": "#/$defs/types/object_null",
+                                                                            "properties": {
+                                                                                "place": {
+                                                                                    "$ref": "#/$defs/types/string_null"
+                                                                                },
+                                                                                "weight": {
+                                                                                    "$ref": "#/$defs/types/integer",
+                                                                                    "minimum": 1,
+                                                                                    "default": 1
+                                                                                }
+                                                                            },
+                                                                            "required": [
+                                                                                "place"
+                                                                            ],
+                                                                            "additionalProperties": false
+                                                                        },
+                                                                        {
+                                                                            "type": [
+                                                                                "string"
+                                                                            ]
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "minItems": 1
+                                                            },
+                                                            {
+                                                                "type": [
+                                                                    "string"
+                                                                ]
+                                                            }
+                                                        ]
+                                                    },
+                                                    "weight": {
+                                                        "$ref": "#/$defs/types/integer",
+                                                        "default": 1
+                                                    },
+                                                    "metadata": {
+                                                        "$ref": "#/$defs/types/object_null",
+                                                        "additionalProperties": {
+                                                            "$ref": "#/$defs/types/variable"
+                                                        },
+                                                        "examples": [
+                                                            {
+                                                                "color": "blue",
+                                                                "description": "Workflow to manage article."
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                "required": [
+                                                    "name"
+                                                ],
+                                                "additionalProperties": false
+                                            },
+                                            "minItems": 1
+                                        },
+                                        {
+                                            "$ref": "#/$defs/types/object_null",
+                                            "additionalProperties": {
+                                                "$ref": "#/$defs/types/object_null",
+                                                "properties": {
+                                                    "name": {
+                                                        "$ref": "#/$defs/types/string_null"
+                                                    },
+                                                    "guard": {
+                                                        "$ref": "#/$defs/types/string_null",
+                                                        "description": "An expression to block the transition.",
+                                                        "examples": [
+                                                            "is_fully_authenticated() and is_granted('ROLE_JOURNALIST') and subject.getTitle() == 'My first article'"
+                                                        ]
+                                                    },
+                                                    "from": {
+                                                        "anyOf": [
+                                                            {
+                                                                "$ref": "#/$defs/types/array_null",
+                                                                "items": {
+                                                                    "anyOf": [
+                                                                        {
+                                                                            "$ref": "#/$defs/types/object_null",
+                                                                            "properties": {
+                                                                                "place": {
+                                                                                    "$ref": "#/$defs/types/string_null"
+                                                                                },
+                                                                                "weight": {
+                                                                                    "$ref": "#/$defs/types/integer",
+                                                                                    "minimum": 1,
+                                                                                    "default": 1
+                                                                                }
+                                                                            },
+                                                                            "required": [
+                                                                                "place"
+                                                                            ],
+                                                                            "additionalProperties": false
+                                                                        },
+                                                                        {
+                                                                            "type": [
+                                                                                "string"
+                                                                            ]
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "minItems": 1
+                                                            },
+                                                            {
+                                                                "type": [
+                                                                    "string"
+                                                                ]
+                                                            }
+                                                        ]
+                                                    },
+                                                    "to": {
+                                                        "anyOf": [
+                                                            {
+                                                                "$ref": "#/$defs/types/array_null",
+                                                                "items": {
+                                                                    "anyOf": [
+                                                                        {
+                                                                            "$ref": "#/$defs/types/object_null",
+                                                                            "properties": {
+                                                                                "place": {
+                                                                                    "$ref": "#/$defs/types/string_null"
+                                                                                },
+                                                                                "weight": {
+                                                                                    "$ref": "#/$defs/types/integer",
+                                                                                    "minimum": 1,
+                                                                                    "default": 1
+                                                                                }
+                                                                            },
+                                                                            "required": [
+                                                                                "place"
+                                                                            ],
+                                                                            "additionalProperties": false
+                                                                        },
+                                                                        {
+                                                                            "type": [
+                                                                                "string"
+                                                                            ]
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "minItems": 1
+                                                            },
+                                                            {
+                                                                "type": [
+                                                                    "string"
+                                                                ]
+                                                            }
+                                                        ]
+                                                    },
+                                                    "weight": {
+                                                        "$ref": "#/$defs/types/integer",
+                                                        "default": 1
+                                                    },
+                                                    "metadata": {
+                                                        "$ref": "#/$defs/types/object_null",
+                                                        "additionalProperties": {
+                                                            "$ref": "#/$defs/types/variable"
+                                                        },
+                                                        "examples": [
+                                                            {
+                                                                "color": "blue",
+                                                                "description": "Workflow to manage article."
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                "additionalProperties": false
+                                            },
+                                            "minProperties": 1
+                                        }
+                                    ]
+                                },
+                                "metadata": {
+                                    "$ref": "#/$defs/types/object_null",
+                                    "additionalProperties": {
+                                        "$ref": "#/$defs/types/variable"
+                                    },
+                                    "examples": [
+                                        {
+                                            "color": "blue",
+                                            "description": "Workflow to manage article."
+                                        }
+                                    ]
+                                }
+                            },
+                            "patternProperties": {
+                                "^support$": {
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/$defs/types/scalar"
+                                        },
+                                        {
+                                            "anyOf": [
+                                                {
+                                                    "$ref": "#/$defs/types/array_null",
+                                                    "items": {
+                                                        "$ref": "#/$defs/types/scalar"
+                                                    }
+                                                },
+                                                {
+                                                    "type": [
+                                                        "string"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "^definition_validator$": {
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/$defs/types/scalar"
+                                        },
+                                        {
+                                            "$ref": "#/$defs/types/array_null",
+                                            "items": {
+                                                "$ref": "#/$defs/types/scalar"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "^event_to_dispatch$": {
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/$defs/types/string_null"
+                                        },
+                                        {
+                                            "$ref": "#/$defs/types/array_null",
+                                            "items": {
+                                                "$ref": "#/$defs/types/string_null"
+                                            },
+                                            "default": null,
+                                            "description": "Select which Transition events should be dispatched for this Workflow. Prefix an event with \"!\" to disable it (e.g. [\"!workflow.announce\"]); future events are dispatched by default in block-list mode.",
+                                            "examples": [
+                                                [
+                                                    "workflow.enter",
+                                                    "workflow.transition"
+                                                ]
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "^place$": {
+                                    "anyOf": [
+                                        {
+                                            "anyOf": [
+                                                {
+                                                    "$ref": "#/$defs/types/object_null",
+                                                    "properties": {
+                                                        "name": {
+                                                            "$ref": "#/$defs/types/scalar"
+                                                        },
+                                                        "metadata": {
+                                                            "$ref": "#/$defs/types/object_null",
+                                                            "additionalProperties": {
+                                                                "$ref": "#/$defs/types/variable"
+                                                            },
+                                                            "examples": [
+                                                                {
+                                                                    "color": "blue",
+                                                                    "description": "Workflow to manage article."
+                                                                }
+                                                            ]
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "name"
+                                                    ],
+                                                    "additionalProperties": false
+                                                },
+                                                {
+                                                    "type": [
+                                                        "string"
+                                                    ]
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "anyOf": [
+                                                {
+                                                    "$ref": "#/$defs/types/array_null",
+                                                    "items": {
+                                                        "anyOf": [
+                                                            {
+                                                                "$ref": "#/$defs/types/object_null",
+                                                                "properties": {
+                                                                    "name": {
+                                                                        "$ref": "#/$defs/types/scalar"
+                                                                    },
+                                                                    "metadata": {
+                                                                        "$ref": "#/$defs/types/object_null",
+                                                                        "additionalProperties": {
+                                                                            "$ref": "#/$defs/types/variable"
+                                                                        },
+                                                                        "examples": [
+                                                                            {
+                                                                                "color": "blue",
+                                                                                "description": "Workflow to manage article."
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                },
+                                                                "required": [
+                                                                    "name"
+                                                                ],
+                                                                "additionalProperties": false
+                                                            },
+                                                            {
+                                                                "type": [
+                                                                    "string"
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                {
+                                                    "$ref": "#/$defs/types/object_null",
+                                                    "additionalProperties": {
+                                                        "anyOf": [
+                                                            {
+                                                                "$ref": "#/$defs/types/object_null",
+                                                                "properties": {
+                                                                    "name": {
+                                                                        "$ref": "#/$defs/types/scalar"
+                                                                    },
+                                                                    "metadata": {
+                                                                        "$ref": "#/$defs/types/object_null",
+                                                                        "additionalProperties": {
+                                                                            "$ref": "#/$defs/types/variable"
+                                                                        },
+                                                                        "examples": [
+                                                                            {
+                                                                                "color": "blue",
+                                                                                "description": "Workflow to manage article."
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                },
+                                                                "additionalProperties": false
+                                                            },
+                                                            {
+                                                                "type": [
+                                                                    "string"
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
+                                                },
+                                                {
+                                                    "type": [
+                                                        "string"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "^transition$": {
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/$defs/types/object_null",
+                                            "properties": {
+                                                "name": {
+                                                    "$ref": "#/$defs/types/string_null"
+                                                },
+                                                "guard": {
+                                                    "$ref": "#/$defs/types/string_null",
+                                                    "description": "An expression to block the transition.",
+                                                    "examples": [
+                                                        "is_fully_authenticated() and is_granted('ROLE_JOURNALIST') and subject.getTitle() == 'My first article'"
+                                                    ]
+                                                },
+                                                "from": {
+                                                    "anyOf": [
+                                                        {
+                                                            "$ref": "#/$defs/types/array_null",
+                                                            "items": {
+                                                                "anyOf": [
+                                                                    {
+                                                                        "$ref": "#/$defs/types/object_null",
+                                                                        "properties": {
+                                                                            "place": {
+                                                                                "$ref": "#/$defs/types/string_null"
+                                                                            },
+                                                                            "weight": {
+                                                                                "$ref": "#/$defs/types/integer",
+                                                                                "minimum": 1,
+                                                                                "default": 1
+                                                                            }
+                                                                        },
+                                                                        "required": [
+                                                                            "place"
+                                                                        ],
+                                                                        "additionalProperties": false
+                                                                    },
+                                                                    {
+                                                                        "type": [
+                                                                            "string"
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "minItems": 1
+                                                        },
+                                                        {
+                                                            "type": [
+                                                                "string"
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                "to": {
+                                                    "anyOf": [
+                                                        {
+                                                            "$ref": "#/$defs/types/array_null",
+                                                            "items": {
+                                                                "anyOf": [
+                                                                    {
+                                                                        "$ref": "#/$defs/types/object_null",
+                                                                        "properties": {
+                                                                            "place": {
+                                                                                "$ref": "#/$defs/types/string_null"
+                                                                            },
+                                                                            "weight": {
+                                                                                "$ref": "#/$defs/types/integer",
+                                                                                "minimum": 1,
+                                                                                "default": 1
+                                                                            }
+                                                                        },
+                                                                        "required": [
+                                                                            "place"
+                                                                        ],
+                                                                        "additionalProperties": false
+                                                                    },
+                                                                    {
+                                                                        "type": [
+                                                                            "string"
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "minItems": 1
+                                                        },
+                                                        {
+                                                            "type": [
+                                                                "string"
+                                                            ]
+                                                        }
+                                                    ]
+                                                },
+                                                "weight": {
+                                                    "$ref": "#/$defs/types/integer",
+                                                    "default": 1
+                                                },
+                                                "metadata": {
+                                                    "$ref": "#/$defs/types/object_null",
+                                                    "additionalProperties": {
+                                                        "$ref": "#/$defs/types/variable"
+                                                    },
+                                                    "examples": [
+                                                        {
+                                                            "color": "blue",
+                                                            "description": "Workflow to manage article."
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "name"
+                                            ],
+                                            "additionalProperties": false
+                                        },
+                                        {
+                                            "anyOf": [
+                                                {
                                                     "$ref": "#/$defs/types/array_null",
                                                     "items": {
                                                         "$ref": "#/$defs/types/object_null",
@@ -11172,21 +12401,30 @@
                                                                     {
                                                                         "$ref": "#/$defs/types/array_null",
                                                                         "items": {
-                                                                            "$ref": "#/$defs/types/object_null",
-                                                                            "properties": {
-                                                                                "place": {
-                                                                                    "$ref": "#/$defs/types/string_null"
+                                                                            "anyOf": [
+                                                                                {
+                                                                                    "$ref": "#/$defs/types/object_null",
+                                                                                    "properties": {
+                                                                                        "place": {
+                                                                                            "$ref": "#/$defs/types/string_null"
+                                                                                        },
+                                                                                        "weight": {
+                                                                                            "$ref": "#/$defs/types/integer",
+                                                                                            "minimum": 1,
+                                                                                            "default": 1
+                                                                                        }
+                                                                                    },
+                                                                                    "required": [
+                                                                                        "place"
+                                                                                    ],
+                                                                                    "additionalProperties": false
                                                                                 },
-                                                                                "weight": {
-                                                                                    "$ref": "#/$defs/types/integer",
-                                                                                    "minimum": 1,
-                                                                                    "default": 1
+                                                                                {
+                                                                                    "type": [
+                                                                                        "string"
+                                                                                    ]
                                                                                 }
-                                                                            },
-                                                                            "required": [
-                                                                                "place"
-                                                                            ],
-                                                                            "additionalProperties": false
+                                                                            ]
                                                                         },
                                                                         "minItems": 1
                                                                     },
@@ -11202,21 +12440,30 @@
                                                                     {
                                                                         "$ref": "#/$defs/types/array_null",
                                                                         "items": {
-                                                                            "$ref": "#/$defs/types/object_null",
-                                                                            "properties": {
-                                                                                "place": {
-                                                                                    "$ref": "#/$defs/types/string_null"
+                                                                            "anyOf": [
+                                                                                {
+                                                                                    "$ref": "#/$defs/types/object_null",
+                                                                                    "properties": {
+                                                                                        "place": {
+                                                                                            "$ref": "#/$defs/types/string_null"
+                                                                                        },
+                                                                                        "weight": {
+                                                                                            "$ref": "#/$defs/types/integer",
+                                                                                            "minimum": 1,
+                                                                                            "default": 1
+                                                                                        }
+                                                                                    },
+                                                                                    "required": [
+                                                                                        "place"
+                                                                                    ],
+                                                                                    "additionalProperties": false
                                                                                 },
-                                                                                "weight": {
-                                                                                    "$ref": "#/$defs/types/integer",
-                                                                                    "minimum": 1,
-                                                                                    "default": 1
+                                                                                {
+                                                                                    "type": [
+                                                                                        "string"
+                                                                                    ]
                                                                                 }
-                                                                            },
-                                                                            "required": [
-                                                                                "place"
-                                                                            ],
-                                                                            "additionalProperties": false
+                                                                            ]
                                                                         },
                                                                         "minItems": 1
                                                                     },
@@ -11250,20 +12497,142 @@
                                                         "additionalProperties": false
                                                     },
                                                     "minItems": 1
+                                                },
+                                                {
+                                                    "$ref": "#/$defs/types/object_null",
+                                                    "additionalProperties": {
+                                                        "$ref": "#/$defs/types/object_null",
+                                                        "properties": {
+                                                            "name": {
+                                                                "$ref": "#/$defs/types/string_null"
+                                                            },
+                                                            "guard": {
+                                                                "$ref": "#/$defs/types/string_null",
+                                                                "description": "An expression to block the transition.",
+                                                                "examples": [
+                                                                    "is_fully_authenticated() and is_granted('ROLE_JOURNALIST') and subject.getTitle() == 'My first article'"
+                                                                ]
+                                                            },
+                                                            "from": {
+                                                                "anyOf": [
+                                                                    {
+                                                                        "$ref": "#/$defs/types/array_null",
+                                                                        "items": {
+                                                                            "anyOf": [
+                                                                                {
+                                                                                    "$ref": "#/$defs/types/object_null",
+                                                                                    "properties": {
+                                                                                        "place": {
+                                                                                            "$ref": "#/$defs/types/string_null"
+                                                                                        },
+                                                                                        "weight": {
+                                                                                            "$ref": "#/$defs/types/integer",
+                                                                                            "minimum": 1,
+                                                                                            "default": 1
+                                                                                        }
+                                                                                    },
+                                                                                    "required": [
+                                                                                        "place"
+                                                                                    ],
+                                                                                    "additionalProperties": false
+                                                                                },
+                                                                                {
+                                                                                    "type": [
+                                                                                        "string"
+                                                                                    ]
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        "minItems": 1
+                                                                    },
+                                                                    {
+                                                                        "type": [
+                                                                            "string"
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "to": {
+                                                                "anyOf": [
+                                                                    {
+                                                                        "$ref": "#/$defs/types/array_null",
+                                                                        "items": {
+                                                                            "anyOf": [
+                                                                                {
+                                                                                    "$ref": "#/$defs/types/object_null",
+                                                                                    "properties": {
+                                                                                        "place": {
+                                                                                            "$ref": "#/$defs/types/string_null"
+                                                                                        },
+                                                                                        "weight": {
+                                                                                            "$ref": "#/$defs/types/integer",
+                                                                                            "minimum": 1,
+                                                                                            "default": 1
+                                                                                        }
+                                                                                    },
+                                                                                    "required": [
+                                                                                        "place"
+                                                                                    ],
+                                                                                    "additionalProperties": false
+                                                                                },
+                                                                                {
+                                                                                    "type": [
+                                                                                        "string"
+                                                                                    ]
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        "minItems": 1
+                                                                    },
+                                                                    {
+                                                                        "type": [
+                                                                            "string"
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                            },
+                                                            "weight": {
+                                                                "$ref": "#/$defs/types/integer",
+                                                                "default": 1
+                                                            },
+                                                            "metadata": {
+                                                                "$ref": "#/$defs/types/object_null",
+                                                                "additionalProperties": {
+                                                                    "$ref": "#/$defs/types/variable"
+                                                                },
+                                                                "examples": [
+                                                                    {
+                                                                        "color": "blue",
+                                                                        "description": "Workflow to manage article."
+                                                                    }
+                                                                ]
+                                                            }
+                                                        },
+                                                        "additionalProperties": false
+                                                    },
+                                                    "minProperties": 1
                                                 }
                                             ]
                                         }
-                                    },
-                                    "additionalProperties": false
+                                    ]
                                 }
+                            },
+                            "additionalProperties": false
+                        },
+                        "properties": {
+                            "enabled": {
+                                "$ref": "#/$defs/types/boolean",
+                                "default": true
                             }
                         },
-                        "patternProperties": {
-                            "^workflow$": {
-                                "$ref": "#/$defs/types/variable"
+                        "propertyNames": {
+                            "not": {
+                                "enum": [
+                                    "workflows",
+                                    "workflow"
+                                ]
                             }
-                        },
-                        "additionalProperties": false
+                        }
                     },
                     {
                         "type": [
@@ -11406,6 +12775,7 @@
                 "http_client": {
                     "$ref": "#/$defs/nodes/http_client"
                 },
+                "imports": true,
                 "json_streamer": {
                     "$ref": "#/$defs/nodes/json_streamer"
                 },
@@ -11430,6 +12800,7 @@
                 "notifier": {
                     "$ref": "#/$defs/nodes/notifier"
                 },
+                "parameters": true,
                 "property_access": {
                     "$ref": "#/$defs/nodes/property_access"
                 },
@@ -11454,6 +12825,7 @@
                 "serializer": {
                     "$ref": "#/$defs/nodes/serializer"
                 },
+                "services": true,
                 "stimulus": {
                     "$ref": "#/$defs/nodes/stimulus"
                 },
@@ -11520,6 +12892,7 @@
                 "http_client": {
                     "$ref": "#/$defs/nodes/http_client"
                 },
+                "imports": true,
                 "json_streamer": {
                     "$ref": "#/$defs/nodes/json_streamer"
                 },
@@ -11541,6 +12914,7 @@
                 "notifier": {
                     "$ref": "#/$defs/nodes/notifier"
                 },
+                "parameters": true,
                 "property_access": {
                     "$ref": "#/$defs/nodes/property_access"
                 },
@@ -11565,6 +12939,7 @@
                 "serializer": {
                     "$ref": "#/$defs/nodes/serializer"
                 },
+                "services": true,
                 "stimulus": {
                     "$ref": "#/$defs/nodes/stimulus"
                 },
