@@ -20,7 +20,6 @@
  *     package_specifier?: string, // Remote "package-name/path" specifier, defaults to the import name
  *     type?: 'js'|'css'|'json',
  *     entrypoint?: bool,
- *     esm?: bool,                 // Whether jsDelivr's ESM build is used, defaults to true
  * }>
  */
 return [
