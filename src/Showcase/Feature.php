@@ -350,6 +350,17 @@ enum Feature: string
     case SerializeStream = 'serialize-stream';
 
     #[Details(
+        'Targeted cache directives in #[Cache]',
+        "#[Cache(target: 'CDN')] sets the RFC 9213 CDN-Cache-Control header, so CDNs keep the talks longer than browsers do.",
+        code: [['src/Controller/Api/ConferenceApiController.php', "target: 'CDN'"]],
+        docs: 'http_cache/expiration',
+        symfony81: ['7ddf2ef'],
+        routes: ['api_conference_talks'],
+        header: 'CDN-Cache-Control',
+    )]
+    case TargetedCacheDirectives = 'targeted-cache-directives';
+
+    #[Details(
         'Cache-Status header',
         'The HTTP cache of the kernel tells what it did in an RFC 9211 Cache-Status header, in production.',
         code: [['config/packages/framework.yaml', 'cache_status:']],
@@ -452,6 +463,15 @@ enum Feature: string
         symfony81: ['3762427'],
     )]
     case AdminRecipients = 'admin-recipients';
+
+    #[Details(
+        'Notifications sent from the From header of the mailer',
+        'The email channel of the Notifier takes its sender from the global From header of the mailer when no envelope sender is set.',
+        code: [['config/packages/mailer.yaml', "From: 'Conferences"]],
+        docs: 'notifier',
+        symfony81: ['5e2e46a'],
+    )]
+    case NotifierFromHeader = 'notifier-from-header';
 
     #[Details(
         'Schedules configured in YAML',
