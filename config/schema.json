@@ -7600,10 +7600,14 @@
                                                                                     "properties": {
                                                                                         "id": {
                                                                                             "$ref": "#/$defs/types/scalar",
+                                                                                            "default": "cache.security.discovery",
                                                                                             "description": "Cache service id to use to cache the OIDC discovery configuration."
                                                                                         }
                                                                                     },
-                                                                                    "additionalProperties": false
+                                                                                    "additionalProperties": false,
+                                                                                    "default": {
+                                                                                        "id": "cache.security.discovery"
+                                                                                    }
                                                                                 }
                                                                             },
                                                                             "additionalProperties": false,
@@ -7655,10 +7659,14 @@
                                                                             "properties": {
                                                                                 "id": {
                                                                                     "$ref": "#/$defs/types/scalar",
+                                                                                    "default": "cache.security.discovery",
                                                                                     "description": "Cache service id to use to cache the OIDC discovery configuration."
                                                                                 }
                                                                             },
-                                                                            "additionalProperties": false
+                                                                            "additionalProperties": false,
+                                                                            "default": {
+                                                                                "id": "cache.security.discovery"
+                                                                            }
                                                                         },
                                                                         "enforce_key_usage_verification": {
                                                                             "$ref": "#/$defs/types/boolean",
