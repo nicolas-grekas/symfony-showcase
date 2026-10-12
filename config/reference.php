@@ -817,7 +817,6 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             class_metadata_factory_name?: scalar|Param|null, // Default: "Doctrine\\ORM\\Mapping\\ClassMetadataFactory"
  *             default_repository_class?: scalar|Param|null, // Default: "Doctrine\\ORM\\EntityRepository"
  *             auto_mapping?: scalar|Param|null, // Default: false
- *             auto_discover_entities?: bool|Param|null, // Registers all entity classes discovered by the container scan, removing the need for explicit "mappings". When not set, enabled if neither "mappings" nor "auto_mapping" is configured and Symfony 8.2 and doctrine/orm 3.6 are available. // Default: null
  *             naming_strategy?: scalar|Param|null, // Default: "doctrine.orm.naming_strategy.default"
  *             quote_strategy?: scalar|Param|null, // Default: "doctrine.orm.quote_strategy.default"
  *             typed_field_mapper?: scalar|Param|null, // Default: "doctrine.orm.typed_field_mapper.default"

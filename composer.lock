@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a897391283a9ee87e94b0314e26033bb",
+    "content-hash": "3b7a9fdf9c6fde8e030e9f3875b43627",
     "packages": [
         {
             "name": "brick/math",
@@ -386,15 +386,21 @@
         {
             "name": "doctrine/doctrine-bundle",
             "version": "3.4.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/doctrine/DoctrineBundle.git",
+                "reference": "5883b0a12ddd0c143878c4342f4cef5eba9443b2"
+            },
             "dist": {
-                "type": "path",
-                "url": "../doctrine-worktrees/showcase",
-                "reference": "2df3953484a51cc657e2a5044565d6e8aa1273b2"
+                "type": "zip",
+                "url": "https://api.github.com/repos/doctrine/DoctrineBundle/zipball/5883b0a12ddd0c143878c4342f4cef5eba9443b2",
+                "reference": "5883b0a12ddd0c143878c4342f4cef5eba9443b2",
+                "shasum": ""
             },
             "require": {
                 "doctrine/dbal": "^4.0",
                 "doctrine/deprecations": "^1.0",
-                "doctrine/persistence": "^4.2",
+                "doctrine/persistence": "^4",
                 "doctrine/sql-formatter": "^1.0.1",
                 "ext-mbstring": "*",
                 "php": "^8.4",
@@ -412,7 +418,7 @@
             },
             "require-dev": {
                 "doctrine/coding-standard": "^14",
-                "doctrine/orm": "^3.4.4",
+                "doctrine/orm": "^3.7.5",
                 "phpstan/phpstan": "^2.1.13",
                 "phpstan/phpstan-phpunit": "2.0.3",
                 "phpstan/phpstan-strict-rules": "^2",
@@ -447,18 +453,7 @@
                     "Doctrine\\Bundle\\DoctrineBundle\\": "src"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Doctrine\\Bundle\\DoctrineBundle\\Tests\\": "tests",
-                    "Fixtures\\": "tests/DependencyInjection/Fixtures"
-                }
-            },
-            "scripts": {
-                "auto-scripts": {
-                    "cache:clear": "symfony-cmd",
-                    "assets:install %PUBLIC_DIR%": "symfony-cmd"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -483,14 +478,30 @@
             "description": "Symfony DoctrineBundle",
             "homepage": "https://www.doctrine-project.org",
             "keywords": [
-                "DBAL",
-                "Database",
-                "ORM",
-                "Persistence"
+                "database",
+                "dbal",
+                "orm",
+                "persistence"
             ],
-            "transport-options": {
-                "relative": true
-            }
+            "support": {
+                "issues": "https://github.com/doctrine/DoctrineBundle/issues",
+                "source": "https://github.com/doctrine/DoctrineBundle/tree/3.4.x"
+            },
+            "funding": [
+                {
+                    "url": "https://www.doctrine-project.org/sponsorship.html",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://www.patreon.com/phpdoctrine",
+                    "type": "patreon"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/doctrine%2Fdoctrine-bundle",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2026-10-12T20:14:11+00:00"
         },
         {
             "name": "doctrine/doctrine-migrations-bundle",

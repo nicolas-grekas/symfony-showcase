@@ -4,9 +4,7 @@ This branch is the app of the `symfony-8.1` branch ported back to Symfony 7.4, t
 support version: same features, same tests, plus the tests of the code 7.4 needs. Each Symfony
 8.0 or 8.1 feature the 8.1 version uses is replaced in its own commit by what one would write
 on 7.4, so `git log symfony-8.1..` lists them, `git diff symfony-8.1` shows what 8.0 and 8.1
-save, and `git diff main` what the whole 8.x series saves. `composer.json` takes DoctrineBundle
-from a local checkout of its 3.4 branch with its open pull requests
-(`repositories.doctrine-bundle`); remove that entry to use the published 3.4.x-dev.
+save, and `git diff main` what the whole 8.x series saves.
 
 One behavior differs from 8.1: the Doctrine and AMQP transports of 7.4 delete a message they
 cannot decode, where 8.1 retries it and then sends it to the failure transport. Such a message
