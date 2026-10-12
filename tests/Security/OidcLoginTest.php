@@ -39,6 +39,9 @@ final class OidcLoginTest extends WebTestCase
     /** @var list<string> */
     private array $idTokens = [];
 
+    /** @var array<string, mixed> The claims the UserInfo endpoint returns */
+    private array $userInfo = self::SPEAKER;
+
     private int $accessTokenLifetime = 300;
     private bool $refreshTokenRevoked = false;
 
@@ -111,6 +114,19 @@ final class OidcLoginTest extends WebTestCase
         $this->client->followRedirect();
         $this->assertSelectorExists('.flash-error');
         $this->assertSelectorExists('nav a:contains("Log in")');
+    }
+
+    public function testAnEmptyEmailIsRefused()
+    {
+        $this->userInfo['email'] = '';
+        $this->client->request('GET', '/oidc/start');
+        parse_str(parse_url($this->client->getResponse()->headers->get('Location'), \PHP_URL_QUERY), $this->authorizationRequest);
+        $this->client->request('GET', '/oidc/callback', ['code' => 'the-code', 'state' => $this->authorizationRequest['state']]);
+
+        $this->assertResponseRedirects('/login');
+        $this->client->followRedirect();
+        $this->assertSelectorExists('.flash-error');
+        $this->assertNull(static::getContainer()->get(EntityManagerInterface::class)->getRepository(User::class)->findOneBy(['email' => '']));
     }
 
     public function testLoggingOutEndsTheSessionAtTheIdentityProvider()
@@ -196,7 +212,7 @@ final class OidcLoginTest extends WebTestCase
             ]),
             $endpoint.'certs' => new JsonMockResponse(['keys' => [self::key()->toPublic()->all()]]),
             $endpoint.'token' => $this->answerTokenRequest($options),
-            $endpoint.'userinfo' => new JsonMockResponse(self::SPEAKER),
+            $endpoint.'userinfo' => new JsonMockResponse($this->userInfo),
             default => new MockResponse('', ['http_code' => 404]),
         };
     }

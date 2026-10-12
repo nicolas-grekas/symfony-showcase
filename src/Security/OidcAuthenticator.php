@@ -95,7 +95,7 @@ final class OidcAuthenticator extends AbstractAuthenticator implements Authentic
         }
 
         // OpenID Connect Core 1.0, Section 5.3.2
-        if (($claims['sub'] ?? null) !== $idToken['sub'] || !\is_string($claims['email'] ?? null)) {
+        if (($claims['sub'] ?? null) !== $idToken['sub'] || !\is_string($claims['email'] ?? null) || '' === $claims['email']) {
             throw new AuthenticationException('The UserInfo endpoint does not describe the user of the ID token.');
         }
 
