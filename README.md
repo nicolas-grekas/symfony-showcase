@@ -2,8 +2,9 @@
 
 A conference app (call for papers, reviews, tickets, back office and API) written to
 exercise the features of Symfony 8.2 the way an application would use them. The
-`symfony-8.1` branch is the same app on Symfony 8.1, and [docs/8.2-vs-8.1.md](docs/8.2-vs-8.1.md)
-shows what 8.2 saves, feature by feature. What building
+`symfony-8.1` and `symfony-7.4` branches are the same app on Symfony 8.1 and 7.4, and
+[docs/8.2-vs-8.1.md](docs/8.2-vs-8.1.md) shows what 8.2 saves, feature by feature, and what 8.0
+and 8.1 saved before it. What building
 it found, bugs and rough edges of 8.2 included, is listed in [LEDGER.md](LEDGER.md) with
 the pull requests that fix them. The Symfony ones are all merged in 8.2.x-dev.
 `composer.json` takes DoctrineBundle from a local checkout of its 3.4 branch with its open
@@ -30,7 +31,7 @@ Mailpit shows the emails at the URL `symfony open:local:webmail` opens.
 
 In the dev environment, the "Symfony 8.2" panel of the web profiler lists the 8.2 features each
 request uses, with links to their code, to their documentation and to the commits of the
-`symfony-8.1` branch that do without them.
+`symfony-8.1` and `symfony-7.4` branches that do without them.
 
 | Who | Logs in with | Can |
 |---|---|---|
