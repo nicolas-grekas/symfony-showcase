@@ -5,6 +5,7 @@ namespace App\Tests\Api;
 use App\Entity\Material\Slides;
 use App\Entity\Material\Video;
 use App\Entity\Proposal;
+use App\Entity\User;
 use App\Enum\ProposalStatus;
 use App\Message\ProposalSubmitted;
 use App\Tests\Security\FakeIdentityProvider;
@@ -13,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\Security\Http\Authenticator\AccessTokenAuthenticator;
 
 final class ProposalApiTest extends WebTestCase
 {
@@ -54,7 +56,8 @@ final class ProposalApiTest extends WebTestCase
         $payload = self::payload();
         $payload['speaker']['bio'] = '';
         $payload['materials'][0]['url'] = 'not a url';
-        $this->submit(FakeIdentityProvider::issueAccessToken('alice@example.com', 'openid proposals:write'), $payload);
+        $this->client->loginUser($this->findUser('alice@example.com'), 'api', [AccessTokenAuthenticator::SCOPE_ATTRIBUTE => ['proposals:write']]);
+        $this->submit(null, $payload);
 
         $this->assertResponseStatusCodeSame(422);
         $violations = json_decode($this->client->getResponse()->getContent(), true)['violations'];
@@ -78,7 +81,8 @@ final class ProposalApiTest extends WebTestCase
 
     public function testTheProposalsScopeIsRequired()
     {
-        $this->submit(FakeIdentityProvider::issueAccessToken('alice@example.com'), self::payload());
+        $this->client->loginUser($this->findUser('alice@example.com'), 'api');
+        $this->submit(null, self::payload());
 
         $this->assertResponseStatusCodeSame(403);
         $this->assertStringContainsString('error="insufficient_scope"', $this->client->getResponse()->headers->get('WWW-Authenticate'));
@@ -100,6 +104,11 @@ final class ProposalApiTest extends WebTestCase
             'CONTENT_TYPE' => 'application/vnd.showcase.proposal+json',
             'HTTP_AUTHORIZATION' => $token ? 'Bearer '.$token : null,
         ]), content: json_encode($payload));
+    }
+
+    private function findUser(string $email): User
+    {
+        return static::getContainer()->get(EntityManagerInterface::class)->getRepository(User::class)->findOneBy(['email' => $email]);
     }
 
     private static function payload(): array
