@@ -145,8 +145,8 @@ enum Feature: string
 
     #[Details(
         'Logging out with a POST request',
-        'logout_form() gives what the form that logs the user out needs, CSRF token included.',
-        code: [['templates/base.html.twig', 'logout_form(']],
+        'logout_button() renders the form that logs the user out with a POST request, CSRF token included.',
+        code: [['templates/base.html.twig', 'logout_button(']],
         docs: 'reference/twig_reference',
         symfony81: ['b53b5ec'],
         loggedIn: true,
@@ -155,8 +155,8 @@ enum Feature: string
 
     #[Details(
         'Impersonation with POST requests',
-        'impersonation_form() and impersonation_exit_form() switch users with POST requests protected by a CSRF token.',
-        code: [['templates/admin/users.html.twig', 'impersonation_form('], ['templates/base.html.twig', 'impersonation_exit_form('], ['config/packages/security.yaml', 'switch_user:']],
+        'impersonation_button() and impersonation_exit_button() render the forms that switch users with POST requests protected by a CSRF token.',
+        code: [['templates/admin/users.html.twig', 'impersonation_button('], ['templates/base.html.twig', 'impersonation_exit_button('], ['config/packages/security.yaml', 'switch_user:']],
         docs: 'security/impersonating_user',
         symfony81: ['13f3c5a'],
         routes: ['admin_users', 'switch_user'],
@@ -206,7 +206,7 @@ enum Feature: string
 
     #[Details(
         '#[Lock] on controllers',
-        'The purchases of tickets for the same conference wait for each other.',
+        "The purchases of tickets for the same conference wait for each other, on a lock keyed with the 'ticket-sale-{conference}' placeholder.",
         code: [['src/Controller/TicketController.php', '#[Lock(']],
         symfony81: ['061be3b'],
         routes: ['ticket_buy'],
@@ -331,14 +331,23 @@ enum Feature: string
     case ApiCatalog = 'api-catalog';
 
     #[Details(
-        'CDN-Cache-Control',
-        "Response::cacheControl('CDN') sets the cache directives of the CDN apart from the ones of browsers.",
-        code: [['src/Controller/Api/ConferenceApiController.php', "cacheControl('CDN')"]],
-        docs: 'http_cache/expiration',
-        symfony81: ['7ddf2ef'],
-        header: 'CDN-Cache-Control',
+        'Results of controllers mapped by #[Serialize]',
+        'The map option maps the returned entities to their API resource with the ObjectMapper, item by item for lists.',
+        code: [['src/Controller/Api/ConferenceApiController.php', 'map: ConferenceResource::class'], ['src/Controller/Api/ProposalApiController.php', 'map: TalkResource::class']],
+        docs: 'controller',
+        routes: ['api_conferences', 'api_conference_talks', 'api_proposal'],
     )]
-    case CdnCacheControl = 'cdn-cache-control';
+    case SerializeMap = 'serialize-map';
+
+    #[Details(
+        'Results of controllers streamed by #[Serialize]',
+        'The stream option writes the talks with JsonStreamer as they are mapped, from the list the controller returns.',
+        code: [['src/Controller/Api/ConferenceApiController.php', 'stream: true']],
+        docs: 'controller',
+        symfony81: ['384e665'],
+        routes: ['api_conference_talks'],
+    )]
+    case SerializeStream = 'serialize-stream';
 
     #[Details(
         'Cache-Status header',
@@ -492,8 +501,8 @@ enum Feature: string
 
     #[Details(
         'Testing tools',
-        'MessengerAssertionsTrait, the configure_container option of createClient() and #[UseRecord] to replay recorded HTTP exchanges.',
-        code: [['tests/Controller/CfpControllerTest.php', 'assertQueuedMessageCount'], ['tests/Api/ProposalApiTest.php', 'configure_container'], ['tests/Travel/TravelAgencyTest.php', '#[UseRecord]']],
+        'MessengerAssertionsTrait across kernel reboots, the configure_container option of createClient(), #[UseRecord] to replay recorded HTTP exchanges, sendWebhook(), loginUser() with scopes on access token firewalls, and the rate limiters and runtime caches reset between tests.',
+        code: [['tests/Controller/CfpControllerTest.php', 'assertQueuedMessageCount'], ['tests/Api/ProposalApiTest.php', 'configure_container'], ['tests/Travel/TravelAgencyTest.php', '#[UseRecord]'], ['tests/Controller/TicketControllerTest.php', 'sendWebhook('], ['tests/Api/ProposalApiTest.php', 'AccessTokenAuthenticator::SCOPE_ATTRIBUTE']],
         docs: 'testing',
         symfony81: ['961389e', '4597ad2', '180e5e3'],
     )]
