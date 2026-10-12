@@ -174,11 +174,10 @@ time from `start_time` (#66823 (merged), 7.4 bug), `ArrayAdapter` ignoring its c
 the MongoDB cache adapters wiring (#66819 (merged)), the session `MetadataBag` (symfony/symfony#66810 (merged)).
 
 Convention (user, 2026-10-12): `private ?ClockInterface $clock = null` with a `time()`/`microtime(true)` fallback, so that ClockMock
-also works. Applied to the classes new in 8.2 (symfony/symfony#66837) and to `debug:scheduler` (#66815). Kept non-null on purpose:
-`Oauth2TokenHandler` and `OidcTokenHandler` (web-token checkers need an instance), the Worker and Scheduler (they `sleep()` on the
+also works. Applied to the classes new in 8.2 (symfony/symfony#66837) and to `debug:scheduler` (#66815). Kept non-null on purpose: the Worker and Scheduler (they `sleep()` on the
 clock), value objects built by users (stamps, Notifier options, triggers), released `public readonly` clocks (`Acknowledger`).
-Side findings: `Oauth2TokenHandler` and `OidcTokenGenerator` default to `new Clock()` and fail without symfony/clock when used
-standalone; `BlueskyTransport` writes `createdAt` in the clock's timezone with a `Z` suffix (symfony/symfony#66838, 7.4).
+Side findings: `OidcTokenHandler`, `OidcTokenGenerator` and `Oauth2TokenHandler` default to `new Clock()` and fail without symfony/clock when used
+standalone (symfony/symfony#66841 6.4, #66840 7.4, and a commit on #66837); `BlueskyTransport` writes `createdAt` in the clock's timezone with a `Z` suffix (symfony/symfony#66838, 7.4).
 
 Left for later:
 
