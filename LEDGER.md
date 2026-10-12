@@ -178,7 +178,7 @@ also works. Applied to the classes new in 8.2 (symfony/symfony#66837) and to `de
 `Oauth2TokenHandler` and `OidcTokenHandler` (web-token checkers need an instance), the Worker and Scheduler (they `sleep()` on the
 clock), value objects built by users (stamps, Notifier options, triggers), released `public readonly` clocks (`Acknowledger`).
 Side findings: `Oauth2TokenHandler` and `OidcTokenGenerator` default to `new Clock()` and fail without symfony/clock when used
-standalone; `BlueskyTransport` writes `createdAt` in the clock's timezone with a `Z` suffix (7.4 bug, not filed yet).
+standalone; `BlueskyTransport` writes `createdAt` in the clock's timezone with a `Z` suffix (symfony/symfony#66838, 7.4).
 
 Left for later:
 
