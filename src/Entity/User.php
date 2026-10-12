@@ -53,6 +53,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, Equatab
         return $this->password;
     }
 
+    #[\Deprecated]
+    public function eraseCredentials(): void
+    {
+        // @deprecated, to be removed when upgrading to Symfony 8
+    }
+
     /**
      * Compares the user kept in the session with the one reloaded from the database on each request: when they differ, the user is logged out.
      */
