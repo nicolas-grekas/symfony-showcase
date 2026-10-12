@@ -58,7 +58,8 @@ final class ConferenceApiController extends AbstractController
      */
     #[Route('/{slug:conference}/talks', name: 'api_conference_talks', methods: ['GET'])]
     // CDNs keep the program longer than browsers do
-    #[Serialize(headers: ['CDN-Cache-Control' => 'max-age=3600'], map: TalkResource::class, stream: true)]
+    #[Cache(maxage: 3600, target: 'CDN')]
+    #[Serialize(map: TalkResource::class, stream: true)]
     public function talks(Conference $conference, ProposalRepository $proposals): array
     {
         return $proposals->findAcceptedForConference($conference->slug);
