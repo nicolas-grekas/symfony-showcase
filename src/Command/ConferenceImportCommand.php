@@ -9,8 +9,8 @@ use Symfony\Component\Clock\DatePoint;
 use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\File\InputFile;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Filesystem\Filesystem;
 
 #[AsCommand('conference:import', description: 'Import conferences from JSON files', usages: ['conferences.json', '2027/*.json'])]
 final class ConferenceImportCommand
@@ -18,6 +18,7 @@ final class ConferenceImportCommand
     public function __construct(
         private readonly ConferenceRepository $conferences,
         private readonly EntityManagerInterface $entityManager,
+        private readonly Filesystem $filesystem,
     ) {
     }
 
@@ -27,8 +28,8 @@ final class ConferenceImportCommand
     public function __invoke(SymfonyStyle $io, #[Argument(description: 'JSON files holding a list of conferences')] array $files): int
     {
         $imported = 0;
-        foreach (array_map(InputFile::fromPath(...), $files) as $file) {
-            foreach (json_decode($file->getContents(), true, flags: \JSON_THROW_ON_ERROR) as $data) {
+        foreach (array_map($this->filesystem->readFile(...), $files) as $contents) {
+            foreach (json_decode($contents, true, flags: \JSON_THROW_ON_ERROR) as $data) {
                 if ($this->conferences->findOneBy(['slug' => $data['slug']])) {
                     $io->note(\sprintf('Skipping "%s", which exists already.', $data['slug']));
 
