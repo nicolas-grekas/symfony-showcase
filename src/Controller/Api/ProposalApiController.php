@@ -55,9 +55,9 @@ final class ProposalApiController extends AbstractController
 
     #[Route('/api/proposals/{id}', name: 'api_proposal', requirements: ['id' => Requirement::UUID_V7], methods: ['GET'])]
     #[IsGranted(ProposalVoter::VIEW, 'proposal', statusCode: 404)]
-    #[Serialize]
-    public function show(Proposal $proposal): TalkResource
+    #[Serialize(map: TalkResource::class)]
+    public function show(Proposal $proposal): Proposal
     {
-        return $this->objectMapper->map($proposal, TalkResource::class);
+        return $proposal;
     }
 }

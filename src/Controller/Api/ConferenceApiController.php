@@ -11,13 +11,10 @@ use App\Repository\ProposalRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Clock\ClockAwareTrait;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\HttpKernel\Attribute\Serialize;
-use Symfony\Component\JsonStreamer\StreamWriterInterface;
 use Symfony\Component\ObjectMapper\ObjectMapperInterface;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\TypeInfo\Type;
 use Symfony\Component\WebLink\Link;
 
 #[Route('/api/conferences', format: 'json')]
@@ -32,16 +29,16 @@ final class ConferenceApiController extends AbstractController
     }
 
     /**
-     * @return list<ConferenceResource>
+     * @return list<Conference>
      */
     #[Route('', name: 'api_conferences', methods: ['GET'])]
-    #[Serialize(context: ['groups' => ['Default']])]
+    #[Serialize(context: ['groups' => ['Default']], map: ConferenceResource::class)]
     public function list(Request $request, ConferenceRepository $conferences): array
     {
         // sent as an RFC 9652 Link-Template header, since the link is a URI template
         $this->addLink($request, new Link('item', '/api/conferences/{slug}'));
 
-        return array_map(fn (Conference $conference) => $this->objectMapper->map($conference, ConferenceResource::class), $conferences->findUpcoming($this->now()));
+        return $conferences->findUpcoming($this->now());
     }
 
     #[Route('/{slug:conference}', name: 'api_conference', methods: ['GET'])]
@@ -55,21 +52,15 @@ final class ConferenceApiController extends AbstractController
     }
 
     /**
-     * Streams the talks as they are read from the database, with code generated for TalkResource at cache warmup.
+     * Streams the talks, mapped one by one, with code generated for TalkResource at cache warmup.
+     *
+     * @return list<Proposal>
      */
     #[Route('/{slug:conference}/talks', name: 'api_conference_talks', methods: ['GET'])]
-    public function talks(Conference $conference, ProposalRepository $proposals, StreamWriterInterface $streamWriter): StreamedResponse
+    // CDNs keep the program longer than browsers do
+    #[Serialize(headers: ['CDN-Cache-Control' => 'max-age=3600'], map: TalkResource::class, stream: true)]
+    public function talks(Conference $conference, ProposalRepository $proposals): array
     {
-        $talks = (function () use ($conference, $proposals) {
-            foreach ($proposals->findAcceptedForConference($conference->slug) as $proposal) {
-                yield $this->objectMapper->map($proposal, TalkResource::class);
-            }
-        })();
-
-        $response = new StreamedResponse($streamWriter->write($talks, Type::iterable(Type::object(TalkResource::class), Type::int())), headers: ['Content-Type' => 'application/json']);
-        // CDNs keep the program longer than browsers do
-        $response->cacheControl('CDN')->setMaxAge(3600);
-
-        return $response;
+        return $proposals->findAcceptedForConference($conference->slug);
     }
 }
