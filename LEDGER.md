@@ -184,7 +184,7 @@ Left for later:
 | Security | persistent remember-me tokens (`PersistentRememberMeHandler`, the 60 s rotation window of `DoctrineTokenProvider`) | needs the cookies of the HTTP row first |
 | Messenger | delays and redelivery of the Doctrine and Redis transports | feature, with the Postgres NOTIFY listener |
 | Uid | `UuidFactory`, `TimeBasedUuidFactory`, `UlidFactory` (the app builds its UUIDv7 from `$orderedAt` because of this), message ids, `--time` of the Uid commands | feature; +2.7 µs per id |
-| Clock | `DatePoint` with a reference resolves a date plus a relative time (`2016-09-08 +1 hour`) against the time of day of the reference, unlike PHP; the clock-aware Validator comparisons of 8.1 use it | symfony/symfony#66831 (6.4); the same agent found that `DatePoint` also moves a time in the first occurrence of a DST fall-back hour to the second one (in progress) |
+| Clock | `DatePoint` with a reference resolves a date plus a relative time (`2016-09-08 +1 hour`) against the time of day of the reference, unlike PHP; the clock-aware Validator comparisons of 8.1 use it | symfony/symfony#66831 (6.4); the same agent found that `DatePoint` also moves a time in the first occurrence of a DST fall-back hour to the second one (symfony/symfony#66833, 6.4; zones west of UTC stay as is, PHP's parser cannot create their second occurrence) |
 | Misc | outbound auth timestamps and token caches (Azure mailer, Firebase, LightSms, Twitter, the KMS token providers), AMQP timestamp, year ranges of `BirthdayType`/`DateType`/`WeekType`, `CurrencyType` and Intl dates, the database session handlers | low value |
 
 Real time on purpose: Lock and Semaphore TTLs (the backend enforces them), the idle connection
