@@ -11,7 +11,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 use Symfony\Component\Security\Core\Authentication\Token\SwitchUserToken;
 
 /**
- * Lists the features of Symfony 8.2 a request used, with links to their code, their documentation and their 8.1 version.
+ * Lists the features of Symfony 8.2 a request used, with links to their code, their documentation and their 8.1 and 7.4 versions.
  */
 #[When('dev')]
 final class FeatureCollector extends AbstractDataCollector
@@ -93,8 +93,14 @@ final class FeatureCollector extends AbstractDataCollector
             'summary' => $details->summary,
             'code' => $code,
             'docs' => null !== $details->docs ? 'https://symfony.com/doc/8.2/'.$details->docs.'.html' : null,
-            'symfony81' => array_map(static fn (string $commit) => ['commit' => $commit, 'url' => self::REPOSITORY.'/commit/'.$commit], $details->symfony81),
+            'symfony81' => array_map(self::commit(...), $details->symfony81),
+            'symfony74' => array_map(self::commit(...), $details->symfony74),
         ];
+    }
+
+    private static function commit(string $commit): array
+    {
+        return ['commit' => $commit, 'url' => self::REPOSITORY.'/commit/'.$commit];
     }
 
     private function findLine(string $path, string $text): ?int

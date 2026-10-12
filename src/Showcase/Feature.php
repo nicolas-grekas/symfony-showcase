@@ -110,6 +110,7 @@ enum Feature: string
         code: [['config/packages/security.yaml', 'oidc_login:']],
         docs: 'security/oidc_login',
         symfony81: ['8f635e0'],
+        symfony74: ['5d614f4'],
         routes: ['_oidc_login_start_main', '_oidc_login_callback_main', '_oidc_login_backchannel_logout_main', 'app_login'],
     )]
     case OidcLogin = 'oidc-login';
@@ -316,6 +317,7 @@ enum Feature: string
         code: [['src/Controller/Api/ConferenceApiController.php', 'addLink']],
         docs: 'web_link',
         symfony81: ['c26325a'],
+        symfony74: ['b4070fe'],
         header: 'Link-Template',
     )]
     case LinkTemplate = 'link-template';
@@ -335,6 +337,7 @@ enum Feature: string
         'The map option maps the returned entities to their API resource with the ObjectMapper, item by item for lists.',
         code: [['src/Controller/Api/ConferenceApiController.php', 'map: ConferenceResource::class'], ['src/Controller/Api/ProposalApiController.php', 'map: TalkResource::class']],
         docs: 'controller',
+        symfony74: ['b4070fe'],
         routes: ['api_conferences', 'api_conference_talks', 'api_proposal'],
     )]
     case SerializeMap = 'serialize-map';
@@ -516,6 +519,7 @@ enum Feature: string
         code: [['src/Command/ConferenceCommands.php', "#[AsCommand('conference'"], ['src/Command/ConferenceCommands.php', '@param list<TicketStatus>']],
         docs: 'console',
         symfony81: ['00aad11', '322908e', '35d5540'],
+        symfony74: ['e6d6e4b', 'f2fcda6', 'b8ffa46'],
     )]
     case ConsoleSubCommands = 'console-sub-commands';
 

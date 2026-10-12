@@ -36,8 +36,8 @@
     <h2>Symfony 8.2 in this request</h2>
 
     <p>
-        What this request used of Symfony 8.2, where the app uses it, and what the same app does on Symfony 8.1.
-        <a href="{{ constant('App\\Showcase\\FeatureCollector::REPOSITORY') }}/blob/main/docs/8.2-vs-8.1.md">Compare the two versions</a>.
+        What this request used of Symfony 8.2, where the app uses it, and what the same app does on Symfony 8.1 and 7.4.
+        <a href="{{ constant('App\\Showcase\\FeatureCollector::REPOSITORY') }}/blob/main/docs/8.2-vs-8.1.md">Compare the versions</a>.
     </p>
 
     {% if collector.used is empty %}
@@ -62,6 +62,7 @@
                 <th scope="col">Feature</th>
                 <th scope="col">Code</th>
                 <th scope="col">On 8.1</th>
+                <th scope="col">On 7.4</th>
             </tr>
         </thead>
         <tbody>
@@ -85,6 +86,13 @@
                     <td class="font-normal">
                         {% for change in feature.symfony81 %}
                             <a href="{{ change.url }}">{{ change.commit }}</a>{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td class="font-normal">
+                        {% for change in feature.symfony74 %}
+                            <a href="{{ change.url }}">{{ change.commit }}</a>{% if not loop.last %}, {% endif %}
+                        {% else %}
+                            <span class="text-muted">{{ feature.symfony81 ? 'as on 8.1' }}</span>
                         {% endfor %}
                     </td>
                 </tr>
