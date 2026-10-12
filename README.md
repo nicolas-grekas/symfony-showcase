@@ -7,9 +7,6 @@ exercise the features of Symfony 8.2 the way an application would use them. The
 and 8.1 saved before it. What building
 it found, bugs and rough edges of 8.2 included, is listed in [LEDGER.md](LEDGER.md) with
 the pull requests that fix them. The Symfony ones are all merged in 8.2.x-dev.
-`composer.json` takes DoctrineBundle from a local checkout of its 3.4 branch with its open
-pull requests (`repositories.doctrine-bundle`); remove that entry to use the published
-3.4.x-dev.
 
 ## Running it
 
