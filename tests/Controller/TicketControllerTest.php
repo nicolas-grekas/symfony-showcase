@@ -12,7 +12,6 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 use Symfony\Component\Mailer\Messenger\SendEmailMessage;
 use Symfony\Component\RemoteEvent\Messenger\ConsumeRemoteEventMessage;
-use Symfony\Component\Webhook\StandardWebhooksSignature;
 
 final class TicketControllerTest extends WebTestCase
 {
@@ -23,8 +22,6 @@ final class TicketControllerTest extends WebTestCase
     protected function setUp(): void
     {
         $this->client = static::createClient();
-        // limiters keep their state in a cache pool, which outlives the tests
-        static::getContainer()->get('cache.rate_limiter')->clear();
     }
 
     public function testBuyingATicketHoldsASeatUntilThePaymentIsConfirmed()
@@ -162,17 +159,7 @@ final class TicketControllerTest extends WebTestCase
 
     private function sendPaymentWebhook(string $type, Ticket $ticket, ?string $secret = null): void
     {
-        $id = 'msg_'.bin2hex(random_bytes(8));
-        $timestamp = (string) time();
-        $body = json_encode(['type' => $type, 'data' => ['reference' => (string) $ticket->id, 'payment' => 'pay_123', 'amount' => $ticket->price]]);
-        $signature = StandardWebhooksSignature::sign($id, $timestamp, $body, $secret ?? $_SERVER['PAYMENTS_WEBHOOK_SECRET']);
-
-        $this->client->request('POST', '/webhook/payments', server: [
-            'CONTENT_TYPE' => 'application/json',
-            'HTTP_WEBHOOK_ID' => $id,
-            'HTTP_WEBHOOK_TIMESTAMP' => $timestamp,
-            'HTTP_WEBHOOK_SIGNATURE' => $signature,
-        ], content: $body);
+        $this->client->sendWebhook('payments', $type, ['data' => ['reference' => (string) $ticket->id, 'payment' => 'pay_123', 'amount' => $ticket->price]], $secret);
     }
 
     private function extractTicketLink(): string
