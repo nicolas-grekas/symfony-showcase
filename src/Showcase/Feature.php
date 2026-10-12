@@ -337,6 +337,7 @@ enum Feature: string
         'The map option maps the returned entities to their API resource with the ObjectMapper, item by item for lists.',
         code: [['src/Controller/Api/ConferenceApiController.php', 'map: ConferenceResource::class'], ['src/Controller/Api/ProposalApiController.php', 'map: TalkResource::class']],
         docs: 'controller',
+        symfony81: ['bde1a78'],
         symfony74: ['b4070fe'],
         routes: ['api_conferences', 'api_conference_talks', 'api_proposal'],
     )]
