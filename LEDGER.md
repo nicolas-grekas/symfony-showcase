@@ -129,7 +129,14 @@ clock), value objects built by users (stamps, Notifier options, triggers), relea
 Side findings: `OidcTokenHandler`, `OidcTokenGenerator` and `Oauth2TokenHandler` default to `new Clock()` and fail without symfony/clock when used
 standalone (symfony/symfony#66841 (merged) 6.4, #66840 7.4, and a commit on #66837); `BlueskyTransport` writes `createdAt` in the clock's timezone with a `Z` suffix (symfony/symfony#66838, 7.4).
 
-Left for later:
+Decision (user, 2026-10-12): what is left below is not moved to `ClockInterface`; tests move it with
+`ClockMock` of the PHPUnit bridge, which overrides `time()`, `microtime()`, `hrtime()`... in the
+namespaces it registers. Three steps make that enough: build "now" from `time()` where code still
+uses `new \DateTimeImmutable()` (rate limiters, `UuidV6`, persistent remember-me tokens), let
+`mockTime()` drive `ClockMock` so that one call moves both clocks, and document which namespaces
+an app registers.
+
+Left to `ClockMock`:
 
 | Area | What reads the time | Why it waits |
 |---|---|---|
