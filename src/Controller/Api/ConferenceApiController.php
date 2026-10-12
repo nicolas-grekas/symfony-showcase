@@ -10,9 +10,9 @@ use App\Repository\ConferenceRepository;
 use App\Repository\ProposalRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Clock\ClockAwareTrait;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Attribute\Cache;
-use Symfony\Component\HttpKernel\Attribute\Serialize;
 use Symfony\Component\JsonStreamer\JsonStreamWriter;
 use Symfony\Component\ObjectMapper\ObjectMapperInterface;
 use Symfony\Component\Routing\Attribute\Route;
@@ -29,24 +29,21 @@ final class ConferenceApiController extends AbstractController
     ) {
     }
 
-    /**
-     * @return list<ConferenceResource>
-     */
     #[Route('', name: 'api_conferences', methods: ['GET'])]
-    #[Serialize(headers: ['Link-Template' => '"/api/conferences/{slug}"; rel="item"'], context: ['groups' => ['list']])]
-    public function list(ConferenceRepository $conferences): array
+    public function list(ConferenceRepository $conferences): JsonResponse
     {
-        return array_map(fn (Conference $conference) => $this->objectMapper->map($conference, ConferenceResource::class), $conferences->findUpcoming($this->now()));
+        $resources = array_map(fn (Conference $conference) => $this->objectMapper->map($conference, ConferenceResource::class), $conferences->findUpcoming($this->now()));
+
+        return $this->json($resources, headers: ['Link-Template' => '"/api/conferences/{slug}"; rel="item"'], context: ['groups' => ['list']]);
     }
 
     #[Route('/{slug:conference}', name: 'api_conference', methods: ['GET'])]
-    #[Serialize(context: ['groups' => ['detail']])]
-    public function show(Conference $conference, ProposalRepository $proposals): ConferenceResource
+    public function show(Conference $conference, ProposalRepository $proposals): JsonResponse
     {
         $resource = $this->objectMapper->map($conference, ConferenceResource::class);
         $resource->talks = array_map(fn (Proposal $proposal) => $this->objectMapper->map($proposal, TalkResource::class), $proposals->findAcceptedForConference($conference->slug));
 
-        return $resource;
+        return $this->json($resource, context: ['groups' => ['detail']]);
     }
 
     /**

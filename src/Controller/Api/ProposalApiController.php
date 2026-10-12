@@ -13,7 +13,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Clock\ClockAwareTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
-use Symfony\Component\HttpKernel\Attribute\Serialize;
 use Symfony\Component\HttpKernel\Exception\GoneHttpException;
 use Symfony\Component\ObjectMapper\ObjectMapperInterface;
 use Symfony\Component\Routing\Attribute\Route;
@@ -55,9 +54,8 @@ final class ProposalApiController extends AbstractController
 
     #[Route('/api/proposals/{id}', name: 'api_proposal', requirements: ['id' => Requirement::UUID_V7], methods: ['GET'])]
     #[IsGranted(ProposalVoter::VIEW, 'proposal', statusCode: 404)]
-    #[Serialize]
-    public function show(Proposal $proposal): TalkResource
+    public function show(Proposal $proposal): JsonResponse
     {
-        return $this->objectMapper->map($proposal, TalkResource::class);
+        return $this->json($this->objectMapper->map($proposal, TalkResource::class));
     }
 }
