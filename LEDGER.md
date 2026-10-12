@@ -95,7 +95,7 @@ app. Nothing is filed yet; 1, 2 and 4 matter most, 5 is the cheapest.
 
 | # | Idea | Seen in | Status |
 |---|---|---|---|
-| 1 | Keep the in-memory transports across the kernel reboots of the test client and reset them between tests; store the rate limiters in an in-memory pool in the test env | `CfpControllerTest` asserts before following the redirect, `TicketControllerTest::setUp()` clears `cache.rate_limiter` (findings 25, 29) | transports in 8.2: symfony/symfony#66787 (merged) (`consumeQueuedMessages()` without a transport), symfony/symfony#66789 (messages kept across reboots); `MailerAssertionsTrait` and `NotificationAssertionsTrait` across reboots: symfony/symfony#66800 (8.2, builds on #66789); limiters reset per test: symfony/symfony#66801 (8.2) |
+| 1 | Keep the in-memory transports across the kernel reboots of the test client and reset them between tests; store the rate limiters in an in-memory pool in the test env | `CfpControllerTest` asserts before following the redirect, `TicketControllerTest::setUp()` clears `cache.rate_limiter` (findings 25, 29) | transports in 8.2: symfony/symfony#66787 (merged) (`consumeQueuedMessages()` without a transport), symfony/symfony#66789 (messages kept across reboots); `MailerAssertionsTrait` and `NotificationAssertionsTrait` across reboots: symfony/symfony#66800 (8.2, builds on #66789); limiters reset per test: symfony/symfony#66801 (8.2); all three now use the `kernel.test_state` tag added by #66789 (`keep: true` copies a service before each reset until the test ends, `method:` is called when the test ends), noted on symfony/symfony#65947 |
 | 2 | `$client->loginUser($user, 'api')` on an `access_token` firewall, sending a bearer token the firewall accepts (`OidcTokenGenerator` already exists) | `tests/Security/FakeIdentityProvider.php`: discovery, JWKS and token signing, wired with `configure_container` | symfony/symfony#66805 (merged) (8.2): the client passes its token with each request and a test-only decorator of the `access_token` authenticator reads it on stateless firewalls; scopes go through `[AccessTokenAuthenticator::SCOPE_ATTRIBUTE => [...]]` |
 | 3 | A DomCrawler helper to add a collection entry from its `data-prototype` | `CfpControllerTest` posts the materials by hand with `getPhpValues()` | idea |
 | 4 | Let a form flow validate only the object of its current step, so a plain `#[Assert\Valid]` works for both the flow and the API | `ProposalDraft` scopes each `Valid` to its step with `restrictGroups: false`, the API lists every step in `validationGroups` (finding 27) | no clean design in Form alone (2026-10-11): the validator cannot validate an object while skipping the cascade into some properties, and a flow does not know where its other steps map; options: a Validator API to skip cascades (8.3), validating the root only in the step group when the step maps its own object (loses root `Default` constraints), or keeping the scoped `Valid` and documenting it. Chosen: document the scoped `Valid` now (symfony/symfony-docs#23271), the Validator API later (idea 12) |
@@ -162,7 +162,7 @@ links, `#[IsSignatureValid]`, `sign_url`), the Messenger worker, `DelayStamp`, t
 transport, the Scheduler, the Standard Webhooks signatures, the HTTP recorder.
 
 Being fixed now (easy, or about features new in 8.2): `security:oidc:generate-token
---not-before` (symfony/symfony#66808, 7.4), the DPoP replay and JWKS cache lifetimes (symfony/symfony#66811), login links and signature
+--not-before` (symfony/symfony#66808, 7.4), the DPoP replay and JWKS cache lifetimes (symfony/symfony#66811 (merged), with the RFC 9111 current age), login links and signature
 remember-me cookies (symfony/symfony#66809), the MongoDB transport wiring and `--failed-after`/`--failed-before` (symfony/symfony#66824 (merged)), the
 Postgres NOTIFY listener in UTC (#66825, 8.1), relative `from`/`until` of the Scheduler and
 `debug:scheduler --date` (symfony/symfony#66815), the `Date` header and DKIM timestamp of Mime (symfony/symfony#66816), Mailer throttling and the
@@ -172,6 +172,13 @@ references in KeyManagement (symfony/symfony#66812), relative input of the HttpK
 `ThrottlingHttpClient` without `pause_handler` (#66822 (merged), 7.4 bug), `CachingHttpClient` reading the request
 time from `start_time` (#66823 (merged), 7.4 bug), `ArrayAdapter` ignoring its clock in `expiresAfter()` (symfony/symfony#66818 (merged), 7.4 bug),
 the MongoDB cache adapters wiring (#66819 (merged)), the session `MetadataBag` (symfony/symfony#66810 (merged)).
+
+Convention (user, 2026-10-12): `private ?ClockInterface $clock = null` with a `time()`/`microtime(true)` fallback, so that ClockMock
+also works. Applied to the classes new in 8.2 (symfony/symfony#66837) and to `debug:scheduler` (#66815). Kept non-null on purpose:
+`Oauth2TokenHandler` and `OidcTokenHandler` (web-token checkers need an instance), the Worker and Scheduler (they `sleep()` on the
+clock), value objects built by users (stamps, Notifier options, triggers), released `public readonly` clocks (`Acknowledger`).
+Side findings: `Oauth2TokenHandler` and `OidcTokenGenerator` default to `new Clock()` and fail without symfony/clock when used
+standalone; `BlueskyTransport` writes `createdAt` in the clock's timezone with a `Z` suffix (7.4 bug, not filed yet).
 
 Left for later:
 
@@ -184,7 +191,7 @@ Left for later:
 | Security | persistent remember-me tokens (`PersistentRememberMeHandler`, the 60 s rotation window of `DoctrineTokenProvider`) | needs the cookies of the HTTP row first |
 | Messenger | delays and redelivery of the Doctrine and Redis transports | feature, with the Postgres NOTIFY listener |
 | Uid | `UuidFactory`, `TimeBasedUuidFactory`, `UlidFactory` (the app builds its UUIDv7 from `$orderedAt` because of this), message ids, `--time` of the Uid commands | feature; +2.7 µs per id |
-| Clock | `DatePoint` with a reference resolves a date plus a relative time (`2016-09-08 +1 hour`) against the time of day of the reference, unlike PHP; the clock-aware Validator comparisons of 8.1 use it | symfony/symfony#66831 (6.4); the same agent found that `DatePoint` also moves a time in the first occurrence of a DST fall-back hour to the second one (symfony/symfony#66833, 6.4; zones west of UTC stay as is, PHP's parser cannot create their second occurrence) |
+| Clock | `DatePoint` with a reference resolves a date plus a relative time (`2016-09-08 +1 hour`) against the time of day of the reference, unlike PHP; the clock-aware Validator comparisons of 8.1 use it | symfony/symfony#66831 (6.4; one `date_parse()` more per string resolved against a reference, +0.8 to +1.6 µs on a ~6 µs construction; on 8.2 the native clock path is untouched); the same agent found that `DatePoint` also moves a time in the first occurrence of a DST fall-back hour to the second one (symfony/symfony#66833, 6.4; zones west of UTC stay as is, PHP's parser cannot create their second occurrence) |
 | Misc | outbound auth timestamps and token caches (Azure mailer, Firebase, LightSms, Twitter, the KMS token providers), AMQP timestamp, year ranges of `BirthdayType`/`DateType`/`WeekType`, `CurrencyType` and Intl dates, the database session handlers | low value |
 
 Real time on purpose: Lock and Semaphore TTLs (the backend enforces them), the idle connection
