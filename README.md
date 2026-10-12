@@ -70,11 +70,11 @@ with `SYMFONY_HTTP_RECORDER=record` while the server runs.
 | OIDC login, recent authentication, POST logout and impersonation | `config/packages/security.yaml`, `src/Security` |
 | Outbox, identity stamps, chained messages, dispatch on failure | `config/packages/messenger.yaml`, `src/MessageHandler` |
 | Scheduler tasks, stateful schedule | `src/Scheduler`, `config/packages/scheduler.yaml` |
-| `#[Lock]`, `#[RateLimit]`, signed and expiring links | `src/Controller/TicketController.php`, `src/Ticket` |
+| `#[Lock]`, `#[RateLimit]`, signed and expiring links | `src/Controller/TicketController.php`, `templates/_macros.html.twig` |
 | Standard Webhooks, remote event consumers | `src/RemoteEvent`, `src/Controller/FakePaymentProviderController.php` |
-| ObjectMapper, `#[Serialize]`, JsonStreamer, `Link-Template`, api-catalog | `src/Api`, `src/Controller/Api` |
+| ObjectMapper and JsonStreamer through `#[Serialize]`, `Link-Template`, api-catalog | `src/Api`, `src/Controller/Api` |
 | Access tokens with scopes, protected resource metadata | `config/packages/security.yaml`, `src/Controller/Api/ProposalApiController.php` |
 | Sub-commands, `InputFile[]`, enum list options | `src/Command/ConferenceCommands.php` |
 | Columns encrypted with KeyManagement | `src/Entity/Speaker.php`, `config/packages/key_management.yaml` |
 | HTTP cache with `Cache-Status` | `config/packages/framework.yaml` |
-| `configure_container`, recorded HTTP exchanges, `MessengerAssertionsTrait` | `tests` |
+| `configure_container`, recorded HTTP exchanges, `MessengerAssertionsTrait`, `sendWebhook()`, `loginUser()` on the API firewall | `tests` |
