@@ -50,8 +50,6 @@ final class OidcLoginTest extends WebTestCase
         $this->client = static::createClient(['configure_container' => function (ContainerInterface $container) {
             $container->set('http_client.transport', new MockHttpClient($this->answer(...)));
         }]);
-        // the discovery document and the keys of the provider are cached
-        static::getContainer()->get('cache.app')->clear();
     }
 
     public function testSpeakersLogInWithTheIdentityProvider()
