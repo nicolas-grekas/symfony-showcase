@@ -45,8 +45,9 @@ final class CfpControllerTest extends WebTestCase
 
         $client->submitForm('Finish', ['proposal_flow[review]' => true]);
         $this->assertResponseRedirects();
+        $client->followRedirect();
+        $this->assertSelectorTextContains('h1', 'Form flows in practice');
 
-        // checked before the next request, which resets the in-memory transports:
         // the event waits in the outbox, which forwards it to RabbitMQ once the transaction commits
         $this->assertQueuedMessageCount(1, 'outbox', ProposalSubmitted::class);
         static::consumeQueuedMessages('outbox');
@@ -55,9 +56,6 @@ final class CfpControllerTest extends WebTestCase
         // its handlers email the three people who review proposals, then the speaker
         static::consumeQueuedMessages('events');
         $this->assertQueuedMessageCount(4, 'async', SendEmailMessage::class);
-
-        $client->followRedirect();
-        $this->assertSelectorTextContains('h1', 'Form flows in practice');
 
         $proposal = static::getContainer()->get(EntityManagerInterface::class)->getRepository(Proposal::class)->findOneBy(['title' => 'Form flows in practice']);
         $this->assertSame(ProposalStatus::Submitted, $proposal->getStatus());
