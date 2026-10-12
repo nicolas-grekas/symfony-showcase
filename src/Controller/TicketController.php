@@ -34,7 +34,7 @@ final class TicketController extends AbstractController
     #[Route('/conferences/{slug:conference}/tickets', name: 'ticket_buy', methods: ['GET', 'POST'])]
     #[IsGranted('IS_AUTHENTICATED')]
     #[RateLimit('ticket_purchase', key: new Expression('args["user"].getUserIdentifier()'), methods: 'POST', exposeHeaders: true)]
-    #[Lock(new Expression('"ticket-sale-" ~ request.attributes.get("conference")'), blocking: true, ttl: 10, methods: 'POST')]
+    #[Lock('ticket-sale-{conference}', blocking: true, ttl: 10, methods: 'POST')]
     #[IsCsrfTokenValid('ticket-purchase', methods: 'POST')]
     public function buy(Conference $conference, Request $request, #[CurrentUser] User $user, TicketRepository $tickets, PaymentGateway $gateway, EntityManagerInterface $entityManager): Response
     {
