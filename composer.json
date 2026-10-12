@@ -125,15 +125,5 @@
         "symfony/phpunit-bridge": "8.1.*",
         "symfony/stopwatch": "8.1.*",
         "symfony/web-profiler-bundle": "8.1.*"
-    },
-    "repositories": [{
-        "name": "doctrine-bundle",
-        "type": "path",
-        "url": "../doctrine-worktrees/showcase",
-        "options": {
-            "versions": {
-                "doctrine/doctrine-bundle": "3.4.x-dev"
-            }
-        }
-    }]
+    }
 }

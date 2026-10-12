@@ -3,9 +3,7 @@
 This branch is the app of the `main` branch ported back to Symfony 8.1: same features, same
 tests, plus the tests of the code 8.1 needs and 8.2 provides. Each Symfony 8.2 feature the app
 uses is replaced in its own commit by what one would write on 8.1, so `git log main..` lists
-them and `git diff main` shows what 8.2 saves. `composer.json` takes DoctrineBundle from a
-local checkout of its 3.4 branch with its open pull requests (`repositories.doctrine-bundle`);
-remove that entry to use the published 3.4.x-dev.
+them and `git diff main` shows what 8.2 saves.
 
 ## Running it
 
