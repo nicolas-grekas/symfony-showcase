@@ -16,12 +16,4 @@ class Kernel extends BaseKernel
 
         $this->container->get(EncryptedStringType::class)->register();
     }
-
-    /**
-     * @return list<string> An array of allowed values for APP_ENV
-     */
-    private function getAllowedEnvs(): array
-    {
-        return ['prod', 'dev', 'test'];
-    }
 }
