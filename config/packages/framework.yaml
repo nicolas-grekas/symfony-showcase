@@ -12,13 +12,10 @@ framework:
 when@test:
     framework:
         test: true
-        session:
-            storage_factory_id: session.storage.factory.mock_file
 
 when@prod:
     framework:
         # the public pages and API responses are served from the cache of the kernel,
         # which tells what it did in an RFC 9211 Cache-Status header
         http_cache:
-            enabled: true
             cache_status: Symfony
