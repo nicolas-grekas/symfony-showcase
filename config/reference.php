@@ -143,7 +143,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     default_uri?: scalar|Param|null, // The default URI used to generate URLs in a non-HTTP context. // Default: null
  *     http_port?: scalar|Param|null, // Default: 80
  *     https_port?: scalar|Param|null, // Default: 443
- *     strict_requirements?: scalar|Param|null, // set to true to throw an exception when a parameter does not match the requirements set to false to disable exceptions when a parameter does not match the requirements (and return null instead) set to null to disable parameter checks against requirements 'true' is the preferred configuration in development mode, while 'false' or 'null' might be preferred in production // Default: true
+ *     strict_requirements?: scalar|Param|null, // Set to true to throw an exception when a parameter does not match the requirements. Set to false to disable exceptions when a parameter does not match the requirements (and return null instead). Set to null to disable parameter checks against requirements. Defaults to true in debug mode and to null otherwise.
  *     utf8?: bool|Param, // Default: true
  * }
  * @psalm-type CacheConfig = array{
@@ -216,7 +216,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         paths?: list<scalar|Param|null>,
  *     },
  *     not_compromised_password?: bool|array{
- *         enabled?: bool|Param, // When disabled, compromised passwords will be accepted as valid. // Default: true
+ *         enabled?: bool|Param|null, // When disabled, compromised passwords will be accepted as valid. Defaults to false when "framework.test" is enabled, to true otherwise. // Default: null
  *         endpoint?: scalar|Param|null, // API endpoint for the NotCompromisedPassword Validator. // Default: null
  *     },
  *     disable_translation?: bool|Param, // Default: false
@@ -282,7 +282,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         },
  *         options?: array<string, mixed>,
  *         failure_transport?: scalar|Param|null, // Transport name to send failed messages to (after all retries have failed). // Default: null
- *         outbox?: scalar|Param|null, // Name of the transport that stores the messages inside the current database transaction; consume that transport to forward them to this one. // Default: null
+ *         outbox?: scalar|Param|null, // Name or DSN of the transport that stores the messages inside the current database transaction; consume that transport to forward them to this one. A value that is not the name of a configured transport is a DSN, used to create the "orders.outbox" transport for an "orders" transport. // Default: null
  *         retry_strategy?: Param|string|array{
  *             service?: scalar|Param|null, // Service id to override the retry strategy entirely. // Default: null
  *             max_retries?: int|Param, // Default: 3
@@ -408,7 +408,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     server?: bool|Param, // If true, a "dev server" will return the assets from the public directory (true in "debug" mode only by default). // Default: "%kernel.debug%"
  *     public_prefix?: scalar|Param|null, // The public path where the assets will be written to (and served from when "server" is true). // Default: "/assets/"
  *     metadata_dir?: scalar|Param|null, // The directory where "asset-map:compile" writes manifest.json, importmap.json and entrypoint.*.json. These files are read by PHP only, so they do not need to be exposed to the browser. // Default: null
- *     missing_import_mode?: "strict"|"warn"|"ignore"|Param, // Behavior if an asset cannot be found when imported from JavaScript or CSS files - e.g. "import './non-existent.js'". "strict" means an exception is thrown, "warn" means a warning is logged, "ignore" means the import is left as-is. // Default: "warn"
+ *     missing_import_mode?: "strict"|"warn"|"ignore"|Param|null, // Behavior if an asset cannot be found when imported from JavaScript or CSS files - e.g. "import './non-existent.js'". "strict" means an exception is thrown, "warn" means a warning is logged, "ignore" means the import is left as-is. Defaults to "strict" in debug mode and to "warn" otherwise. // Default: null
  *     extensions?: array<string, scalar|Param|null>,
  *     importmap_path?: scalar|Param|null, // The path of the importmap.php file. // Default: "%kernel.project_dir%/importmap.php"
  *     importmap_polyfill?: scalar|Param|null, // The importmap name that will be used to load the polyfill. Set to false to disable. // Default: "es-module-shims"
@@ -472,7 +472,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     enabled?: bool|Param, // Default: true
  *     max_host_connections?: int|Param, // The maximum number of connections to a single host.
  *     recorder?: bool|array{ // Record HTTP exchanges into HAR files and replay them in tests (see RecorderHttpClient).
- *         enabled?: bool|Param, // Default: false
+ *         enabled?: bool|Param|null, // Defaults to true when "framework.test" is enabled, to false otherwise. // Default: null
  *         redactor?: scalar|Param|null, // Service id of a RedactorInterface; when set, "redact" and "redact_except" are ignored. // Default: null
  *         redact?: list<scalar|Param|null>,
  *         redact_except?: list<scalar|Param|null>,
@@ -780,7 +780,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     json_streamer?: JsonStreamerConfig,
  *     session?: bool|array{ // Session configuration
  *         enabled?: bool|Param, // Default: false
- *         storage_factory_id?: scalar|Param|null, // Default: "session.storage.factory.native"
+ *         storage_factory_id?: scalar|Param|null, // Defaults to "session.storage.factory.mock_file" when "framework.test" is true, to "session.storage.factory.native" otherwise. // Default: null
  *         handler_id?: scalar|Param|null, // Defaults to using the native session handler, or to the native *file* session handler if "save_path" is not null.
  *         name?: scalar|Param|null,
  *         cookie_lifetime?: scalar|Param|null,
@@ -1344,9 +1344,9 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         ignore_case?: bool|Param, // Default: false
  *         encode_as_base64?: bool|Param, // Default: true
  *         iterations?: scalar|Param|null, // Default: 5000
- *         cost?: int|Param, // Default: null
- *         memory_cost?: scalar|Param|null, // Default: null
- *         time_cost?: scalar|Param|null, // Default: null
+ *         cost?: int|Param, // Defaults to the lowest value bcrypt accepts when "framework.test" is enabled. // Default: null
+ *         memory_cost?: scalar|Param|null, // Defaults to the lowest value argon2 accepts when "framework.test" is enabled. // Default: null
+ *         time_cost?: scalar|Param|null, // Defaults to the lowest value argon2 accepts when "framework.test" is enabled. // Default: null
  *         id?: scalar|Param|null,
  *     }>,
  *     providers?: array<string, array{ // Default: []
@@ -1471,7 +1471,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             remember_me?: bool|Param, // Deprecated: Setting the "security.firewalls..oidc_login.remember_me.remember_me" configuration option has no effect and is deprecated. It will be removed in Symfony 9.0. // Default: true
  *             success_handler?: scalar|Param|null,
  *             failure_handler?: scalar|Param|null,
- *             check_path?: scalar|Param|null, // The firewall path where the OIDC provider redirects after authentication. Must match a redirect URI registered with the provider. A route is declared for this path by the "security.authenticator.oidc_login.route_loader" service, which the application must import (see the OIDC login documentation), as it does for the logout routes. A route name is accepted too, in which case no route is declared for it. // Default: "/oidc/callback"
+ *             check_path?: scalar|Param|null, // The firewall path where the OIDC provider redirects after authentication. Must match a redirect URI registered with the provider. A route is declared for this path by the "security.route_loader" service, which the application must import. A route name is accepted too, in which case no route is declared for it. // Default: "/oidc/callback"
  *             use_forward?: bool|Param, // Default: false
  *             login_path?: scalar|Param|null, // Default: "/login"
  *             always_use_default_target_path?: bool|Param, // Default: false
@@ -1694,7 +1694,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *                     },
  *                 },
  *             },
- *             resource_metadata?: array{ // Declaring this node serves the RFC 9728 protected resource metadata document of the firewall at "/.well-known/oauth-protected-resource" and advertises its URL in the "resource_metadata" parameter of the "WWW-Authenticate" header, which is how a client discovers where to get a token this firewall accepts. The route is declared by the "security.authenticator.access_token.route_loader" service, which the application must import as it does for the logout routes; make sure it is reachable without a token.
+ *             resource_metadata?: array{ // Declaring this node serves the RFC 9728 protected resource metadata document of the firewall at "/.well-known/oauth-protected-resource" and advertises its URL in the "resource_metadata" parameter of the "WWW-Authenticate" header, which is how a client discovers where to get a token this firewall accepts. The route is declared by the "security.route_loader" service, which the application must import. Make sure the route is reachable without a token.
  *                 resource?: scalar|Param|null, // The resource identifier of this firewall: an HTTPS URL, without a fragment (e.g. "https://api.example.com" or "https://example.com/api"). Its path component is inserted after the well-known path, as RFC 9728, Section 3.1 prescribes, so that one host can serve the metadata of several protected resources. Defaults to the origin the document is served from, which is what a firewall covering a whole application wants. // Default: null
  *                 authorization_servers?: Param|string|list<scalar|Param|null>,
  *                 jwks_uri?: scalar|Param|null, // URL of the JWK Set holding the keys this resource signs its own responses with. Unrelated to the keys the access tokens are verified against, which belong to the authorization server. // Default: null

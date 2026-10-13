@@ -394,15 +394,16 @@
                                         "enum": [
                                             "strict",
                                             "warn",
-                                            "ignore"
+                                            "ignore",
+                                            null
                                         ]
                                     },
                                     {
                                         "$ref": "#/$defs/types/param"
                                     }
                                 ],
-                                "default": "warn",
-                                "description": "Behavior if an asset cannot be found when imported from JavaScript or CSS files - e.g. \"import './non-existent.js'\". \"strict\" means an exception is thrown, \"warn\" means a warning is logged, \"ignore\" means the import is left as-is."
+                                "default": null,
+                                "description": "Behavior if an asset cannot be found when imported from JavaScript or CSS files - e.g. \"import './non-existent.js'\". \"strict\" means an exception is thrown, \"warn\" means a warning is logged, \"ignore\" means the import is left as-is. Defaults to \"strict\" in debug mode and to \"warn\" otherwise."
                             },
                             "extensions": {
                                 "$ref": "#/$defs/types/object_null",
@@ -694,7 +695,7 @@
                     "server": "%kernel.debug%",
                     "public_prefix": "/assets/",
                     "metadata_dir": null,
-                    "missing_import_mode": "warn",
+                    "missing_import_mode": null,
                     "extensions": [],
                     "importmap_path": "%kernel.project_dir%/importmap.php",
                     "importmap_polyfill": "es-module-shims",
@@ -3113,7 +3114,8 @@
                                     },
                                     "storage_factory_id": {
                                         "$ref": "#/$defs/types/scalar",
-                                        "default": "session.storage.factory.native"
+                                        "default": null,
+                                        "description": "Defaults to \"session.storage.factory.mock_file\" when \"framework.test\" is true, to \"session.storage.factory.native\" otherwise."
                                     },
                                     "handler_id": {
                                         "$ref": "#/$defs/types/scalar",
@@ -3203,7 +3205,7 @@
                         ],
                         "default": {
                             "enabled": false,
-                            "storage_factory_id": "session.storage.factory.native",
+                            "storage_factory_id": null,
                             "cookie_secure": "auto",
                             "cookie_httponly": true,
                             "cookie_samesite": "lax",
@@ -3437,8 +3439,9 @@
                                         "$ref": "#/$defs/types/object_null",
                                         "properties": {
                                             "enabled": {
-                                                "$ref": "#/$defs/types/boolean",
-                                                "default": false
+                                                "$ref": "#/$defs/types/boolean_null",
+                                                "default": null,
+                                                "description": "Defaults to true when \"framework.test\" is enabled, to false otherwise."
                                             },
                                             "redactor": {
                                                 "$ref": "#/$defs/types/scalar",
@@ -3469,7 +3472,7 @@
                                     }
                                 ],
                                 "default": {
-                                    "enabled": false,
+                                    "enabled": null,
                                     "redactor": null,
                                     "redact": [],
                                     "redact_except": []
@@ -4206,7 +4209,7 @@
                 "default": {
                     "enabled": true,
                     "recorder": {
-                        "enabled": false,
+                        "enabled": null,
                         "redactor": null,
                         "redact": [],
                         "redact_except": []
@@ -5240,7 +5243,7 @@
                                                 "outbox": {
                                                     "$ref": "#/$defs/types/scalar",
                                                     "default": null,
-                                                    "description": "Name of the transport that stores the messages inside the current database transaction; consume that transport to forward them to this one."
+                                                    "description": "Name or DSN of the transport that stores the messages inside the current database transaction; consume that transport to forward them to this one. A value that is not the name of a configured transport is a DSN, used to create the \"orders.outbox\" transport for an \"orders\" transport."
                                                 },
                                                 "retry_strategy": {
                                                     "anyOf": [
@@ -6956,8 +6959,7 @@
                             },
                             "strict_requirements": {
                                 "$ref": "#/$defs/types/scalar",
-                                "default": true,
-                                "description": "set to true to throw an exception when a parameter does not match the requirements\nset to false to disable exceptions when a parameter does not match the requirements (and return null instead)\nset to null to disable parameter checks against requirements\n'true' is the preferred configuration in development mode, while 'false' or 'null' might be preferred in production"
+                                "description": "Set to true to throw an exception when a parameter does not match the requirements.\nSet to false to disable exceptions when a parameter does not match the requirements (and return null instead).\nSet to null to disable parameter checks against requirements.\nDefaults to true in debug mode and to null otherwise."
                             },
                             "utf8": {
                                 "$ref": "#/$defs/types/boolean",
@@ -6978,7 +6980,6 @@
                     "default_uri": null,
                     "http_port": 80,
                     "https_port": 443,
-                    "strict_requirements": true,
                     "utf8": true
                 }
             },
@@ -7197,15 +7198,18 @@
                                             "$ref": "#/$defs/types/integer_null",
                                             "minimum": 4,
                                             "maximum": 31,
-                                            "default": null
+                                            "default": null,
+                                            "description": "Defaults to the lowest value bcrypt accepts when \"framework.test\" is enabled."
                                         },
                                         "memory_cost": {
                                             "$ref": "#/$defs/types/scalar",
-                                            "default": null
+                                            "default": null,
+                                            "description": "Defaults to the lowest value argon2 accepts when \"framework.test\" is enabled."
                                         },
                                         "time_cost": {
                                             "$ref": "#/$defs/types/scalar",
-                                            "default": null
+                                            "default": null,
+                                            "description": "Defaults to the lowest value argon2 accepts when \"framework.test\" is enabled."
                                         },
                                         "id": {
                                             "$ref": "#/$defs/types/scalar"
@@ -7925,7 +7929,7 @@
                                         "check_path": {
                                             "$ref": "#/$defs/types/scalar",
                                             "default": "/oidc/callback",
-                                            "description": "The firewall path where the OIDC provider redirects after authentication. Must match a redirect URI registered with the provider. A route is declared for this path by the \"security.authenticator.oidc_login.route_loader\" service, which the application must import (see the OIDC login documentation), as it does for the logout routes. A route name is accepted too, in which case no route is declared for it."
+                                            "description": "The firewall path where the OIDC provider redirects after authentication. Must match a redirect URI registered with the provider. A route is declared for this path by the \"security.route_loader\" service, which the application must import. A route name is accepted too, in which case no route is declared for it."
                                         },
                                         "use_forward": {
                                             "$ref": "#/$defs/types/boolean",
@@ -8955,7 +8959,7 @@
                                                                     "items": {
                                                                         "$ref": "#/$defs/types/scalar"
                                                                     },
-                                                                    "description": "Issuers allowed to generate the token, for validation purpose."
+                                                                    "description": "Issuers allowed to generate the token, for validation purpose. When \"discovery\" is set, defaults to the issuers that the discovery documents announce."
                                                                 },
                                                                 "algorithms": {
                                                                     "$ref": "#/$defs/types/array_null",
@@ -9053,7 +9057,7 @@
                                                                             "items": {
                                                                                 "$ref": "#/$defs/types/scalar"
                                                                             },
-                                                                            "description": "Issuers allowed to generate the token, for validation purpose."
+                                                                            "description": "Issuers allowed to generate the token, for validation purpose. When \"discovery\" is set, defaults to the issuers that the discovery documents announce."
                                                                         }
                                                                     ]
                                                                 },
@@ -9318,7 +9322,7 @@
                                                             ]
                                                         }
                                                     ],
-                                                    "description": "The issuer identifiers of the authorization servers issuing the access tokens this firewall accepts (e.g. \"https://accounts.example.com\"). This is what tells a client holding no token where to go and get one."
+                                                    "description": "The issuer identifiers of the authorization servers issuing the access tokens this firewall accepts (e.g. \"https://accounts.example.com\"). This is what tells a client holding no token where to go and get one. Defaults to the issuers of the \"oidc\" or \"oauth2\" token handler."
                                                 },
                                                 "jwks_uri": {
                                                     "$ref": "#/$defs/types/scalar",
@@ -9409,7 +9413,7 @@
                                                                     ]
                                                                 }
                                                             ],
-                                                            "description": "The issuer identifiers of the authorization servers issuing the access tokens this firewall accepts (e.g. \"https://accounts.example.com\"). This is what tells a client holding no token where to go and get one."
+                                                            "description": "The issuer identifiers of the authorization servers issuing the access tokens this firewall accepts (e.g. \"https://accounts.example.com\"). This is what tells a client holding no token where to go and get one. Defaults to the issuers of the \"oidc\" or \"oauth2\" token handler."
                                                         }
                                                     ]
                                                 },
@@ -9483,7 +9487,7 @@
                                                 }
                                             },
                                             "additionalProperties": false,
-                                            "description": "Declaring this node serves the RFC 9728 protected resource metadata document of the firewall at \"/.well-known/oauth-protected-resource\" and advertises its URL in the \"resource_metadata\" parameter of the \"WWW-Authenticate\" header, which is how a client discovers where to get a token this firewall accepts. The route is declared by the \"security.authenticator.access_token.route_loader\" service, which the application must import as it does for the logout routes; make sure it is reachable without a token."
+                                            "description": "Declaring this node serves the RFC 9728 protected resource metadata document of the firewall at \"/.well-known/oauth-protected-resource\" and advertises its URL in the \"resource_metadata\" parameter of the \"WWW-Authenticate\" header, which is how a client discovers where to get a token this firewall accepts. The route is declared by the \"security.route_loader\" service, which the application must import. Make sure the route is reachable without a token."
                                         },
                                         "dpop": {
                                             "anyOf": [
@@ -11563,9 +11567,9 @@
                                         "$ref": "#/$defs/types/object_null",
                                         "properties": {
                                             "enabled": {
-                                                "$ref": "#/$defs/types/boolean",
-                                                "default": true,
-                                                "description": "When disabled, compromised passwords will be accepted as valid."
+                                                "$ref": "#/$defs/types/boolean_null",
+                                                "default": null,
+                                                "description": "When disabled, compromised passwords will be accepted as valid. Defaults to false when \"framework.test\" is enabled, to true otherwise."
                                             },
                                             "endpoint": {
                                                 "$ref": "#/$defs/types/scalar",
@@ -11582,7 +11586,7 @@
                                     }
                                 ],
                                 "default": {
-                                    "enabled": true,
+                                    "enabled": null,
                                     "endpoint": null
                                 }
                             },
@@ -11655,7 +11659,7 @@
                         "paths": []
                     },
                     "not_compromised_password": {
-                        "enabled": true,
+                        "enabled": null,
                         "endpoint": null
                     },
                     "disable_translation": false,
