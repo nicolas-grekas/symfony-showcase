@@ -275,7 +275,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     transports?: array<string, Param|string|array{ // Default: []
  *         dsn?: scalar|Param|null,
  *         serializer?: scalar|Param|null, // Service id of a custom serializer to use. // Default: null
- *         sign?: bool|Param, // Whether to sign every message sent to this transport with its trust level, and to refuse any message received from it that is unsigned, or signed as unverified when this is not a failure transport. When false, only the messages whose handlers ask for it are signed. // Default: false
+ *         sign?: bool|Param, // Whether to sign every message sent to this transport with its trust level, and to refuse any message received from it that is unsigned, or signed as unverified when this is not a failure transport. Handlers with the "sign" option require it on the transports their messages come from. // Default: false
  *         claim_check?: array{
  *             cache_pool?: scalar|Param|null, // Service id of the dedicated cache pool used to store claims. Pools declared under "framework.cache.pools" must define a "default_lifetime".
  *             max_size?: int|Param, // Maximum encoded message size in bytes before using a claim check.
@@ -672,6 +672,8 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *         client?: scalar|Param|null, // Name of the client wrapping the data keys this store creates (must match an entry of "clients"); defaults to the default client. // Default: null
  *         key_id?: scalar|Param|null, // Master key wrapping the data keys this store creates (backend-specific: alias, ARN, key URL, ...).
  *         table?: scalar|Param|null, // Name of the table holding the wrapped data keys. // Default: "key_management_data_keys"
+ *         read_self_contained?: bool|Param, // Whether a payload carrying its own wrapped data key is still read, through the default client. On while migrating to the stored format, off afterwards: such a payload resolves no row, so nothing the store checks applies to it. // Default: false
+ *         bind_wrapping_context?: bool|Param, // Whether the backend authenticates the reference and the scope of each data key as it wraps it. Off by default: not every backend accepts authenticated data, and turning it on needs the stored keys rewrapped. // Default: false
  *         max_age?: mixed, // Seconds after which the current data key of a scope is retired in favour of a fresh one; the default of 30 days keeps what one key seals under the collision bound of the random 96-bit IV each payload carries. 0 retires the key on every call, null never retires it. // Default: 2592000
  *     },
  *     doctrine_dbal?: array{

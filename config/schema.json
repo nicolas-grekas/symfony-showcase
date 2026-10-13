@@ -4343,6 +4343,16 @@
                                         "default": "key_management_data_keys",
                                         "description": "Name of the table holding the wrapped data keys."
                                     },
+                                    "read_self_contained": {
+                                        "$ref": "#/$defs/types/boolean",
+                                        "default": false,
+                                        "description": "Whether a payload carrying its own wrapped data key is still read, through the default client. On while migrating to the stored format, off afterwards: such a payload resolves no row, so nothing the store checks applies to it."
+                                    },
+                                    "bind_wrapping_context": {
+                                        "$ref": "#/$defs/types/boolean",
+                                        "default": false,
+                                        "description": "Whether the backend authenticates the reference and the scope of each data key as it wraps it. Off by default: not every backend accepts authenticated data, and turning it on needs the stored keys rewrapped."
+                                    },
                                     "max_age": {
                                         "$ref": "#/$defs/types/variable",
                                         "default": 2592000,
@@ -5212,7 +5222,7 @@
                                                 "sign": {
                                                     "$ref": "#/$defs/types/boolean",
                                                     "default": false,
-                                                    "description": "Whether to sign every message sent to this transport with its trust level, and to refuse any message received from it that is unsigned, or signed as unverified when this is not a failure transport. When false, only the messages whose handlers ask for it are signed."
+                                                    "description": "Whether to sign every message sent to this transport with its trust level, and to refuse any message received from it that is unsigned, or signed as unverified when this is not a failure transport. Handlers with the \"sign\" option require it on the transports their messages come from."
                                                 },
                                                 "claim_check": {
                                                     "$ref": "#/$defs/types/object_null",
