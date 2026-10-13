@@ -37,7 +37,7 @@ final class ProposalApiTest extends WebTestCase
         $this->assertSame('Streaming JSON with Symfony', $talk['title']);
         $this->assertSame(['Alice Martin'], $talk['speakers']);
         $this->assertResponseHeaderSame('Location', '/api/proposals/'.$talk['id']);
-        $this->assertQueuedMessageCount(1, 'outbox', ProposalSubmitted::class);
+        $this->assertQueuedMessageCount(1, 'events.outbox', ProposalSubmitted::class);
 
         $proposal = static::getContainer()->get(EntityManagerInterface::class)->find(Proposal::class, $talk['id']);
         $this->assertSame(ProposalStatus::Submitted, $proposal->getStatus());

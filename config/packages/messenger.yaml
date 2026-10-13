@@ -7,22 +7,16 @@ messenger:
 
     transports:
         # https://symfony.com/doc/current/messenger.html#transport-configuration
-        async:
-            dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
-            retry_strategy:
-                max_retries: 3
-                multiplier: 2
-        # domain events go to RabbitMQ only once the database transaction that recorded them commits
+        async: '%env(MESSENGER_TRANSPORT_DSN)%'
+        # domain events go to RabbitMQ only once the database transaction that recorded them commits:
+        # they wait in the "events.outbox" transport created from this DSN
         events:
             dsn: '%env(RABBITMQ_DSN)%/%%2f/events'
-            outbox: outbox
+            outbox: 'doctrine://default?queue_name=outbox'
             retry_strategy:
                 max_retries: 2
                 delay: 500
-        outbox: 'doctrine://default?queue_name=outbox'
         failed: 'doctrine://default?queue_name=failed'
-
-    default_bus: messenger.bus.default
 
     buses:
         messenger.bus.default:
@@ -44,5 +38,6 @@ when@test:
     messenger:
         transports:
             async: 'in-memory://'
-            events: 'in-memory://'
-            outbox: 'in-memory://'
+            events:
+                dsn: 'in-memory://'
+                outbox: 'in-memory://'

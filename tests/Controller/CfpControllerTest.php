@@ -49,8 +49,8 @@ final class CfpControllerTest extends WebTestCase
         $this->assertSelectorTextContains('h1', 'Form flows in practice');
 
         // the event waits in the outbox, which forwards it to RabbitMQ once the transaction commits
-        $this->assertQueuedMessageCount(1, 'outbox', ProposalSubmitted::class);
-        static::consumeQueuedMessages('outbox');
+        $this->assertQueuedMessageCount(1, 'events.outbox', ProposalSubmitted::class);
+        static::consumeQueuedMessages('events.outbox');
         $this->assertQueuedMessageCount(1, 'events', ProposalSubmitted::class);
 
         // its handlers email the three people who review proposals, then the speaker

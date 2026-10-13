@@ -21,11 +21,11 @@ final class HandleProposalDecisionTest extends KernelTestCase
         $proposal = static::getContainer()->get(EntityManagerInterface::class)->getRepository(Proposal::class)->findOneBy(['title' => 'Workflows as code']);
 
         static::getContainer()->get(MessageBusInterface::class)->dispatch(new ProposalDecided($proposal->id, true));
-        static::consumeQueuedMessages('outbox');
+        static::consumeQueuedMessages('events.outbox');
         static::consumeQueuedMessages('events');
 
         // the booking is retried, then given up
-        static::consumeQueuedMessages('outbox');
+        static::consumeQueuedMessages('events.outbox');
         try {
             static::consumeQueuedMessages('events');
             $this->fail('The booking should have failed.');

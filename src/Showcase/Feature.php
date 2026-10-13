@@ -397,7 +397,7 @@ enum Feature: string
     #[Details(
         'Outbox',
         'The domain events are stored in the database transaction that records them, then sent to RabbitMQ.',
-        code: [['config/packages/messenger.yaml', 'outbox: outbox']],
+        code: [['config/packages/messenger.yaml', "outbox: 'doctrine://"]],
         docs: 'messenger',
         symfony81: ['a946384'],
         routes: ['cfp_submit', 'api_proposal_submit', 'proposal_accept', 'proposal_reject'],
