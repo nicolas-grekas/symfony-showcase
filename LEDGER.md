@@ -50,6 +50,7 @@ Still open. The findings that are fixed or settled are in the [history](#history
 | 35 | The `oidc` token handler builds the discovery URL relatively to `base_uri`: `http://kc/realms/showcase` fetches `http://kc/realms/.well-known/openid-configuration`, only a trailing slash works around it, even with `check_issuer` (`oidc_user_info` too) | doc, 7.4 | symfony/symfony#66758 (merged) (the description of `base_uri`) and symfony/symfony-docs#23255 say it must end with a slash; fixing it in code was turned down |
 | 36 | The Symfony CLI exports `DEFAULT_URI` with a trailing slash, the routing recipe writes it without one: `'%env(DEFAULT_URI)%/path'` is right with one and wrong with the other | DX, Symfony CLI | symfony-cli/symfony-cli#778 |
 | 54 | `ChainStamp` and `DispatchOnFailureStamp` have no documentation; `sign_url`, `#[AsFormType]`, `PolymorphicCollectionType`, `#[Lock]`, `#[AsWorkflow]` and the identity stamps are documented in open pull requests only | doc, 8.2 | symfony/symfony-docs#23264, #22909, #22695, #23265, #23214, #23147; none for the two stamps |
+| 57 | Resolving an env var on a `ContainerBuilder` before compilation (e.g. in a `prepend()` method) stores an empty `container.env_var_processors_locator` that hides the processors registered later: `compile(true)` then fails with "Unsupported env var prefix" for a custom processor (found while making `framework.test` resolve at compile time, symfony/symfony#66893) | bug, 6.4 | symfony/symfony#66894 |
 
 ## Ideas for 8.3
 
