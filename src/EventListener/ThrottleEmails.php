@@ -2,6 +2,7 @@
 
 namespace App\EventListener;
 
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Mailer\Event\MessageEvent;
 use Symfony\Component\Messenger\Exception\RecoverableMessageHandlingException;
@@ -14,7 +15,8 @@ use Symfony\Component\RateLimiter\RateLimiterFactoryInterface;
 final class ThrottleEmails
 {
     public function __construct(
-        private readonly RateLimiterFactoryInterface $mailerLimiter,
+        #[Target('mailer')]
+        private readonly RateLimiterFactoryInterface $limiter,
     ) {
     }
 
@@ -24,7 +26,7 @@ final class ThrottleEmails
             return;
         }
 
-        $limit = $this->mailerLimiter->create()->consume();
+        $limit = $this->limiter->create()->consume();
 
         if (!$limit->isAccepted()) {
             throw new RecoverableMessageHandlingException('Rate limit for mailer transport exceeded.', retryDelay: max(0, $limit->getRetryAfter()->getTimestamp() - time()) * 1000);
