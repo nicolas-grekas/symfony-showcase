@@ -1,15 +1,8 @@
-_security_logout:
-    resource: security.route_loader.logout
+_security:
+    resource: security.route_loader
     type: service
 
-_security_oidc_login:
-    resource: security.authenticator.oidc_login.route_loader
-    type: service
-
-_security_access_token:
-    resource: security.authenticator.access_token.route_loader
-    type: service
-
+# POST only: a GET request gets a 405 instead of reaching the logout listener
 app_logout:
     path: /logout
     methods: [POST]
