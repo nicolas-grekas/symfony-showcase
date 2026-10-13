@@ -3236,12 +3236,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/doctrine-dbal-key-management.git",
-                "reference": "3867b8c1910e0f120ae06b18a0adfb6a77040252"
+                "reference": "c50ba1ea7d040076fc223f4565372a21fc454757"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/doctrine-dbal-key-management/zipball/3867b8c1910e0f120ae06b18a0adfb6a77040252",
-                "reference": "3867b8c1910e0f120ae06b18a0adfb6a77040252",
+                "url": "https://api.github.com/repos/symfony/doctrine-dbal-key-management/zipball/c50ba1ea7d040076fc223f4565372a21fc454757",
+                "reference": "c50ba1ea7d040076fc223f4565372a21fc454757",
                 "shasum": ""
             },
             "require": {
@@ -3312,7 +3312,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-10-12T14:23:15+00:00"
+            "time": "2026-10-13T05:07:25+00:00"
         },
         {
             "name": "symfony/doctrine-messenger",
@@ -3396,12 +3396,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/doctrine-orm-key-management.git",
-                "reference": "b17c030ffa9a6a777ecccad659d8bce444cc5eeb"
+                "reference": "7a0530bed3034f100464ea0fa84412abe4d192d1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/doctrine-orm-key-management/zipball/b17c030ffa9a6a777ecccad659d8bce444cc5eeb",
-                "reference": "b17c030ffa9a6a777ecccad659d8bce444cc5eeb",
+                "url": "https://api.github.com/repos/symfony/doctrine-orm-key-management/zipball/7a0530bed3034f100464ea0fa84412abe4d192d1",
+                "reference": "7a0530bed3034f100464ea0fa84412abe4d192d1",
                 "shasum": ""
             },
             "require": {
@@ -3469,7 +3469,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-10-09T05:58:54+00:00"
+            "time": "2026-10-11T20:17:46+00:00"
         },
         {
             "name": "symfony/dotenv",
@@ -4920,12 +4920,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/key-management.git",
-                "reference": "359d33df99c10fdf693f140a7b3d37ef79424410"
+                "reference": "7f2de684553cd4838e130fc12f1d12032e475b29"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/key-management/zipball/359d33df99c10fdf693f140a7b3d37ef79424410",
-                "reference": "359d33df99c10fdf693f140a7b3d37ef79424410",
+                "url": "https://api.github.com/repos/symfony/key-management/zipball/7f2de684553cd4838e130fc12f1d12032e475b29",
+                "reference": "7f2de684553cd4838e130fc12f1d12032e475b29",
                 "shasum": ""
             },
             "require": {
@@ -5013,7 +5013,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-10-12T08:59:47+00:00"
+            "time": "2026-10-13T05:07:25+00:00"
         },
         {
             "name": "symfony/lock",

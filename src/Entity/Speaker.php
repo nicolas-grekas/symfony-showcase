@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\SpeakerRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
+use Symfony\Component\KeyManagement\Bridge\DoctrineOrm\Attribute\Encrypted;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: SpeakerRepository::class)]
@@ -23,8 +24,9 @@ class Speaker
     #[ORM\Column(type: 'text')]
     public string $bio;
 
-    /** Encrypted at rest, for the travel agency only */
-    #[ORM\Column(type: 'encrypted_string', nullable: true)]
+    /** For the travel agency only */
+    #[ORM\Column(nullable: true)]
+    #[Encrypted(key: 'speaker.contact')]
     public ?string $phone = null;
 
     public function __construct(

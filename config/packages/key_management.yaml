@@ -6,7 +6,3 @@ key_management:
     # the data keys are kept wrapped in a table: the KMS is reached once per key, and its master key can be rotated
     store:
         key_id: speakers
-    # the columns encrypted at rest, declared as Doctrine types when the kernel boots
-    doctrine_dbal:
-        types:
-            encrypted_string: { type: string, key: speaker.contact }

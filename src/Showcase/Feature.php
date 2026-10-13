@@ -507,8 +507,8 @@ enum Feature: string
 
     #[Details(
         'Columns encrypted at rest',
-        'KeyManagement encrypts the phone numbers of the speakers with a data key wrapped by a key management service.',
-        code: [['config/packages/key_management.yaml', 'key_management:'], ['src/Entity/Speaker.php', 'encrypted_string']],
+        '#[Encrypted] makes KeyManagement encrypt the phone numbers of the speakers with a data key wrapped by a key management service.',
+        code: [['src/Entity/Speaker.php', "#[Encrypted(key: 'speaker.contact')]"], ['config/packages/key_management.yaml', 'key_management:']],
         symfony81: ['6367255'],
         routes: ['cfp_submit', 'api_proposal_submit'],
     )]
