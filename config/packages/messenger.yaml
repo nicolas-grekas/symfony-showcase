@@ -27,6 +27,7 @@ framework:
                     - App\Messenger\CorrelationMiddleware
                     - App\Messenger\LoggingMiddleware
                     - doctrine_transaction
+                    - App\Messenger\InboxMiddleware
 
         routing:
             Symfony\Component\Mailer\Messenger\SendEmailMessage: async

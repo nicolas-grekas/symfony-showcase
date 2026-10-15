@@ -1,6 +1,8 @@
 doctrine:
     dbal:
         url: '%env(resolve:DATABASE_URL)%'
+        # no entity maps the table of App\Messenger\InboxMiddleware: keep it out of the generated migrations
+        schema_filter: '~^(?!messenger_inbox$)~'
 
         # IMPORTANT: You MUST configure your server version,
         # either here or in the DATABASE_URL env var (see .env file)
