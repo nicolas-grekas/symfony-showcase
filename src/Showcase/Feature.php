@@ -409,6 +409,7 @@ enum Feature: string
         'The worker records each domain event in the transaction of its handlers, and skips the handlers of an event redelivered after they committed.',
         code: [['config/packages/messenger.yaml', 'inbox: true']],
         docs: 'messenger',
+        symfony81: ['269b299'],
     )]
     case Inbox = 'inbox';
 
