@@ -405,6 +405,14 @@ enum Feature: string
     case Outbox = 'outbox';
 
     #[Details(
+        'Inbox',
+        'The worker records each domain event in the transaction of its handlers, and skips the handlers of an event redelivered after they committed.',
+        code: [['config/packages/messenger.yaml', 'inbox: true']],
+        docs: 'messenger',
+    )]
+    case Inbox = 'inbox';
+
+    #[Details(
         'Correlation of messages',
         'Every message carries correlation, message and causation ids, and a handler gets them as arguments.',
         code: [['config/packages/messenger.yaml', 'identity_stamps: true'], ['src/MessageHandler/SendSubmissionReceipt.php', 'CorrelationStamp $']],

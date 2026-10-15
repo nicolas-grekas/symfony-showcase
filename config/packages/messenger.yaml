@@ -13,6 +13,8 @@ messenger:
         events:
             dsn: '%env(RABBITMQ_DSN)%/%%2f/events'
             outbox: 'doctrine://default?queue_name=outbox'
+            # a redelivered event whose handlers committed already is acknowledged without handling it again
+            inbox: true
             retry_strategy:
                 max_retries: 2
                 delay: 500

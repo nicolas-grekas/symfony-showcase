@@ -41,4 +41,27 @@ final class HandleProposalDecisionTest extends KernelTestCase
         $this->assertSame('admin@example.com', $alerts[0]->getTo()[0]->getAddress());
         $this->assertStringContainsString('Book it by hand for "Workflows as code".', $alerts[0]->getHtmlBody() ?? $alerts[0]->getTextBody());
     }
+
+    public function testARedeliveredEventIsNotHandledAgain()
+    {
+        self::bootKernel();
+        $proposal = static::getContainer()->get(EntityManagerInterface::class)->getRepository(Proposal::class)->findOneBy(['title' => 'Workflows as code']);
+
+        static::getContainer()->get(MessageBusInterface::class)->dispatch(new ProposalDecided($proposal->id, false));
+        static::consumeQueuedMessages('events.outbox');
+        $events = static::getContainer()->get('messenger.transport.events');
+        [$event] = $events->getSent();
+        static::consumeQueuedMessages('events');
+
+        // the worker committed what the handlers did, then failed to acknowledge the event: the broker delivers it again
+        $events->send($event);
+        static::consumeQueuedMessages('events');
+
+        static::consumeQueuedMessages('async');
+        $decisions = array_filter(
+            static::getMailerMessages(),
+            static fn ($message) => $message instanceof Email && 'About your proposal' === $message->getSubject(),
+        );
+        $this->assertCount(\count($proposal->speakers), $decisions);
+    }
 }
