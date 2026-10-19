@@ -1525,7 +1525,7 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *                 },
  *                 tls_client_auth?: bool|Param, // Authenticate with "client_certificate", issued by a certificate authority.
  *                 self_signed_tls_client_auth?: bool|Param, // Authenticate with "client_certificate", self-signed.
- *                 id?: scalar|Param|null, // The id of a service implementing "ClientAuthenticationInterface", for a scheme Symfony does not ship. The method it reports is only known once it is built, so the rules a public client cannot bend are then checked on the first request to this firewall instead of while the container compiles.
+ *                 id?: scalar|Param|null, // The id of a service implementing "ClientAuthenticationInterface", for a scheme Symfony does not ship. The method it reports is only known once it is built, so the rules a public client cannot bend are then checked when a login starts on this firewall instead of while the container compiles.
  *             },
  *             dpop?: Param|string|array{ // Binds the tokens the provider issues to a key held by this client (DPoP); a token the provider did not bind is refused.
  *                 key?: scalar|Param|null, // The private key the proofs are signed with, as a JSON-encoded JWK.

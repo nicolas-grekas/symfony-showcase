@@ -8296,7 +8296,7 @@
                                                         },
                                                         "id": {
                                                             "$ref": "#/$defs/types/scalar",
-                                                            "description": "The id of a service implementing \"ClientAuthenticationInterface\", for a scheme Symfony does not ship. The method it reports is only known once it is built, so the rules a public client cannot bend are then checked on the first request to this firewall instead of while the container compiles."
+                                                            "description": "The id of a service implementing \"ClientAuthenticationInterface\", for a scheme Symfony does not ship. The method it reports is only known once it is built, so the rules a public client cannot bend are then checked when a login starts on this firewall instead of while the container compiles."
                                                         }
                                                     },
                                                     "additionalProperties": false
