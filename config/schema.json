@@ -10042,7 +10042,7 @@
                                                 "resource": {
                                                     "$ref": "#/$defs/types/scalar",
                                                     "default": null,
-                                                    "description": "The resource identifier of this firewall: an HTTPS URL, without a fragment (e.g. \"https://api.example.com\" or \"https://example.com/api\"). Its path component is inserted after the well-known path, as RFC 9728, Section 3.1 prescribes, so that one host can serve the metadata of several protected resources. Defaults to the origin the document is served from, which is what a firewall covering a whole application wants."
+                                                    "description": "The resource identifier of this firewall: an HTTPS URL without a fragment (e.g. \"https://example.com/api\"), read when the container is compiled, or a path (e.g. \"/api\") resolved against the origin of the request. Its path is inserted after the well-known path, as RFC 9728, Section 3.1 prescribes. Defaults to the origin of the request, which is what a firewall covering a whole application wants."
                                                 },
                                                 "authorization_servers": {
                                                     "anyOf": [
