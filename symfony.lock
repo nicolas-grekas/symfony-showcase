@@ -318,8 +318,8 @@
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "main",
-            "version": "6.3",
-            "ref": "620a1b84865ceb2ba304c8f8bf2a185fbf32a843"
+            "version": "8.2",
+            "ref": "30050bb35d10c0195a1500199a97c8c04085d2be"
         },
         "files": [
             "config/packages/translation.yaml",
