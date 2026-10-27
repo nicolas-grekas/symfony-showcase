@@ -1,8 +1,4 @@
 # yaml-language-server: $schema=../schema.json
-parameters:
-    # MCP clients connect to this URL, and ask Keycloak for tokens bound to it with the "resource" parameter of RFC 8707
-    mcp.url: 'http://localhost:8124/mcp'
-
 security:
     # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
     password_hashers:
@@ -61,11 +57,12 @@ security:
                 token_handler:
                     oidc:
                         <<: *oidc
-                        audience: '%mcp.url%'
-                # served at /.well-known/oauth-protected-resource/mcp
+                        # MCP clients ask Keycloak for tokens bound to this URL, with the "resource" parameter of RFC 8707
+                        audience: '%env(MCP_RESOURCE)%'
+                # served at /.well-known/oauth-protected-resource/mcp, with the origin of the request
                 resource_metadata:
                     <<: *resource_metadata
-                    resource: '%mcp.url%'
+                    resource: /mcp
         main:
             lazy: true
             provider: app_users
