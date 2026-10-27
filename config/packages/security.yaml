@@ -23,7 +23,7 @@ security:
     firewalls:
         dev:
             # Ensure dev tools and static assets are always allowed
-            pattern: ^/(_profiler|_wdt|assets|build)/
+            pattern: ^/(_profiler(/|$)|(_wdt|assets|build)/)
             security: false
         # third-party clients call the API with an access token of the identity provider
         api:

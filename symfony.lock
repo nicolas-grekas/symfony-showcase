@@ -279,7 +279,7 @@
             "repo": "github.com/symfony/recipes",
             "branch": "main",
             "version": "8.2",
-            "ref": "259668d43f45091f0dcb9f27981d71d4af3bb09d"
+            "ref": "c0af0228ae2d5825bbbca9f32a4c054f1c40e88d"
         },
         "files": [
             "config/packages/security.yaml",
