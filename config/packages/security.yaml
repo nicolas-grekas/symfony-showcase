@@ -25,9 +25,9 @@ security:
             # Ensure dev tools and static assets are always allowed
             pattern: ^/(_profiler(/|$)|(_wdt|assets|build)/)
             security: false
-        # third-party clients call the API with an access token of the identity provider
+        # third-party clients call the API and the MCP server with an access token of the identity provider
         api:
-            pattern: ^/api/
+            pattern: ^/(api/|mcp$)
             stateless: true
             provider: app_users
             user_checker: App\Security\UserChecker
@@ -81,3 +81,4 @@ security:
         - { path: ^/admin/users, roles: ROLE_ADMIN }
         - { path: ^/admin, roles: ROLE_REVIEWER }
         - { path: ^/me, roles: ROLE_USER }
+        - { path: ^/mcp$, roles: ROLE_USER }

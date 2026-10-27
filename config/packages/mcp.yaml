@@ -1,17 +1,8 @@
 mcp:
     servers:
-        default:
-            # Use the MCP SDK attributes to declare tools, prompts and resources on your services.
-            # Once MCP services exist, restrict the registry to their namespace(s), e.g. 'App\Mcp\'.
-            # Namespace patterns must match at least one registered MCP service.
-            # '*' also exposes MCP services from third-party bundles over HTTP.
-            registry: '*'
-
+        conferences:
+            description: 'The talks, schedules and call for papers of the conferences'
+            instructions: 'search_talks and get_schedule read the program of the conferences. list_my_proposals and submit_proposal act in the name of the speaker who is logged in; submitting needs the proposals:write scope.'
+            registry: 'App\Mcp\'
             http:
                 path: /mcp
-                # Only localhost is allowed by default. Add hostnames without ports for remote access.
-                # allowed_hosts: ['localhost', 'mcp.example.com']
-
-            # Enable STDIO for clients such as Claude Desktop via bin/console mcp:server.
-            # transports:
-            #     stdio: true

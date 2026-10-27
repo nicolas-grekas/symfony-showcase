@@ -51,6 +51,23 @@ class ProposalRepository extends ServiceEntityRepository
     /**
      * @return list<Proposal>
      */
+    public function searchAccepted(string $query): array
+    {
+        return $this->createQueryBuilder('p')
+            ->join('p.conference', 'c')
+            ->where('p.status = :status')
+            ->andWhere('LOWER(p.title) LIKE :query OR LOWER(p.abstract) LIKE :query')
+            ->setParameter('status', ProposalStatus::Accepted)
+            ->setParameter('query', '%'.addcslashes(mb_strtolower($query), '%_\\').'%')
+            ->orderBy('c.startsOn')
+            ->addOrderBy('p.title')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return list<Proposal>
+     */
     public function findScheduled(Conference $conference): array
     {
         return $this->createQueryBuilder('p')
