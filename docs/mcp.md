@@ -57,9 +57,9 @@ The compose file runs Keycloak 26.8 with two experimental features that MCP clie
   keeps the `showcase-api` audience, which only the API accepts.
 - `cimd` (client ID metadata documents). Claude Code and Claude Desktop use the URL of a
   document on `claude.ai` as their client id, so they need no client of their own in the realm.
-  The `mcp-cimd` client policy lets Keycloak fetch these documents. It also accepts documents
-  served over HTTP from `host.docker.internal`, to test a client locally: don't keep that in
-  production.
+  The `mcp-cimd` client policy lets Keycloak fetch these documents, and Keycloak asks the user
+  to consent to such a client on the first login. The policy also accepts documents served over
+  HTTP from `host.docker.internal`, to test a client locally: don't keep that in production.
 
 Clients that don't use a metadata document log in with the `showcase-mcp` client: a public
 client with PKCE, whose redirect URIs are the ones of the MCP Inspector and of Claude Code.
@@ -201,6 +201,9 @@ The tools get the user from the `Security` service: `#[CurrentUser]` only works 
   request.
 - The app sends no CORS headers, so the MCP clients that run in a browser can't connect. The
   command-line clients and Claude Code don't need them.
+- When a token lacks a scope, the TypeScript MCP SDK (1.32) refreshes the token instead of
+  asking the user for the scope, if it has a refresh token, and then gets the `403` again. The
+  step-up only works for the clients that start a new authorization.
 - The URL of the MCP server is written in the configuration, as the `mcp.url` parameter:
   Symfony needs the path of the `resource` when it builds the container, and refuses an
   environment variable that holds the whole URL, or an `http` URL whose host is an environment
