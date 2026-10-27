@@ -415,12 +415,10 @@
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "main",
-            "version": "3.3",
-            "ref": "3b2f8ca32a07fcb00f899649053943fa3d8bbfb6"
+            "version": "8.2",
+            "ref": "46c0212530169ce92351ce7d58336db04f77c2a6"
         },
-        "files": [
-            "config/packages/workflow.yaml"
-        ]
+        "files": []
     },
     "twig/extra-bundle": {
         "version": "v3.29.0"
