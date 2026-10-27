@@ -378,7 +378,7 @@
             "repo": "github.com/symfony/recipes",
             "branch": "main",
             "version": "8.2",
-            "ref": "09f3a006a6cff5a51962d5026d17b1c0a45b5338"
+            "ref": "8379003b884b943fdf0ff66b0378231b0e51f893"
         },
         "files": [
             "config/packages/web_profiler.yaml",
