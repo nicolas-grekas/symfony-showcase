@@ -331,8 +331,8 @@
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "main",
-            "version": "6.4",
-            "ref": "06dacf16872358cb1f2494e089070ff2d045233a"
+            "version": "8.2",
+            "ref": "7e3e99b592d2b9d9afa64cfbd2fe18f1400f9750"
         },
         "files": [
             "config/packages/twig.yaml",
