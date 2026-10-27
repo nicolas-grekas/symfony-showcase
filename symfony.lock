@@ -177,8 +177,8 @@
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "main",
-            "version": "4.3",
-            "ref": "09051cfde49476e3c12cd3a0e44289ace1c75a4f"
+            "version": "8.2",
+            "ref": "7060663d821eba7c76091060693c98744ff37bf8"
         },
         "files": [
             "config/packages/mailer.yaml"
