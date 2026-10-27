@@ -17,8 +17,8 @@ security:
         # reviewers of a single conference, e.g. ROLE_REVIEWER_LILLE
         ROLE_REVIEWER_*: [ROLE_REVIEWER]
 
-    # accepting or rejecting a proposal requires having typed one's password in the last 15 minutes
-    recent_authentication_lifetime: 900
+    # accepting or rejecting a proposal requires having typed one's password recently, in the last 15 minutes by default
+    recent_authentication_lifetime: '%env(int:RECENT_AUTHENTICATION_LIFETIME)%'
 
     firewalls:
         dev:
