@@ -20210,6 +20210,147 @@
                     "uuid47_secret": null
                 }
             },
+            "ux_icons": {
+                "$ref": "#/$defs/types/object_null",
+                "properties": {
+                    "icon_dir": {
+                        "$ref": "#/$defs/types/scalar",
+                        "default": "%kernel.project_dir%/assets/icons",
+                        "description": "The local directory where icons are stored."
+                    },
+                    "default_icon_attributes": {
+                        "$ref": "#/$defs/types/object_null",
+                        "additionalProperties": {
+                            "$ref": "#/$defs/types/scalar"
+                        },
+                        "default": {
+                            "fill": "currentColor"
+                        },
+                        "description": "Default attributes to add to all icons.",
+                        "examples": [
+                            {
+                                "class": "icon"
+                            }
+                        ]
+                    },
+                    "icon_sets": {
+                        "$ref": "#/$defs/types/object_null",
+                        "additionalProperties": {
+                            "$ref": "#/$defs/types/object_null",
+                            "properties": {
+                                "path": {
+                                    "$ref": "#/$defs/types/scalar",
+                                    "description": "The local icon set directory path.\n(cannot be used with 'alias')",
+                                    "examples": [
+                                        "%kernel.project_dir%/assets/svg/acme"
+                                    ]
+                                },
+                                "alias": {
+                                    "$ref": "#/$defs/types/scalar",
+                                    "description": "The remote icon set identifier.\n(cannot be used with 'path')",
+                                    "examples": [
+                                        "simple-icons"
+                                    ]
+                                },
+                                "icon_attributes": {
+                                    "$ref": "#/$defs/types/object_null",
+                                    "additionalProperties": {
+                                        "$ref": "#/$defs/types/scalar"
+                                    },
+                                    "description": "Override default icon attributes for icons in this set.",
+                                    "examples": [
+                                        {
+                                            "class": "icon icon-acme",
+                                            "fill": "none"
+                                        }
+                                    ]
+                                },
+                                "suffixes": {
+                                    "$ref": "#/$defs/types/object_null",
+                                    "additionalProperties": {
+                                        "$ref": "#/$defs/types/object_null",
+                                        "properties": {
+                                            "icon_attributes": {
+                                                "$ref": "#/$defs/types/object_null",
+                                                "additionalProperties": {
+                                                    "$ref": "#/$defs/types/scalar"
+                                                },
+                                                "description": "Attributes for icons matching this suffix."
+                                            }
+                                        },
+                                        "additionalProperties": false,
+                                        "description": "The suffix name (e.g. \"solid\", \"20-solid\")"
+                                    },
+                                    "description": "Suffix-based attributes (following Iconify naming conventions).\nhttps://iconify.design/docs/libraries/tools/icon-set/themes.html"
+                                }
+                            },
+                            "additionalProperties": false,
+                            "description": "the icon set prefix (e.g. \"acme\")"
+                        },
+                        "description": "Icon sets configuration."
+                    },
+                    "aliases": {
+                        "$ref": "#/$defs/types/object_null",
+                        "additionalProperties": {
+                            "$ref": "#/$defs/types/string_null"
+                        },
+                        "description": "Icon aliases (map of alias => full name).",
+                        "examples": [
+                            {
+                                "dots": "clarity:ellipsis-horizontal-line",
+                                "privacy": "bi:cookie"
+                            }
+                        ]
+                    },
+                    "iconify": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/types/object_null",
+                                "properties": {
+                                    "enabled": {
+                                        "$ref": "#/$defs/types/boolean",
+                                        "default": true
+                                    },
+                                    "on_demand": {
+                                        "$ref": "#/$defs/types/boolean",
+                                        "default": true,
+                                        "description": "Whether to download icons \"on demand\"."
+                                    },
+                                    "auto_lock": {
+                                        "$ref": "#/$defs/types/boolean",
+                                        "default": false,
+                                        "description": "Persist \"on demand\" icons to the local icon directory (see \"icon_dir\").\nRecommended in dev only. Requires \"on_demand\" to be enabled."
+                                    },
+                                    "endpoint": {
+                                        "$ref": "#/$defs/types/scalar",
+                                        "default": "https://api.iconify.design",
+                                        "description": "The endpoint for the Iconify icons API."
+                                    }
+                                },
+                                "additionalProperties": false
+                            },
+                            {
+                                "type": [
+                                    "boolean"
+                                ]
+                            }
+                        ],
+                        "default": {
+                            "enabled": true,
+                            "on_demand": true,
+                            "auto_lock": false,
+                            "endpoint": "https://api.iconify.design"
+                        },
+                        "description": "Configuration for the remote icon service."
+                    },
+                    "ignore_not_found": {
+                        "$ref": "#/$defs/types/boolean",
+                        "default": false,
+                        "description": "Ignore error when an icon is not found.\nSet to 'true' to fail silently."
+                    }
+                },
+                "additionalProperties": false
+            },
             "validation": {
                 "anyOf": [
                     {
@@ -22720,6 +22861,9 @@
         "uid": {
             "$ref": "#/$defs/nodes/uid"
         },
+        "ux_icons": {
+            "$ref": "#/$defs/nodes/ux_icons"
+        },
         "validation": {
             "$ref": "#/$defs/nodes/validation"
         },
@@ -22845,6 +22989,9 @@
                 },
                 "uid": {
                     "$ref": "#/$defs/nodes/uid"
+                },
+                "ux_icons": {
+                    "$ref": "#/$defs/nodes/ux_icons"
                 },
                 "validation": {
                     "$ref": "#/$defs/nodes/validation"
@@ -22975,6 +23122,9 @@
                 "uid": {
                     "$ref": "#/$defs/nodes/uid"
                 },
+                "ux_icons": {
+                    "$ref": "#/$defs/nodes/ux_icons"
+                },
                 "validation": {
                     "$ref": "#/$defs/nodes/validation"
                 },
@@ -23099,6 +23249,9 @@
                 },
                 "uid": {
                     "$ref": "#/$defs/nodes/uid"
+                },
+                "ux_icons": {
+                    "$ref": "#/$defs/nodes/ux_icons"
                 },
                 "validation": {
                     "$ref": "#/$defs/nodes/validation"
