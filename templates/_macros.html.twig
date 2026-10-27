@@ -9,3 +9,8 @@
 {% macro ticket_url(ticket) %}
     {{- url('ticket_show', {id: ticket.id})|sign_url(ticket.conference.endsOn|date_modify('+1 day')) -}}
 {% endmacro %}
+
+{# the cosine similarity of two embeddings, from 0 to 1 #}
+{% macro similarity(value) %}
+    <span class="similarity"><meter min="0" max="1" value="{{ value }}"></meter> {{ (value * 100)|round }}%</span>
+{%- endmacro %}

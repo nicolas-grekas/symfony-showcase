@@ -1,0 +1,20 @@
+{% import '_macros.html.twig' as ui %}
+<div{{ attributes }}>
+    <input type="search" data-model="debounce(300)|query" value="{{ query }}" placeholder="e.g. pages that load slowly" aria-label="Search the talks and proposals by meaning">
+    {% set results = computed.results %}
+    {% if results %}
+        <table class="search-results" data-loading="addClass(searching)">
+            <thead><tr><th>Title</th><th>Conference</th><th>Status</th><th>Similarity</th></tr></thead>
+            <tbody>
+                {% for result in results %}
+                    <tr>
+                        <td><a href="{{ path('proposal_show', {id: result.id}) }}">{{ result.title }}</a></td>
+                        <td>{{ result.conference }}</td>
+                        <td>{{ result.status|humanize }}</td>
+                        <td>{{ ui.similarity(result.similarity) }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>

@@ -104,3 +104,23 @@ tr.arrived {
         visibility: hidden;
     }
 }
+
+input[type="search"] {
+    width: 100%;
+    box-sizing: border-box;
+    padding: .4rem;
+    margin-bottom: .5rem;
+}
+
+.search-results.searching {
+    opacity: .5;
+}
+
+.similarity {
+    white-space: nowrap;
+}
+
+.similarity meter {
+    width: 6rem;
+    vertical-align: middle;
+}

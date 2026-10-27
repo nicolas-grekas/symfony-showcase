@@ -1,4 +1,5 @@
 {% extends 'base.html.twig' %}
+{% import '_macros.html.twig' as ui %}
 
 {% block title %}Review assistant: {{ proposal.title }}{% endblock %}
 
@@ -17,7 +18,7 @@
                             <td><a href="{{ path('proposal_show', {id: other.id}) }}" data-turbo-frame="_top">{{ other.title }}</a></td>
                             <td>{{ other.conference }}</td>
                             <td>{{ other.status|humanize }}</td>
-                            <td>{{ (other.similarity * 100)|round }}%</td>
+                            <td>{{ ui.similarity(other.similarity) }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>

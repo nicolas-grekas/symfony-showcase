@@ -5,6 +5,12 @@
 {% block body %}
     <h1>Back office</h1>
 
+    <h2>Search by meaning</h2>
+    <p class="help-text">The closest talks and proposals of all conferences, by the embeddings of the review assistant.</p>
+    <twig:SemanticSearch />
+
+    <h2>Conferences</h2>
+
     <ul>
         {% for conference in conferences %}
             <li>
