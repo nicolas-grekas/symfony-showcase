@@ -365,8 +365,8 @@
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "main",
-            "version": "7.0",
-            "ref": "8c1c4e28d26a124b0bb273f537ca8ce443472bfd"
+            "version": "8.2",
+            "ref": "06ad4500705d987fa871ffb4ad04cea68870371e"
         },
         "files": [
             "config/packages/validator.yaml"
