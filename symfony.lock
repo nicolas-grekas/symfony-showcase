@@ -79,8 +79,8 @@
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "main",
-            "version": "6.4",
-            "ref": "c01c47af2ec66a74ec046eccb919cfe27d3464ec"
+            "version": "8.2",
+            "ref": "1766d3625a3cc3b88fe5686a22875a24a976fb3b"
         },
         "files": [
             "assets/app.js",
