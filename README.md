@@ -11,7 +11,9 @@ the pull requests that fix them. The Symfony ones are all merged in 8.2.x-dev.
 ## Running it
 
 Requirements: PHP 8.5 with the `intl`, `pdo_pgsql`, `amqp` and `sodium` extensions, the
-[Symfony CLI](https://symfony.com/download) and Docker.
+[Symfony CLI](https://symfony.com/download) and Docker. The examples that get a token also need
+`jq`, and the MCP Inspector needs Node.js with `npx`: Node.js 22.19 or later for the Inspector 2,
+[docs/mcp.md](docs/mcp.md) tells which version to use with an older one.
 
 ```bash
 composer install
