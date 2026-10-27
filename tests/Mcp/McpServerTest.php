@@ -7,22 +7,28 @@ use App\Entity\User;
 use App\Enum\ProposalStatus;
 use App\Enum\Room;
 use App\Message\ProposalSubmitted;
+use App\Tests\Security\FakeIdentityProvider;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Clock\DatePoint;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\Security\Http\Authenticator\AccessTokenAuthenticator;
 
 final class McpServerTest extends WebTestCase
 {
     private const PROTOCOL_VERSION = '2025-11-25';
+    private const MCP_URL = 'http://localhost:8124/mcp';
 
     private KernelBrowser $client;
     private ?string $sessionId = null;
 
     protected function setUp(): void
     {
-        $this->client = static::createClient();
+        $this->client = static::createClient(['configure_container' => static function (ContainerInterface $container) {
+            $container->set('http_client.transport', new MockHttpClient(new FakeIdentityProvider($_SERVER['OIDC_ISSUER'])));
+        }]);
     }
 
     public function testAnAccessTokenIsRequired()
@@ -30,19 +36,36 @@ final class McpServerTest extends WebTestCase
         $this->rpc('initialize', self::initializeParams());
 
         $this->assertResponseStatusCodeSame(401);
-        $this->assertSame('Bearer resource_metadata="http://localhost/.well-known/oauth-protected-resource"', $this->client->getResponse()->headers->get('WWW-Authenticate'));
+        $this->assertSame('Bearer resource_metadata="http://localhost:8124/.well-known/oauth-protected-resource/mcp"', $this->client->getResponse()->headers->get('WWW-Authenticate'));
     }
 
     public function testTheMetadataTellsWhereToGetAToken()
     {
-        $this->client->request('GET', '/.well-known/oauth-protected-resource');
+        // RFC 9728 inserts the path of the resource after the well-known path
+        $this->client->request('GET', '/.well-known/oauth-protected-resource/mcp');
 
         $this->assertResponseIsSuccessful();
         $metadata = json_decode($this->client->getResponse()->getContent(), true);
-        // the resource is the origin, which covers the MCP endpoint and the API alike
-        $this->assertSame('http://localhost', $metadata['resource']);
+        // the "resource" that MCP clients pass to Keycloak (RFC 8707)
+        $this->assertSame(self::MCP_URL, $metadata['resource']);
         $this->assertSame([$_SERVER['OIDC_ISSUER']], $metadata['authorization_servers']);
         $this->assertSame(['proposals:write'], $metadata['scopes_supported']);
+    }
+
+    public function testTokensAreBoundToTheMcpServer()
+    {
+        $this->rpc('initialize', self::initializeParams(), FakeIdentityProvider::issueAccessToken('alice@example.com', audience: self::MCP_URL));
+        $this->assertResponseIsSuccessful();
+
+        // the tokens of the API are not accepted by the MCP server
+        $this->rpc('initialize', self::initializeParams(), FakeIdentityProvider::issueAccessToken('alice@example.com'));
+        $this->assertResponseStatusCodeSame(401);
+
+        // and the tokens of the MCP server are not accepted by the API
+        $this->client->request('GET', '/api/proposals/'.static::getContainer()->get(EntityManagerInterface::class)->getRepository(Proposal::class)->findOneBy(['title' => 'Forms in 2027'])->id, server: [
+            'HTTP_AUTHORIZATION' => 'Bearer '.FakeIdentityProvider::issueAccessToken('alice@example.com', audience: self::MCP_URL),
+        ]);
+        $this->assertResponseStatusCodeSame(401);
     }
 
     public function testInitializeAndListTheTools()
@@ -182,7 +205,7 @@ final class McpServerTest extends WebTestCase
 
         // the challenge of RFC 6750, which MCP clients answer by asking the user for the missing scope
         $this->assertResponseStatusCodeSame(403);
-        $this->assertSame('Bearer error="insufficient_scope",error_description="The request requires higher privileges than provided by the access token.",scope="proposals:write",resource_metadata="http://localhost/.well-known/oauth-protected-resource"', $this->client->getResponse()->headers->get('WWW-Authenticate'));
+        $this->assertSame('Bearer error="insufficient_scope",error_description="The request requires higher privileges than provided by the access token.",scope="proposals:write",resource_metadata="http://localhost:8124/.well-known/oauth-protected-resource/mcp"', $this->client->getResponse()->headers->get('WWW-Authenticate'));
         $this->assertSame(0, static::getContainer()->get(EntityManagerInterface::class)->getRepository(Proposal::class)->count(['title' => 'MCP servers with Symfony']));
     }
 
@@ -204,7 +227,7 @@ final class McpServerTest extends WebTestCase
             $entityManager->flush();
         }
 
-        $this->client->loginUser($user, 'api', [AccessTokenAuthenticator::SCOPE_ATTRIBUTE => $scopes]);
+        $this->client->loginUser($user, 'mcp', [AccessTokenAuthenticator::SCOPE_ATTRIBUTE => $scopes]);
     }
 
     private function initialize(): array
@@ -229,7 +252,7 @@ final class McpServerTest extends WebTestCase
         return $response['result'];
     }
 
-    private function rpc(string $method, array $params = []): void
+    private function rpc(string $method, array $params = [], ?string $token = null): void
     {
         static $id = 0;
 
@@ -244,6 +267,7 @@ final class McpServerTest extends WebTestCase
             'HTTP_ACCEPT' => 'application/json, text/event-stream',
             'HTTP_MCP_PROTOCOL_VERSION' => $this->sessionId ? self::PROTOCOL_VERSION : null,
             'HTTP_MCP_SESSION_ID' => $this->sessionId,
+            'HTTP_AUTHORIZATION' => $token ? 'Bearer '.$token : null,
         ]), content: json_encode($message));
     }
 

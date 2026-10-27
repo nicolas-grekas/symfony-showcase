@@ -103,6 +103,20 @@
         "proposals:write",
         "offline_access"
       ]
+    },
+    {
+      "clientId": "showcase-api",
+      "name": "Resource server of the API and of the MCP server",
+      "description": "The audience of the access tokens. Its resource_url is the resource that MCP clients name (RFC 8707), which then becomes the only audience of the token.",
+      "enabled": true,
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "attributes": {
+        "resource_url": "http://localhost:8124/mcp"
+      }
     }
   ],
   "clientScopes": [

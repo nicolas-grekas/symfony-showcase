@@ -1,4 +1,8 @@
 # yaml-language-server: $schema=../schema.json
+parameters:
+    # MCP clients connect to this URL, and ask Keycloak for tokens bound to it with the "resource" parameter of RFC 8707
+    mcp.url: 'http://localhost:8124/mcp'
+
 security:
     # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
     password_hashers:
@@ -25,15 +29,15 @@ security:
             # Ensure dev tools and static assets are always allowed
             pattern: ^/(_profiler(/|$)|(_wdt|assets|build)/)
             security: false
-        # third-party clients call the API and the MCP server with an access token of the identity provider
+        # third-party clients call the API with an access token of the identity provider
         api:
-            pattern: ^/(api/|mcp$)
+            pattern: ^/api/
             stateless: true
             provider: app_users
             user_checker: App\Security\UserChecker
             access_token:
                 token_handler:
-                    oidc:
+                    oidc: &oidc
                         discovery:
                             # with a trailing slash: the discovery path is resolved against it as a relative URL
                             base_uri: '%env(OIDC_ISSUER)%/'
@@ -44,9 +48,24 @@ security:
                         # Keycloak types its access tokens "JWT", not "at+jwt" (RFC 9068)
                         enforce_at_jwt_type: false
                 # served at /.well-known/oauth-protected-resource, telling clients where to get a token (RFC 9728)
-                resource_metadata:
+                resource_metadata: &resource_metadata
                     authorization_servers: ['%env(OIDC_ISSUER)%']
                     scopes_supported: ['proposals:write']
+        # the MCP server only accepts the tokens bound to its URL, which the API rejects
+        mcp:
+            pattern: ^/mcp$
+            stateless: true
+            provider: app_users
+            user_checker: App\Security\UserChecker
+            access_token:
+                token_handler:
+                    oidc:
+                        <<: *oidc
+                        audience: '%mcp.url%'
+                # served at /.well-known/oauth-protected-resource/mcp
+                resource_metadata:
+                    <<: *resource_metadata
+                    resource: '%mcp.url%'
         main:
             lazy: true
             provider: app_users
