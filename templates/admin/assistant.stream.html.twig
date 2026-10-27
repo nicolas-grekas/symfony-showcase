@@ -1,0 +1,20 @@
+{# the server-sent events of AssistantController::notes(), one block per event #}
+
+{% block tool_call -%}
+    <turbo-stream action="append" target="notes-tools"><template><code>{{ step.name }}</code> </template></turbo-stream>
+{%- endblock %}
+
+{% block partial_notes -%}
+    <turbo-stream action="update" target="notes-summary"><template>{{ step.summary ?? '' }}</template></turbo-stream>
+    {%- if step.tags %}<turbo-stream action="update" target="notes-tags"><template>{{ step.tags|join(', ') }}</template></turbo-stream>{% endif %}
+    {%- if step.track %}<turbo-stream action="update" target="notes-track"><template>{{ step.track.name }}</template></turbo-stream>{% endif %}
+{%- endblock %}
+
+{# replacing the notes removes the source of the stream, which closes it #}
+{% block notes -%}
+    <turbo-stream action="replace" target="notes"><template>{{ include('admin/_notes.html.twig') }}</template></turbo-stream>
+{%- endblock %}
+
+{% block error -%}
+    <turbo-stream action="replace" target="notes"><template><p id="notes" class="flash flash-error">The assistant failed: {{ error }}</p></template></turbo-stream>
+{%- endblock %}

@@ -29,21 +29,10 @@
         {% endif %}
 
         <h3>Notes</h3>
-        {% if error %}
-            <p class="flash flash-error">The assistant failed: {{ error }}</p>
-        {% endif %}
-        {% if notes %}
-            <div id="notes">
-                <dl>
-                    <dt>Summary</dt>
-                    <dd class="summary">{{ notes.summary }}</dd>
-                    <dt>Tags</dt>
-                    <dd class="tags">{{ notes.tags|join(', ') }}</dd>
-                    <dt>Track</dt>
-                    <dd class="track">{{ notes.track ? notes.track.name : 'None' }}</dd>
-                </dl>
-                <p class="help-text">Written by {{ assistant.model }} on the {{ assistant.platform }} platform.</p>
-            </div>
+        {% if writing %}
+            {{ include('admin/_notes.html.twig', {source: path('admin_proposal_notes', {id: proposal.id, token: csrf_token('assistant')})}) }}
+        {% elseif notes %}
+            {{ include('admin/_notes.html.twig') }}
         {% endif %}
         <form method="post" action="{{ path('admin_proposal_review', {id: proposal.id}) }}">
             <input type="hidden" name="_token" value="{{ csrf_token('assistant') }}">

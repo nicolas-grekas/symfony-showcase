@@ -1,0 +1,16 @@
+{# with a source, the notes that the model writes, which the stream of the source fills #}
+<div id="notes"{% if source is defined %} aria-busy="true"{% endif %}>
+    {% if source is defined %}
+        <turbo-stream-source src="{{ source }}"></turbo-stream-source>
+        <p class="help-text">Reading with its tools: <span id="notes-tools"></span></p>
+    {% endif %}
+    <dl>
+        <dt>Summary</dt>
+        <dd class="summary" id="notes-summary">{{ notes.summary ?? '' }}</dd>
+        <dt>Tags</dt>
+        <dd class="tags" id="notes-tags">{{ (notes.tags ?? [])|join(', ') }}</dd>
+        <dt>Track</dt>
+        <dd class="track" id="notes-track">{{ notes ? (notes.track ? notes.track.name : 'None') }}</dd>
+    </dl>
+    <p class="help-text">Written by {{ assistant.model }} on the {{ assistant.platform }} platform.</p>
+</div>

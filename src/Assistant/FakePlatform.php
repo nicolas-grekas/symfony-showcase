@@ -10,6 +10,10 @@ use Symfony\AI\Platform\ModelCatalog\ModelCatalogInterface;
 use Symfony\AI\Platform\PlatformInterface;
 use Symfony\AI\Platform\Result\DeferredResult;
 use Symfony\AI\Platform\Result\ResultInterface;
+use Symfony\AI\Platform\Result\Stream\Delta\DeltaInterface;
+use Symfony\AI\Platform\Result\Stream\Delta\TextDelta;
+use Symfony\AI\Platform\Result\Stream\Delta\ToolCallComplete;
+use Symfony\AI\Platform\Result\StreamResult;
 use Symfony\AI\Platform\Result\TextResult;
 use Symfony\AI\Platform\Result\ToolCall;
 use Symfony\AI\Platform\Result\ToolCallResult;
@@ -17,6 +21,7 @@ use Symfony\AI\Platform\Result\VectorResult;
 use Symfony\AI\Platform\Test\MockModelCatalog;
 use Symfony\AI\Platform\Test\MockPlatformFactory;
 use Symfony\AI\Platform\Vector\Vector;
+use Symfony\Component\Clock\ClockInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -27,7 +32,7 @@ use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
  * It is the mock platform of Symfony AI with scripted answers. The embeddings count the words of the texts, so texts
  * that share words are similar. The chat model reads the proposal with the tools of the review assistant. Then it takes
  * the first sentence of the abstract as the summary, adds the closest talk or proposal, and takes the most frequent
- * words as the tags.
+ * words as the tags. Asked to stream, it writes its answer a few characters at a time, at the pace of the clock.
  */
 #[AutoconfigureTag('ai.platform', ['name' => 'fake'])]
 final class FakePlatform implements PlatformInterface
@@ -43,6 +48,7 @@ final class FakePlatform implements PlatformInterface
         EventDispatcherInterface $eventDispatcher,
         #[Autowire(env: 'AI_EMBEDDING_MODEL')]
         string $embeddingModel,
+        private readonly ClockInterface $clock,
     ) {
         // only the chat models take messages, so a text to embed is not turned into a message
         $models = new CompositeModelCatalog([
@@ -85,16 +91,18 @@ final class FakePlatform implements PlatformInterface
         if (!$results) {
             preg_match('/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/', json_encode(end($input['messages'])['content']), $id);
 
-            return new ToolCallResult([
+            $toolCalls = [
                 new ToolCall('fake_1', 'get_proposal', ['id' => $id[0] ?? '']),
                 new ToolCall('fake_2', 'find_similar_proposals', ['id' => $id[0] ?? '']),
                 new ToolCall('fake_3', 'list_tracks'),
-            ]);
+            ];
+
+            return ($options['stream'] ?? false) ? new StreamResult($this->think(new ToolCallComplete($toolCalls))) : new ToolCallResult($toolCalls);
         }
 
         $proposal = $results['get_proposal'] ?? null;
         if (!\is_array($proposal)) {
-            return new TextResult(json_encode(['summary' => \sprintf('The proposal could not be read: %s', $proposal), 'tags' => [], 'track' => null]));
+            return $this->write(['summary' => \sprintf('The proposal could not be read: %s', $proposal), 'tags' => [], 'track' => null], $options);
         }
 
         $words = array_count_values(self::words($proposal['title'].' '.$proposal['abstract']));
@@ -117,7 +125,32 @@ final class FakePlatform implements PlatformInterface
             }
         }
 
-        return new TextResult(json_encode(['summary' => $summary, 'tags' => \array_slice(array_keys($words), 0, 3), 'track' => $track]));
+        return $this->write(['summary' => $summary, 'tags' => \array_slice(array_keys($words), 0, 3), 'track' => $track], $options);
+    }
+
+    private function write(array $answer, array $options): ResultInterface
+    {
+        $json = json_encode($answer, \JSON_UNESCAPED_SLASHES | \JSON_UNESCAPED_UNICODE);
+        if (!($options['stream'] ?? false)) {
+            return new TextResult($json);
+        }
+
+        // tokens of up to four characters, with the spaces before them
+        preg_match_all('/\s*\S{1,4}/u', $json, $tokens);
+
+        return new StreamResult($this->think(...array_map(static fn (string $token) => new TextDelta($token), $tokens[0])));
+    }
+
+    /**
+     * @return \Generator<DeltaInterface>
+     */
+    private function think(DeltaInterface ...$deltas): \Generator
+    {
+        foreach ($deltas as $delta) {
+            $this->clock->sleep($delta instanceof TextDelta ? .03 : .5);
+
+            yield $delta;
+        }
     }
 
     /**

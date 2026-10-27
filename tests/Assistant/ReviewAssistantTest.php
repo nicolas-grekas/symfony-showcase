@@ -16,11 +16,14 @@ use Symfony\AI\Platform\Test\MockPlatformFactory;
 use Symfony\AI\Store\Bridge\Doctrine\EntityIndexer;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DomCrawler\Crawler;
 
 final class ReviewAssistantTest extends WebTestCase
 {
     use AiAssertionsTrait;
+    use ClockSensitiveTrait;
 
     private KernelBrowser $client;
 
@@ -59,26 +62,58 @@ final class ReviewAssistantTest extends WebTestCase
         $this->assertResponseStatusCodeSame(403);
     }
 
-    public function testTheAssistantSummarizesAProposal()
+    public function testTheAssistantWritesTheNotesInFrontOfTheReviewer()
     {
+        // the fake platform takes its time to write, as a model does
+        static::mockTime();
         $this->embedTheProposals();
         $this->client->loginUser($this->findUser('reviewer@example.com'));
-        $this->client->request('GET', '/admin/proposals/'.$this->findProposal('Finding the slow parts of a Symfony app')->id.'/assistant');
+        $url = '/admin/proposals/'.$this->findProposal('Finding the slow parts of a Symfony app')->id.'/assistant';
+        $this->client->request('GET', $url);
 
-        $this->client->enableProfiler();
         $this->client->submitForm('Summarize');
 
-        // the agent reads the proposal with its tools, then answers
+        // the panel opens a stream, which calls the model
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorExists('#notes[aria-busy="true"]');
+        $this->client->enableProfiler();
+        $this->client->request('GET', $this->client->getCrawler()->filter('#notes turbo-stream-source')->attr('src'));
+
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseHeaderSame('Content-Type', 'text/event-stream; charset=UTF-8');
         self::assertPlatformCallCount(2);
         self::assertToolCalled('get_proposal');
         self::assertToolCalled('find_similar_proposals');
-        $this->assertResponseRedirects();
 
-        $this->client->followRedirect();
+        // the assistant reads the proposal with its tools, then the summary grows as the model writes it
+        $events = $this->getServerEvents();
+        $this->assertSame('<turbo-stream action="append" target="notes-tools"><template><code>get_proposal</code> </template></turbo-stream>', $events[0]);
+        $summaries = array_values(array_filter($events, static fn (string $event) => str_starts_with($event, '<turbo-stream action="update" target="notes-summary">')));
+        $this->assertGreaterThan(10, \count($summaries));
+        $this->assertContains('<turbo-stream action="update" target="notes-summary"><template>When</template></turbo-stream>', $summaries);
+        $this->assertContains('<turbo-stream action="update" target="notes-summary"><template>When a page</template></turbo-stream>', $summaries);
+
+        // then the notes replace the stream
+        $notes = (new Crawler(end($events)))->filter('turbo-stream[action="replace"][target="notes"] template');
+        $this->assertSame('When a page is slow, the cause can be the database, the cache, the templates or the browser. It is close to "Profiling a Symfony app end to end" (SymfonyCon Amsterdam, accepted).', trim((new Crawler($notes->html()))->filter('.summary')->text()));
+        $this->assertStringNotContainsString('turbo-stream-source', $notes->html());
+
+        $this->client->request('GET', $url);
         $this->assertSelectorTextSame('#notes .summary', 'When a page is slow, the cause can be the database, the cache, the templates or the browser. It is close to "Profiling a Symfony app end to end" (SymfonyCon Amsterdam, accepted).');
         $this->assertSelectorTextSame('#notes .tags', 'slow, symfony, app');
         $this->assertSelectorTextSame('#notes .track', 'Performance');
         $this->assertSelectorTextContains('#notes', 'Written by openai/gpt-oss-120b on the fake platform');
+    }
+
+    public function testTheStreamNeedsTheTokenOfTheForm()
+    {
+        $this->client->loginUser($this->findUser('reviewer@example.com'));
+        $this->client->enableProfiler();
+
+        $this->client->request('GET', '/admin/proposals/'.$this->findProposal('Forms in 2027')->id.'/assistant/notes');
+
+        $this->assertResponseStatusCodeSame(403);
+        self::assertPlatformCallCount(0);
     }
 
     public function testTheNotesAreKeptForTheOtherReviewers()
@@ -87,7 +122,7 @@ final class ReviewAssistantTest extends WebTestCase
         $url = '/admin/proposals/'.$this->findProposal('Forms in 2027')->id.'/assistant';
         $this->client->request('GET', $url);
         $this->assertSelectorNotExists('#notes');
-        $this->client->submitForm('Summarize');
+        $this->summarize();
 
         $this->client->loginUser($this->findUser('organizer@example.com'));
         $this->client->enableProfiler();
@@ -118,8 +153,8 @@ final class ReviewAssistantTest extends WebTestCase
         $this->client->request('GET', '/admin/proposals/'.$proposal->id.'/assistant');
 
         $this->assertSelectorTextContains('#assistant', 'The assistant only reads. Accepting or rejecting a proposal is your decision, and asks for your password.');
-        $this->client->submitForm('Summarize');
-        $this->client->followRedirect();
+        $this->summarize();
+        $this->client->request('GET', '/admin/proposals/'.$proposal->id.'/assistant');
 
         $this->assertSelectorTextContains('#notes .summary', 'Tool "accept_proposal" was not found, please use one of these: get_proposal, list_speaker_proposals, find_similar_proposals, list_tracks');
         $this->assertSame(ProposalStatus::InReview, $this->findProposal('State machines with the Workflow component')->getStatus());
@@ -140,6 +175,31 @@ final class ReviewAssistantTest extends WebTestCase
         foreach ($tools as $tool) {
             $this->assertTrue($tool->isReadOnly(), $tool->getName());
         }
+    }
+
+    /**
+     * Clicks "Summarize", then reads the stream that the panel opens, as the browser does.
+     */
+    private function summarize(): void
+    {
+        static::mockTime();
+        $this->client->submitForm('Summarize');
+        $this->client->request('GET', $this->client->getCrawler()->filter('#notes turbo-stream-source')->attr('src'));
+        $this->assertResponseIsSuccessful();
+    }
+
+    /**
+     * @return list<string> the data of each event of the stream
+     */
+    private function getServerEvents(): array
+    {
+        $events = [];
+        foreach (preg_split('/\n\n/', trim($this->client->getInternalResponse()->getContent())) as $event) {
+            preg_match_all('/^data: ?(.*)$/m', $event, $data);
+            $events[] = implode("\n", $data[1]);
+        }
+
+        return $events;
     }
 
     private function embedTheProposals(): void

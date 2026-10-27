@@ -93,3 +93,14 @@ tr.arrived {
         background: #fff8c5;
     }
 }
+
+#notes[aria-busy="true"] .summary::after {
+    content: '▍';
+    animation: caret 1s steps(2, start) infinite;
+}
+
+@keyframes caret {
+    to {
+        visibility: hidden;
+    }
+}
