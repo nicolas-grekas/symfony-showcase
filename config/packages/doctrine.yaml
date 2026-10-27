@@ -33,6 +33,6 @@ when@prod:
 
     cache:
         pools:
-            doctrine.result_cache_pool: ~
+            doctrine.result_cache_pool: null
             doctrine.system_cache_pool:
                 adapter: cache.system
