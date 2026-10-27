@@ -11,11 +11,15 @@ use App\Repository\ProposalRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\AI\Platform\Vector\VectorInterface;
+use Symfony\AI\Store\Bridge\Doctrine\Mapping\Embedding;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Clock\DatePoint;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: ProposalRepository::class)]
+// an HNSW index, created by a migration
+#[ORM\Index(name: 'proposal_embedding_idx', columns: ['embedding'])]
 class Proposal
 {
     #[ORM\Id]
@@ -33,6 +37,11 @@ class Proposal
 
     #[ORM\Column(enumType: Room::class, nullable: true)]
     public private(set) ?Room $room = null;
+
+    /** The meaning of the title and the abstract, for the similarity search of the review assistant */
+    #[ORM\Column(type: 'vector', nullable: true)]
+    #[Embedding(from: ['title', 'abstract'])]
+    public private(set) ?VectorInterface $embedding = null;
 
     /** @var Collection<int, Speaker> */
     #[ORM\ManyToMany(targetEntity: Speaker::class)]

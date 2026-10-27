@@ -35,6 +35,7 @@ messenger:
         # webhooks are acknowledged right away and consumed by a worker
         Symfony\Component\RemoteEvent\Messenger\ConsumeRemoteEventMessage: async
         Symfony\Component\Webhook\Messenger\SendWebhookMessage: async
+        App\Message\EmbedProposal: async
         App\Message\DomainEvent: events
         App\Message\TravelCommand: events
 

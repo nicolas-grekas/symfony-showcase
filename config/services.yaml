@@ -15,5 +15,10 @@ services:
     App\:
         resource: '../src/'
 
+    # the proposals are embedded by a worker and by "assistant:index", not when they are flushed
+    Symfony\AI\Store\Bridge\Doctrine\EntityEmbedder:
+        arguments: ['@ai.vectorizer.proposals']
+    Symfony\AI\Store\Bridge\Doctrine\EntityIndexer: ~
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

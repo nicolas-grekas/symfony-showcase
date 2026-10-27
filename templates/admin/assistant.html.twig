@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Review assistant: {{ proposal.title }}{% endblock %}
+
+{% block body %}
+    <turbo-frame id="assistant">
+        <h2>Review assistant</h2>
+        <p class="help-text">The assistant only reads. Accepting or rejecting a proposal is your decision, and asks for your password.</p>
+
+        <h3>Similar talks and proposals</h3>
+        {% if similar %}
+            <table id="similar">
+                <thead><tr><th>Title</th><th>Conference</th><th>Status</th><th>Similarity</th></tr></thead>
+                <tbody>
+                    {% for other in similar %}
+                        <tr>
+                            <td><a href="{{ path('proposal_show', {id: other.id}) }}" data-turbo-frame="_top">{{ other.title }}</a></td>
+                            <td>{{ other.conference }}</td>
+                            <td>{{ other.status|humanize }}</td>
+                            <td>{{ (other.similarity * 100)|round }}%</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% elseif proposal.embedding is null %}
+            <p>The proposal is not embedded yet: a worker embeds the proposals after they are submitted.</p>
+        {% else %}
+            <p>There is no other talk or proposal.</p>
+        {% endif %}
+
+        <h3>Notes</h3>
+        {% if error %}
+            <p class="flash flash-error">The assistant failed: {{ error }}</p>
+        {% endif %}
+        {% if notes %}
+            <div id="notes">
+                <dl>
+                    <dt>Summary</dt>
+                    <dd class="summary">{{ notes.summary }}</dd>
+                    <dt>Tags</dt>
+                    <dd class="tags">{{ notes.tags|join(', ') }}</dd>
+                    <dt>Track</dt>
+                    <dd class="track">{{ notes.track ? notes.track.name : 'None' }}</dd>
+                </dl>
+                <p class="help-text">Written by {{ assistant.model }} on the {{ assistant.platform }} platform.</p>
+            </div>
+        {% endif %}
+        <form method="post" action="{{ path('admin_proposal_review', {id: proposal.id}) }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('assistant') }}">
+            <button type="submit">{{ notes ? 'Summarize again' : 'Summarize' }}</button>
+        </form>
+    </turbo-frame>
+{% endblock %}

@@ -33,4 +33,8 @@
             {% endfor %}
         </ul>
     {% endif %}
+
+    {% if is_granted('PROPOSAL_REVIEW', proposal) %}
+        <turbo-frame id="assistant" src="{{ path('admin_proposal_assistant', {id: proposal.id}) }}" loading="lazy"></turbo-frame>
+    {% endif %}
 {% endblock %}
