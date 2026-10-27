@@ -266,11 +266,11 @@
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "main",
-            "version": "7.2",
-            "ref": "caea3c928ee9e1b21288fd76aef36f16ea355515"
+            "version": "8.2",
+            "ref": "a3739cfd29c84fb1f5cc2733fcb7ba83ac64c30b"
         },
         "files": [
-            "src/Schedule.php"
+            "config/packages/scheduler.yaml"
         ]
     },
     "symfony/security-bundle": {

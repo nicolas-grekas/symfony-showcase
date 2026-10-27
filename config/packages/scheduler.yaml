@@ -1,9 +1,13 @@
 # yaml-language-server: $schema=../schema.json
 scheduler:
-    # scheduled messages follow the routing of Messenger, as they will by default in 9.0
+    # send the scheduled messages to the Messenger transports routed for their class
     use_messenger_routing: true
+
     schedules:
         default:
-            # missed runs are caught up after a downtime, once only, by a single worker
+            # run the tasks missed while no worker was running, once
             stateful: true
             process_only_last_missed_run: true
+
+            # add your tasks with the #[AsCronTask] and #[AsPeriodicTask] attributes
+            # see https://symfony.com/doc/current/scheduler.html
