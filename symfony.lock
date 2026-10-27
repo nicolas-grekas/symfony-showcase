@@ -106,8 +106,8 @@
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "main",
-            "version": "5.3",
-            "ref": "5aa8aa48234c8eb6dbdd7b3cd5d791485d2cec4b"
+            "version": "8.2",
+            "ref": "bf7758dda9715a7b8599012cd8b23adc09dd6fa8"
         },
         "files": [
             "config/packages/debug.yaml"
