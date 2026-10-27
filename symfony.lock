@@ -131,11 +131,11 @@
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "main",
-            "version": "7.2",
-            "ref": "7d86a6723f4a623f59e2bf966b6aad2fc461d36b"
+            "version": "8.2",
+            "ref": "3432a58fba173e2c80d9e86b50fdd9598fef1335"
         },
         "files": [
-            "config/packages/csrf.yaml"
+            "config/packages/form.yaml"
         ]
     },
     "symfony/framework-bundle": {
@@ -287,6 +287,18 @@
         "files": [
             "config/packages/security.yaml",
             "config/routes/security.yaml"
+        ]
+    },
+    "symfony/security-csrf": {
+        "version": "8.2",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "8.2",
+            "ref": "939ab3e95126f02c1d7a481abf72c40f810ea1cb"
+        },
+        "files": [
+            "config/packages/csrf_protection.yaml"
         ]
     },
     "symfony/stimulus-bundle": {
