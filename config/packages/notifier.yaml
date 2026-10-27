@@ -1,7 +1,7 @@
 # yaml-language-server: $schema=../schema.json
 notifier:
     channel_policy:
-        # use chat/slack, chat/telegram, sms/twilio or sms/nexmo
+        # use chat/slack, chat/telegram, sms/twilio or sms/vonage
         urgent: ['email']
         high: ['email']
         medium: ['email']
