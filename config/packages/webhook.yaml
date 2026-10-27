@@ -2,6 +2,13 @@
 webhook:
     # https://www.standardwebhooks.com signatures, for the webhooks received and the ones the fake provider sends
     signature_format: standard
+    no_private_network: true
     routing:
         payments:
             secret: '%env(PAYMENTS_WEBHOOK_SECRET)%'
+
+when@dev:
+    webhook:
+        no_private_network:
+            # the fake payment provider sends its webhooks to this app
+            allow_list: ['127.0.0.1', '::1']
