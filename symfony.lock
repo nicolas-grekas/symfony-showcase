@@ -243,12 +243,10 @@
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "main",
-            "version": "7.3",
-            "ref": "dae70df71978ae9226ae915ffd5fad817f5ca1f7"
+            "version": "8.2",
+            "ref": "46c0212530169ce92351ce7d58336db04f77c2a6"
         },
-        "files": [
-            "config/packages/property_info.yaml"
-        ]
+        "files": []
     },
     "symfony/routing": {
         "version": "8.2",
