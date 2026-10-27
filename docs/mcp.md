@@ -18,12 +18,16 @@ has its own OAuth layer, which the app doesn't use.
 | `get_schedule` | gives the time, room, title and speakers of each scheduled talk of a conference | a token |
 | `list_my_proposals` | lists the proposals of the speaker who is logged in, with their status | a token |
 | `submit_proposal` | submits a talk to an open call for papers, validated like the API does | the `proposals:write` scope |
+| `list_proposals_to_review` | lists the proposals of a conference that wait for a decision | the reviewer role and the `proposals:review` scope |
+| `review_proposal` | gives the notes of the [review assistant](ai.md) about a proposal, and the similar talks and proposals | the reviewer role and the `proposals:review` scope |
 
 The schedule is also a resource: `conference://{conference}/schedule`, e.g.
 `conference://symfonylive-lille/schedule`.
 
-The code is in `src/Mcp`. The tools are methods of `ConferenceTools` with the `#[McpTool]`
-attribute of the SDK. They call the services of the app: the repositories, the
+The Keycloak realm has a `reviewer` / `reviewer` user for the tools of the reviewers.
+
+The code is in `src/Mcp`. The tools are methods of `ConferenceTools` and `ReviewerTools` with the
+`#[McpTool]` attribute of the SDK. They call the services of the app: the repositories, the
 `ProposalSubmitter` of the call for papers, the validator and the object mapper.
 
 ## Running it
@@ -38,7 +42,7 @@ The answer is a `401` with `WWW-Authenticate: Bearer resource_metadata="http://l
 That document tells the client where to get a token, and for which resource:
 
 ```json
-{"resource":"http://localhost:8124/mcp","authorization_servers":["http://localhost:8180/realms/showcase"],"scopes_supported":["proposals:write"],"bearer_methods_supported":["header"]}
+{"resource":"http://localhost:8124/mcp","authorization_servers":["http://localhost:8180/realms/showcase"],"scopes_supported":["proposals:write","proposals:review"],"bearer_methods_supported":["header"]}
 ```
 
 Connect the clients to `http://localhost:8124/mcp`, not to `127.0.0.1`. Keycloak only issues

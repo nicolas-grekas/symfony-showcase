@@ -63,6 +63,8 @@ security:
                 resource_metadata:
                     <<: *resource_metadata
                     resource: /mcp
+                    # the reviewers use the review assistant through the MCP server only
+                    scopes_supported: ['proposals:write', 'proposals:review']
         main:
             lazy: true
             provider: app_users

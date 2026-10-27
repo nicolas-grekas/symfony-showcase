@@ -9,6 +9,7 @@ use App\Enum\Room;
 use App\Message\ProposalSubmitted;
 use App\Tests\Security\FakeIdentityProvider;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\AI\Store\Bridge\Doctrine\EntityIndexer;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Clock\DatePoint;
@@ -49,7 +50,7 @@ final class McpServerTest extends WebTestCase
         $this->assertSame('http://localhost/mcp', $metadata['resource']);
         $this->assertSame($_SERVER['MCP_RESOURCE'], $metadata['resource']);
         $this->assertSame([$_SERVER['OIDC_ISSUER']], $metadata['authorization_servers']);
-        $this->assertSame(['proposals:write'], $metadata['scopes_supported']);
+        $this->assertSame(['proposals:write', 'proposals:review'], $metadata['scopes_supported']);
     }
 
     public function testTokensAreBoundToTheMcpServer()
@@ -79,7 +80,7 @@ final class McpServerTest extends WebTestCase
         $this->assertNotNull($this->sessionId);
 
         $tools = array_column($this->call('tools/list')['tools'], null, 'name');
-        $this->assertSame(['search_talks', 'get_schedule', 'list_my_proposals', 'submit_proposal'], array_keys($tools));
+        $this->assertSame(['search_talks', 'get_schedule', 'list_my_proposals', 'submit_proposal', 'list_proposals_to_review', 'review_proposal'], array_keys($tools));
         $this->assertTrue($tools['search_talks']['annotations']['readOnlyHint']);
         $this->assertSame(['beginner', 'intermediate', 'advanced'], $tools['submit_proposal']['inputSchema']['properties']['level']['enum']);
     }
@@ -217,6 +218,47 @@ final class McpServerTest extends WebTestCase
         $result = $this->call('tools/call', ['name' => 'search_talks', 'arguments' => ['query' => 'profiling']]);
 
         $this->assertSame(['Profiling a Symfony app end to end'], array_column($result['structuredContent']['talks'], 'title'));
+    }
+
+    public function testReviewersReviewProposalsWithTheAssistant()
+    {
+        static::getContainer()->get(EntityIndexer::class)->index(Proposal::class);
+        $this->login('reviewer@example.com', ['proposals:review']);
+        $this->initialize();
+
+        $proposals = $this->call('tools/call', ['name' => 'list_proposals_to_review', 'arguments' => ['conference' => 'symfonylive-lille']])['structuredContent']['proposals'];
+        $this->assertSame(['submitted', 'in_review'], array_values(array_unique(array_column($proposals, 'status'))));
+        $proposal = $proposals[array_search('Finding the slow parts of a Symfony app', array_column($proposals, 'title'), true)];
+
+        $result = $this->call('tools/call', ['name' => 'review_proposal', 'arguments' => ['proposal' => $proposal['id']]]);
+
+        $this->assertFalse($result['isError'] ?? false, $result['content'][0]['text'] ?? '');
+        $review = $result['structuredContent'];
+        $this->assertStringStartsWith('When a page is slow', $review['notes']['summary']);
+        $this->assertSame('performance', $review['notes']['track']);
+        $this->assertSame(['title' => 'Profiling a Symfony app end to end', 'similarity' => 0.64], array_intersect_key($review['similar'][0], ['title' => 1, 'similarity' => 1]));
+        $this->assertSame(ProposalStatus::Submitted, static::getContainer()->get(EntityManagerInterface::class)->find(Proposal::class, $proposal['id'])->getStatus());
+    }
+
+    public function testReviewingProposalsNeedsTheScope()
+    {
+        $this->login('reviewer@example.com');
+        $this->initialize();
+
+        $this->rpc('tools/call', ['name' => 'list_proposals_to_review', 'arguments' => ['conference' => 'symfonylive-lille']]);
+
+        $this->assertResponseStatusCodeSame(403);
+        $this->assertStringContainsString('error="insufficient_scope",error_description="The request requires higher privileges than provided by the access token.",scope="proposals:review"', $this->client->getResponse()->headers->get('WWW-Authenticate'));
+    }
+
+    public function testOnlyReviewersReviewProposals()
+    {
+        $this->login('alice@example.com', ['proposals:review']);
+        $this->initialize();
+
+        $this->rpc('tools/call', ['name' => 'review_proposal', 'arguments' => ['proposal' => (string) static::getContainer()->get(EntityManagerInterface::class)->getRepository(Proposal::class)->findOneBy(['title' => 'Forms in 2027'])->id]]);
+
+        $this->assertResponseStatusCodeSame(403);
     }
 
     private function login(string $email, array $scopes = []): void

@@ -68,6 +68,22 @@ class ProposalRepository extends ServiceEntityRepository
     /**
      * @return list<Proposal>
      */
+    public function findToReview(Conference $conference): array
+    {
+        return $this->createQueryBuilder('p')
+            ->where('p.conference = :conference')
+            ->andWhere('p.status IN (:statuses)')
+            ->setParameter('conference', $conference)
+            ->setParameter('statuses', [ProposalStatus::Submitted, ProposalStatus::InReview])
+            ->orderBy('p.submittedAt')
+            ->addOrderBy('p.title')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return list<Proposal>
+     */
     public function findScheduled(Conference $conference): array
     {
         return $this->createQueryBuilder('p')

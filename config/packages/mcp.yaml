@@ -2,7 +2,7 @@ mcp:
     servers:
         conferences:
             description: 'The talks, schedules and call for papers of the conferences'
-            instructions: 'search_talks and get_schedule read the program of the conferences. list_my_proposals and submit_proposal act in the name of the speaker who is logged in; submitting needs the proposals:write scope.'
+            instructions: 'search_talks and get_schedule read the program of the conferences. list_my_proposals and submit_proposal act in the name of the speaker who is logged in; submitting needs the proposals:write scope. list_proposals_to_review and review_proposal are for the reviewers, with the proposals:review scope: review_proposal gives the notes of the review assistant, and the reviewers decide in the back office.'
             registry: 'App\Mcp\'
             http:
                 path: /mcp
