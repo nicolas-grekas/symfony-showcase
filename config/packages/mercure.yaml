@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=../schema.json
 mercure:
     hubs:
         default:
@@ -10,3 +11,14 @@ mercure:
                     iss: '%env(MERCURE_JWT_ISSUER)%'
                     sub: 'app'
                     client_id: 'app'
+
+when@test:
+    mercure:
+        hubs:
+            default:
+                # the tests read the updates from the hub service, nothing is sent
+                http_client: mercure.test_http_client
+
+    services:
+        mercure.test_http_client:
+            class: Symfony\Component\HttpClient\MockHttpClient

@@ -53,15 +53,21 @@ services:
     image: dunglas/mercure
     restart: unless-stopped
     environment:
-      # Uncomment the following line to disable HTTPS,
-      #SERVER_NAME: ':80'
+      # HTTP, on the port 80 of the container
+      SERVER_NAME: ':80'
       MERCURE_PUBLISHER_JWT_KEY: '!ChangeThisMercureHubJWTSecretKey!'
       MERCURE_SUBSCRIBER_JWT_KEY: '!ChangeThisMercureHubJWTSecretKey!'
       # Must match the MERCURE_JWT_ISSUER of your Symfony project
       MERCURE_TRUSTED_ISSUERS: 'https://localhost'
-      # Set the URL of your Symfony project (without trailing slash!) as value of the cors_origins directive
+      # the updates of the app carry no data, so the pages of the app subscribe without a token
       MERCURE_EXTRA_DIRECTIVES: |
-        cors_origins http://127.0.0.1:8000
+        anonymous
+        cors_origins http://127.0.0.1:8124 http://localhost:8124
+    healthcheck:
+      test: ["CMD", "curl", "-fs", "http://localhost:2019/mercure/health/ready"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     volumes:
       - mercure_data:/data
       - mercure_config:/config

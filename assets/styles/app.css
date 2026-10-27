@@ -83,3 +83,13 @@ form.inline {
 .flash-error {
     background: #ffebe9;
 }
+
+tr.arrived {
+    animation: arrived 6s ease-out;
+}
+
+@keyframes arrived {
+    from {
+        background: #fff8c5;
+    }
+}

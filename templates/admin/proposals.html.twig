@@ -1,15 +1,21 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Proposals{% endblock %}
+{% block title %}Proposals for {{ conference.name }}{% endblock %}
+
+{% block head %}
+    {# the hub tells the page to refresh when a proposal is submitted, see App\MessageHandler\RefreshProposalLists #}
+    {{ turbo_refreshes_with(method: 'morph', scroll: 'preserve') }}
+{% endblock %}
 
 {% block body %}
-    <h1>Proposals</h1>
+    <h1>Proposals for {{ conference.name }}</h1>
+    {{ turbo_stream_from(path('admin_proposals', {conference: conference.id})) }}
 
     <table>
         <thead><tr><th>Title</th><th>Speakers</th><th>Status</th><th>Submitted</th><th>Public</th></tr></thead>
-        <tbody>
-            {% for proposal in proposals %}
-                <tr>
+        <tbody data-controller="arrivals">
+            {% for proposal in proposals|sort((a, b) => b.submittedAt <=> a.submittedAt) %}
+                <tr id="proposal-{{ proposal.id }}" data-arrivals-target="row">
                     <td><a href="{{ path('proposal_show', {id: proposal.id}) }}">{{ proposal.title }}</a></td>
                     <td>{{ proposal.speakers|map(s => s.name)|join(', ') }}</td>
                     <td>{{ proposal.status.value|humanize }}</td>
