@@ -11,6 +11,7 @@ use App\Enum\Format;
 use App\Enum\Level;
 use App\Repository\ConferenceRepository;
 use App\Repository\ProposalRepository;
+use Mcp\Capability\Attribute\McpResourceTemplate;
 use Mcp\Capability\Attribute\McpTool;
 use Mcp\Exception\ToolCallException;
 use Mcp\Schema\ToolAnnotations;
@@ -21,7 +22,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
- * The tools of the MCP server. The firewall of the API authenticates every request.
+ * The tools and resources of the MCP server. The firewall of the API authenticates every request.
  */
 final class ConferenceTools
 {
@@ -58,6 +59,7 @@ final class ConferenceTools
      * @return array{conference: string, slots: list<SlotResult>}
      */
     #[McpTool(name: 'get_schedule', annotations: new ToolAnnotations(readOnlyHint: true))]
+    #[McpResourceTemplate(uriTemplate: 'conference://{conference}/schedule', name: 'schedule', mimeType: 'application/json')]
     public function getSchedule(string $conference): array
     {
         $conference = $this->findConference($conference);

@@ -96,6 +96,19 @@ final class McpServerTest extends WebTestCase
         ]], $schedule['slots']);
     }
 
+    public function testTheScheduleIsAlsoAResource()
+    {
+        $this->login('carol@example.com');
+        $this->initialize();
+
+        $templates = $this->call('resources/templates/list')['resourceTemplates'];
+        $this->assertSame(['conference://{conference}/schedule'], array_column($templates, 'uriTemplate'));
+
+        $contents = $this->call('resources/read', ['uri' => 'conference://symfonycon-amsterdam/schedule'])['contents'];
+        $this->assertSame('application/json', $contents[0]['mimeType']);
+        $this->assertSame(['conference' => 'SymfonyCon Amsterdam', 'slots' => []], json_decode($contents[0]['text'], true));
+    }
+
     public function testAnUnknownConferenceIsAToolError()
     {
         $this->login('alice@example.com');
