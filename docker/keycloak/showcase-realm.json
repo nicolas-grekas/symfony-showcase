@@ -833,5 +833,60 @@
         }
       ]
     }
-  ]
+  ],
+  "clientProfiles": {
+    "profiles": [
+      {
+        "name": "mcp-cimd",
+        "description": "MCP clients identified by the URL of their client ID metadata document",
+        "executors": [
+          {
+            "executor": "client-id-metadata-document",
+            "configuration": {
+              "cimd-allow-http-scheme": true,
+              "cimd-allow-permitted-domains": [
+                "claude.ai",
+                "localhost",
+                "127.0.0.1",
+                "host.docker.internal"
+              ],
+              "cimd-restrict-same-domain": false,
+              "only-allow-confidential-client": false,
+              "accept-public-client-with-confidential-client-only-grant": true,
+              "cimd-resource-indicator-allow-list": [
+                "http://localhost:8124/mcp"
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "clientPolicies": {
+    "policies": [
+      {
+        "name": "mcp-cimd",
+        "description": "Applies the mcp-cimd profile to the client IDs that are URLs of these domains",
+        "enabled": true,
+        "conditions": [
+          {
+            "condition": "client-id-uri",
+            "configuration": {
+              "client-id-uri-scheme": [
+                "https",
+                "http"
+              ],
+              "client-id-uri-allow-permitted-domains": [
+                "claude.ai",
+                "host.docker.internal"
+              ]
+            }
+          }
+        ],
+        "profiles": [
+          "mcp-cimd"
+        ]
+      }
+    ]
+  }
 }

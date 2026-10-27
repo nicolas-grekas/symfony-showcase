@@ -22,8 +22,8 @@ services:
 ###> keycloak ###
   keycloak:
     image: quay.io/keycloak/keycloak:26.8.1
-    # resource indicators bind the tokens of MCP clients to the MCP server (RFC 8707)
-    command: start-dev --import-realm --features=resource-indicators
+    # resource indicators (RFC 8707) and client ID metadata documents, which MCP clients use
+    command: start-dev --import-realm --features=resource-indicators,cimd
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
       KC_BOOTSTRAP_ADMIN_PASSWORD: admin
