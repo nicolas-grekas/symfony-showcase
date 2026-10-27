@@ -13371,6 +13371,254 @@
                 },
                 "additionalProperties": false
             },
+            "mercure": {
+                "$ref": "#/$defs/types/object_null",
+                "properties": {
+                    "hubs": {
+                        "$ref": "#/$defs/types/object_null",
+                        "additionalProperties": {
+                            "$ref": "#/$defs/types/object_null",
+                            "properties": {
+                                "url": {
+                                    "$ref": "#/$defs/types/scalar",
+                                    "default": null,
+                                    "description": "URL of the hub's publish endpoint. Leave empty to publish through FrankenPHP's built-in Mercure hub.",
+                                    "examples": [
+                                        "https://demo.mercure.rocks/.well-known/mercure"
+                                    ]
+                                },
+                                "public_url": {
+                                    "$ref": "#/$defs/types/scalar",
+                                    "default": null,
+                                    "description": "URL of the hub's public endpoint",
+                                    "examples": [
+                                        "https://demo.mercure.rocks/.well-known/mercure"
+                                    ]
+                                },
+                                "publisher": {
+                                    "$ref": "#/$defs/types/object_null",
+                                    "properties": {
+                                        "value": {
+                                            "$ref": "#/$defs/types/scalar",
+                                            "description": "JSON Web Token to use to publish to this hub."
+                                        },
+                                        "provider": {
+                                            "$ref": "#/$defs/types/scalar",
+                                            "description": "The ID of a service implementing TokenProviderInterface."
+                                        },
+                                        "factory": {
+                                            "$ref": "#/$defs/types/scalar",
+                                            "description": "The ID of a service implementing TokenFactoryInterface, used to create the JSON Web Token."
+                                        },
+                                        "topics": {
+                                            "$ref": "#/$defs/types/variable",
+                                            "description": "A list of topics to allow publishing to when using the given factory to generate the JWT."
+                                        },
+                                        "secret": {
+                                            "$ref": "#/$defs/types/scalar",
+                                            "description": "The JWT Secret to use.",
+                                            "examples": [
+                                                "!ChangeMe!"
+                                            ]
+                                        },
+                                        "passphrase": {
+                                            "$ref": "#/$defs/types/scalar",
+                                            "default": "",
+                                            "description": "The JWT secret passphrase."
+                                        },
+                                        "algorithm": {
+                                            "$ref": "#/$defs/types/scalar",
+                                            "description": "The algorithm to use to sign the JWT. With \"secret\", one of LcobucciFactory::SIGN_ALGORITHMS (\"hmac.sha256\", the default). With \"jwks_uri\", a JWA name from WebTokenFactory::SIGN_ALGORITHMS (\"HS256\", the default)."
+                                        },
+                                        "jwks_uri": {
+                                            "$ref": "#/$defs/types/scalar",
+                                            "description": "URL of a JSON Web Key Set (JWKS) to fetch the signing key from, instead of \"secret\". Requires \"protocol_version: 1.0\" and \"web-token/jwt-library\"."
+                                        },
+                                        "key_id": {
+                                            "$ref": "#/$defs/types/scalar",
+                                            "description": "The \"kid\" of the key to select from \"jwks_uri\", required when the key set holds more than one matching key."
+                                        },
+                                        "claims": {
+                                            "$ref": "#/$defs/types/object_null",
+                                            "additionalProperties": {
+                                                "$ref": "#/$defs/types/variable"
+                                            },
+                                            "description": "Additional claims for the JWT built when using \"secret\" or \"jwks_uri\", e.g. \"iss\"/\"sub\"/\"client_id\", required by RFC 9068 access tokens under \"protocol_version: 1.0\". \"aud\" defaults to this hub's \"public_url\" (or \"url\"), plus \"url\" for the publisher token, which is sent there: a 1.0 hub derives its expected audience from each request unless it pins its \"resource_identifier\"."
+                                        }
+                                    },
+                                    "additionalProperties": false,
+                                    "description": "Configuration of the JSON Web Token used to publish to this hub. Use with \"subscriber\" to sign publisher and subscriber tokens with different keys."
+                                },
+                                "subscriber": {
+                                    "$ref": "#/$defs/types/object_null",
+                                    "properties": {
+                                        "factory": {
+                                            "$ref": "#/$defs/types/scalar",
+                                            "description": "The ID of a service implementing TokenFactoryInterface, used to create the JSON Web Tokens."
+                                        },
+                                        "secret": {
+                                            "$ref": "#/$defs/types/scalar",
+                                            "description": "The JWT Secret to use.",
+                                            "examples": [
+                                                "!ChangeMe!"
+                                            ]
+                                        },
+                                        "passphrase": {
+                                            "$ref": "#/$defs/types/scalar",
+                                            "default": "",
+                                            "description": "The JWT secret passphrase."
+                                        },
+                                        "algorithm": {
+                                            "$ref": "#/$defs/types/scalar",
+                                            "description": "The algorithm to use to sign the JWT. With \"secret\", one of LcobucciFactory::SIGN_ALGORITHMS (\"hmac.sha256\", the default). With \"jwks_uri\", a JWA name from WebTokenFactory::SIGN_ALGORITHMS (\"HS256\", the default)."
+                                        },
+                                        "jwks_uri": {
+                                            "$ref": "#/$defs/types/scalar",
+                                            "description": "URL of a JSON Web Key Set (JWKS) to fetch the signing key from, instead of \"secret\". Requires \"protocol_version: 1.0\" and \"web-token/jwt-library\"."
+                                        },
+                                        "key_id": {
+                                            "$ref": "#/$defs/types/scalar",
+                                            "description": "The \"kid\" of the key to select from \"jwks_uri\", required when the key set holds more than one matching key."
+                                        },
+                                        "claims": {
+                                            "$ref": "#/$defs/types/object_null",
+                                            "additionalProperties": {
+                                                "$ref": "#/$defs/types/variable"
+                                            },
+                                            "description": "Additional claims for the JWT built when using \"secret\" or \"jwks_uri\", e.g. \"iss\"/\"sub\"/\"client_id\", required by RFC 9068 access tokens under \"protocol_version: 1.0\". \"aud\" defaults to this hub's \"public_url\" (or \"url\"), plus \"url\" for the publisher token, which is sent there: a 1.0 hub derives its expected audience from each request unless it pins its \"resource_identifier\"."
+                                        }
+                                    },
+                                    "additionalProperties": false,
+                                    "description": "Configuration of the JSON Web Tokens created for subscribers (e.g. the authorization cookie)."
+                                },
+                                "jwt": {
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/$defs/types/object_null",
+                                            "properties": {
+                                                "value": {
+                                                    "$ref": "#/$defs/types/scalar",
+                                                    "description": "JSON Web Token to use to publish to this hub."
+                                                },
+                                                "provider": {
+                                                    "$ref": "#/$defs/types/scalar",
+                                                    "description": "The ID of a service to call to provide the JSON Web Token."
+                                                },
+                                                "factory": {
+                                                    "$ref": "#/$defs/types/scalar",
+                                                    "description": "The ID of a service to call to create the JSON Web Token."
+                                                },
+                                                "publish": {
+                                                    "$ref": "#/$defs/types/variable",
+                                                    "description": "A list of topics to allow publishing to when using the given factory to generate the JWT."
+                                                },
+                                                "subscribe": {
+                                                    "$ref": "#/$defs/types/variable",
+                                                    "description": "A list of topics to allow subscribing to when using the given factory to generate the JWT."
+                                                },
+                                                "secret": {
+                                                    "$ref": "#/$defs/types/scalar",
+                                                    "description": "The JWT Secret to use.",
+                                                    "examples": [
+                                                        "!ChangeMe!"
+                                                    ]
+                                                },
+                                                "passphrase": {
+                                                    "$ref": "#/$defs/types/scalar",
+                                                    "default": "",
+                                                    "description": "The JWT secret passphrase."
+                                                },
+                                                "algorithm": {
+                                                    "$ref": "#/$defs/types/scalar",
+                                                    "description": "The algorithm to use to sign the JWT. With \"secret\", one of LcobucciFactory::SIGN_ALGORITHMS (\"hmac.sha256\", the default). With \"jwks_uri\", a JWA name from WebTokenFactory::SIGN_ALGORITHMS (\"HS256\", the default)."
+                                                },
+                                                "jwks_uri": {
+                                                    "$ref": "#/$defs/types/scalar",
+                                                    "description": "URL of a JSON Web Key Set (JWKS) to fetch the signing key from, instead of \"secret\". Requires \"protocol_version: 1.0\" and \"web-token/jwt-library\"."
+                                                },
+                                                "key_id": {
+                                                    "$ref": "#/$defs/types/scalar",
+                                                    "description": "The \"kid\" of the key to select from \"jwks_uri\", required when the key set holds more than one matching key."
+                                                },
+                                                "claims": {
+                                                    "$ref": "#/$defs/types/object_null",
+                                                    "additionalProperties": {
+                                                        "$ref": "#/$defs/types/variable"
+                                                    },
+                                                    "description": "Additional claims for the JWT built when using \"secret\" or \"jwks_uri\", e.g. \"iss\"/\"sub\"/\"client_id\", required by RFC 9068 access tokens under \"protocol_version: 1.0\". \"aud\" defaults to this hub's \"public_url\" (or \"url\"), plus \"url\" for the publisher token, which is sent there: a 1.0 hub derives its expected audience from each request unless it pins its \"resource_identifier\"."
+                                                }
+                                            },
+                                            "additionalProperties": false
+                                        },
+                                        {
+                                            "type": [
+                                                "string"
+                                            ]
+                                        }
+                                    ],
+                                    "description": "JSON Web Token configuration."
+                                },
+                                "jwt_provider": {
+                                    "$ref": "#/$defs/types/scalar",
+                                    "description": "Deprecated since symfony/mercure-bundle 0.3: The child node \"jwt_provider\" at path \"mercure.hubs..jwt_provider\" is deprecated, use \"jwt.provider\" instead.\n\nThe ID of a service to call to generate the JSON Web Token.",
+                                    "deprecated": true
+                                },
+                                "bus": {
+                                    "$ref": "#/$defs/types/scalar",
+                                    "description": "Name of the Messenger bus where the handler for this hub must be registered. Default to the default bus if Messenger is enabled."
+                                },
+                                "http_client": {
+                                    "$ref": "#/$defs/types/scalar",
+                                    "description": "The ID of the HTTP client service to publish to this hub with, e.g. a scoped client with a short timeout. Defaults to \"http_client\"."
+                                },
+                                "protocol_version": {
+                                    "anyOf": [
+                                        {
+                                            "enum": [
+                                                "!php/enum Symfony\\Component\\Mercure\\ProtocolVersion::Legacy",
+                                                "0.x",
+                                                "!php/enum Symfony\\Component\\Mercure\\ProtocolVersion::V1",
+                                                "1.0",
+                                                null
+                                            ]
+                                        },
+                                        {
+                                            "$ref": "#/$defs/types/param"
+                                        }
+                                    ],
+                                    "default": "1.0",
+                                    "description": "The Mercure protocol version spoken by this hub: \"1.0\" (default) or \"0.x\". Affects the default cookie name, the JWT claim shape built by \"jwt.secret\", and how the mercure() Twig function interprets matcher-typed topics."
+                                },
+                                "cookie_name": {
+                                    "$ref": "#/$defs/types/scalar",
+                                    "default": null,
+                                    "description": "Name of the subscriber authorization cookie. Defaults to a value computed from \"protocol_version\" when not set: \"__Secure-mercure_access_token\" for \"1.0\" (\"mercure_access_token\" in debug mode, matching the hub's \"playground\" mode), \"mercureAuthorization\" for \"0.x\"."
+                                }
+                            },
+                            "additionalProperties": false
+                        }
+                    },
+                    "default_hub": {
+                        "$ref": "#/$defs/types/scalar"
+                    },
+                    "default_cookie_lifetime": {
+                        "$ref": "#/$defs/types/integer_null",
+                        "default": null,
+                        "description": "Default lifetime of the cookie containing the JWT, in seconds. Defaults to the value of \"framework.session.cookie_lifetime\"."
+                    },
+                    "enable_profiler": {
+                        "$ref": "#/$defs/types/boolean",
+                        "description": "Deprecated since symfony/mercure-bundle 0.3: The child node \"enable_profiler\" at path \"mercure.enable_profiler\" is deprecated.\n\nEnable Symfony Web Profiler integration.",
+                        "deprecated": true
+                    }
+                },
+                "patternProperties": {
+                    "^hub$": {
+                        "$ref": "#/$defs/types/variable"
+                    }
+                },
+                "additionalProperties": false
+            },
             "messenger": {
                 "anyOf": [
                     {
@@ -22313,6 +22561,9 @@
         "mcp": {
             "$ref": "#/$defs/nodes/mcp"
         },
+        "mercure": {
+            "$ref": "#/$defs/nodes/mercure"
+        },
         "messenger": {
             "$ref": "#/$defs/nodes/messenger"
         },
@@ -22427,6 +22678,9 @@
                 },
                 "mcp": {
                     "$ref": "#/$defs/nodes/mcp"
+                },
+                "mercure": {
+                    "$ref": "#/$defs/nodes/mercure"
                 },
                 "messenger": {
                     "$ref": "#/$defs/nodes/messenger"
@@ -22548,6 +22802,9 @@
                 "mcp": {
                     "$ref": "#/$defs/nodes/mcp"
                 },
+                "mercure": {
+                    "$ref": "#/$defs/nodes/mercure"
+                },
                 "messenger": {
                     "$ref": "#/$defs/nodes/messenger"
                 },
@@ -22665,6 +22922,9 @@
                 },
                 "mcp": {
                     "$ref": "#/$defs/nodes/mcp"
+                },
+                "mercure": {
+                    "$ref": "#/$defs/nodes/mercure"
                 },
                 "messenger": {
                     "$ref": "#/$defs/nodes/messenger"
