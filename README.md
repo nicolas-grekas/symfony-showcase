@@ -47,6 +47,18 @@ curl -H "Authorization: Bearer $TOKEN" http://127.0.0.1:8124/api/conferences/sym
 
 `/.well-known/api-catalog` lists the endpoints, and `/api/docs` describes them.
 
+## MCP server
+
+`/mcp` serves an MCP server, with the MCP bundle of Symfony AI: AI clients such as Claude Code
+or the MCP Inspector can search the talks, read the schedules, list the proposals of a speaker
+and submit new ones. It takes the same Keycloak tokens as the API, checked by the same firewall,
+and submitting needs the `proposals:write` scope. [docs/mcp.md](docs/mcp.md) tells how to
+connect a client:
+
+```bash
+claude mcp add --transport http --client-id showcase-mcp --callback-port 8125 conferences http://localhost:8124/mcp
+```
+
 ## Tests
 
 ```bash
@@ -72,6 +84,7 @@ with `SYMFONY_HTTP_RECORDER=record` while the server runs.
 | Standard Webhooks, remote event consumers | `src/RemoteEvent`, `src/Controller/FakePaymentProviderController.php` |
 | ObjectMapper and JsonStreamer through `#[Serialize]`, `Link-Template`, api-catalog | `src/Api`, `src/Controller/Api` |
 | Access tokens with scopes, protected resource metadata | `config/packages/security.yaml`, `src/Controller/Api/ProposalApiController.php` |
+| MCP tools behind the API firewall, `#[IsGranted]` on tools | `src/Mcp`, `config/packages/mcp.yaml`, `docs/mcp.md` |
 | Sub-commands, `InputFile[]`, enum list options | `src/Command/ConferenceCommands.php` |
 | Columns encrypted with KeyManagement | `src/Entity/Speaker.php`, `config/packages/key_management.yaml` |
 | HTTP cache with `Cache-Status` | `config/packages/framework.yaml` |
