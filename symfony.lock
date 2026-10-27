@@ -390,8 +390,8 @@
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "main",
-            "version": "1.0",
-            "ref": "b9e6cc8e7b6069d0e8a816665809a423864eb4dd"
+            "version": "1.4",
+            "ref": "63800aca6d1ad624b04bf7af2427e959f9ec0f57"
         },
         "files": [
             "config/packages/messenger.yaml"
