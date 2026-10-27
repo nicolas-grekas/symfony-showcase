@@ -9,6 +9,16 @@ proposal, a reviewer sees:
   that fits best. The model reads the data of the app with tools: the proposal, the other proposals
   of its speakers, the similar talks and proposals, and the tracks.
 
+The panel shows the tools that the model calls, then writes the notes as the model streams them
+(see "Notes written in front of the reviewer").
+
+In the back office, the reviewers also:
+
+- see the proposals of a conference arrive in their list as they are submitted, from the form, the
+  API or the MCP server (see "Proposals that arrive live");
+- search the talks and proposals of all conferences by meaning, as they type (see "Search by
+  meaning").
+
 The assistant never decides, and its tools only read. Accepting or rejecting a proposal stays a
 reviewer action, behind the recent authentication of the reviewer (see "Human in the loop").
 
@@ -16,7 +26,9 @@ The same assistant is available to MCP clients, such as Claude Code, as two tool
 of the app (see "MCP tools").
 
 It uses [Symfony AI](https://github.com/symfony/ai) 1.0.0-BETA1, with the Platform, Agent and Store
-components, the AI bundle, the Hugging Face platform bridge and the Doctrine store bridge.
+components, the AI bundle, the Hugging Face platform bridge and the Doctrine store bridge. The pages
+use [Symfony UX](https://ux.symfony.com) 3.6: Turbo and its Mercure bridge, Live Components and
+Icons, with the Mercure bundle 0.6 and a [Mercure](https://mercure.rocks) hub.
 
 ## Running it
 
@@ -100,6 +112,20 @@ symfony console assistant:index
 
 Run the same migration on the test database, e.g. `symfony console doctrine:migrations:migrate -n --env=test`.
 
+## The Mercure hub
+
+`compose.yaml` runs a Mercure hub, the `mercure` service, over HTTP. The Symfony CLI exposes its URL
+to the app in `MERCURE_URL` and `MERCURE_PUBLIC_URL`. A container set created before the hub was
+added needs it started:
+
+```bash
+docker compose up -d --wait mercure
+```
+
+The publisher key of the hub and `MERCURE_JWT_SECRET` in `.env` are the same development key.
+Change both for production. The pages subscribe without a token (the `anonymous` directive), from
+the origins of the app (the `cors_origins` directive): the updates of the app carry no data.
+
 ## How the proposals are embedded
 
 The model is never called while a speaker waits:
@@ -152,6 +178,65 @@ so the page doesn't wait for it. The "Summarize" button calls the model.
 In development, the AI panel of the web profiler shows the calls to the model and the tools that
 the model called, for each request.
 
+## Notes written in front of the reviewer
+
+"Summarize" posts the form of the panel. The answer shows empty notes and a `<turbo-stream-source>`
+element: Turbo opens an `EventSource` on its URL, `/admin/proposals/{id}/assistant/notes`, and
+applies the Turbo Streams that it receives. `AssistantController::notes()` returns an
+`EventStreamResponse`, whose events render the blocks of `admin/assistant.stream.html.twig`:
+
+1. each tool that the agent calls adds its name to the panel;
+2. each partial `ReviewNotes` updates the summary, then the tags and the track;
+3. the final notes replace the notes of the panel. This removes the `<turbo-stream-source>` element,
+   which closes the stream.
+
+`ReviewAssistant::stream()` calls the agent with the `stream` option and the `ReviewNotes` response
+format. The structured output listener of the platform parses the JSON as the model writes it, and
+denormalizes a partial `ReviewNotes` each time it changes. The agent passes the tool calls and these
+partial objects as the updates of its execution. The final notes are kept in the cache, as before.
+
+The stream calls the model, so it needs the CSRF token of the form, as the "Summarize" button does.
+An `EventSource` can't send a header or a body: `#[IsCsrfTokenValid]` reads the token from the
+query string (`tokenSource: IsCsrfTokenValid::SOURCE_QUERY`).
+
+The fake platform streams its answers a few characters at a time, and sleeps with the `clock`
+service between them. The tests mock the clock with `mockTime()`, so they don't wait.
+
+The `review_proposal` MCP tool doesn't stream.
+
+## Proposals that arrive live
+
+When a proposal is submitted, `App\MessageHandler\RefreshProposalLists` handles the
+`ProposalSubmitted` event in the worker, once the transaction of the proposal commits. It publishes
+the `refresh` action of Turbo to the Mercure hub, on the topic of the list of proposals of the
+conference: its path, `/admin/conferences/{id}/proposals`.
+
+The list subscribes to this topic with `turbo_stream_from()`, and asks Turbo to morph the page when
+it refreshes, with `turbo_refreshes_with(method: 'morph', scroll: 'preserve')`. Turbo loads the page
+again, with the session of the reviewer, and morphs it: the new proposal comes first. The `arrivals`
+Stimulus controller highlights the rows that the list didn't have. A "Live" badge shows while the
+page is connected to the hub.
+
+The update carries no data, so the hub never sees a proposal and the pages need no token to
+subscribe. Each open list loads the page again for each submitted proposal. The speaker never waits
+for the hub: when the hub is down, the handler fails and Messenger retries it, and the submission is
+already saved.
+
+## Search by meaning
+
+The back office has a search box: `App\Twig\Components\SemanticSearch`, a Live Component. As the
+reviewer types, it renders again after a pause of 300 ms, with the five closest talks and proposals
+of all conferences and a bar of their similarity. `SimilarProposals::search()` calls the
+`proposals` retriever of the AI bundle, which embeds the text with the model of the proposals and
+queries the store. The text is kept in the URL, as the `query` parameter.
+
+Live Components render again at `/_components/SemanticSearch`, which is not under `/admin`, so the
+`access_control` rule of the back office doesn't apply. `#[IsGranted('ROLE_REVIEWER')]` on the
+component checks these requests too.
+
+With the fake platform, the similarity is about the words that two texts share. With a model, it is
+about their meaning.
+
 ## Human in the loop
 
 - The tools are marked read-only with `ToolEffectHints(readOnlyHint: true)`, and
@@ -159,7 +244,8 @@ the model called, for each request.
   that changes data, added to the agent later, can't run without a change of this policy.
 - Accepting or rejecting a proposal stays on the "Accept or reject" page. This page asks reviewers
   for their password when they didn't type it in the last 15 minutes
-  (`recent_authentication_lifetime` in `security.yaml`). The assistant panel says so.
+  (`recent_authentication_lifetime` in `security.yaml`, from `RECENT_AUTHENTICATION_LIFETIME`). The
+  assistant panel says so with a "Read-only" badge, and the button with a lock.
 - The speakers write the proposals, so the system prompt tells the model not to follow the
   instructions of a proposal. The tools protect the decisions, not the prompt. A model that follows
   such instructions has no tool to act on them.
@@ -195,13 +281,52 @@ $MCP "Authorization: Bearer $TOKEN" --method tools/call --tool-name list_proposa
 $MCP "Authorization: Bearer $TOKEN" --method tools/call --tool-name review_proposal --tool-arg proposal=<id>
 ```
 
+## A demo
+
+To show the assistant, from a speaker who submits a talk with Claude Code to a reviewer who accepts
+it:
+
+1. Reset the data, then embed the proposals and forget the notes:
+
+   ```bash
+   symfony console doctrine:fixtures:load -n
+   symfony console assistant:index
+   symfony console cache:pool:clear cache.app
+   ```
+
+2. Make the password prompt show up on each decision, then start the server as the README says:
+
+   ```bash
+   echo RECENT_AUTHENTICATION_LIFETIME=10 >> .env.local
+   ```
+
+3. In a browser, log in as `reviewer@example.com` / `reviewer` and open the proposals of SymfonyLive
+   Lille in the back office. The "Live" badge shows.
+4. In Claude Code, connected to the MCP server with the `proposals:write` scope ([mcp.md](mcp.md)),
+   ask for a talk to be submitted to SymfonyLive Lille, for example about warming up the cache after
+   a deployment. The proposal arrives in the list of the reviewer.
+5. Open it: the panel lists the similar talks and proposals. Click "Summarize": the tools, then the
+   notes, appear as the model writes them. A worker embeds the proposal right after it is submitted:
+   if the panel says that the proposal is not embedded yet, reload the page.
+6. Click "Start the review", then "Accept or reject": the app asks for the password. Type it, then
+   accept the proposal.
+
+Remove `RECENT_AUTHENTICATION_LIFETIME` from `.env.local` afterwards.
+
 ## Tests
 
 The tests use the fake platform (`AI_PLATFORM=fake` in `.env.test`). It is built with
 `MockPlatformFactory`, the mock platform of Symfony AI, so the agent, the tools, the structured
 output and the profiler run for real. A test replaces the platform with its own mock through the
 `configure_container` option of `createClient()`, as `testTheAssistantCannotDecide()` does.
-`AiAssertionsTrait` of the AI bundle asserts the calls to the model and to the tools.
+`AiAssertionsTrait` of the AI bundle asserts the calls to the model and to the tools, also when they
+happen in the body of a streamed response.
+
+The tests don't need a Mercure hub. In the test environment, `mercure.yaml` gives the hub a
+`MockHttpClient`, and the tests read the updates that the app published from the hub service, which
+records them in debug mode. `tests/Controller/Admin/ProposalListTest.php` checks the update that a
+submission publishes. `tests/Assistant/SemanticSearchTest.php` renders the search with the
+`InteractsWithLiveComponents` trait of Live Components.
 
 The tests need pgvector in the test database.
 
@@ -219,6 +344,22 @@ The tests need pgvector in the test database.
   `ai:agent:call`, `ai:store:retrieve` and `ai:platform:invoke` commands, the profiler panel and
   `AiAssertionsTrait`.
 
+## What Symfony UX and Mercure provide
+
+- Turbo opens an `EventSource` for a `<turbo-stream-source>` element and applies the Turbo Streams
+  it receives, morphs a page that refreshes, and keeps the elements marked `data-turbo-permanent`.
+  UX Turbo adds `turbo_stream_from()`, which subscribes to a topic of the Mercure hub,
+  `turbo_refreshes_with()` and `TurboStream::refresh()`.
+- The Mercure bundle configures the hub, signs the tokens that publish, and records the published
+  updates in debug mode.
+- Live Components render a component again when a `LiveProp` changes in the browser
+  (`data-model="debounce(300)|query"`), keep it in the URL (`url: true`), and test it with
+  `InteractsWithLiveComponents`.
+- UX Icons renders the icons of `assets/icons`, which `ux:icons:import` downloads from Iconify. The
+  app stores the Lucide icons it uses, so nothing is downloaded at runtime.
+- Symfony 8.2 provides `EventStreamResponse` and `ServerEvent` for the server-sent events, and
+  `tokenSource` for `#[IsCsrfTokenValid]`.
+
 ## What the app adds
 
 - `SelectedPlatform` is the platform that `AI_PLATFORM` selects among the platforms tagged
@@ -230,6 +371,8 @@ The tests need pgvector in the test database.
   vectorizer on the store, declares `EntityEmbedder` and `EntityIndexer` in `services.yaml`, and
   embeds the proposals with Messenger and the `assistant:index` command.
 - `DenyWritingTools`, the cache of the notes, the panel of the back office and the MCP tools.
+- `ReviewAssistant::stream()`, the stream template of the panel, `RefreshProposalLists`, the
+  `arrivals` Stimulus controller, and the search component.
 
 ## Limits
 
@@ -241,3 +384,15 @@ The tests need pgvector in the test database.
   and the Doctrine store reads `limit`.
 - `ai.yaml` lists the tools of the agent under `services`, as the short list form fails
   `lint:yaml --check-schema`.
+- In debug mode, the traceable platform of the profiler wraps each streamed result in a new
+  `StreamResult`, without the listener that builds the final object of a structured output. A
+  streamed agent call with a response format then ends with a `TextResult`, not an `ObjectResult`,
+  and `asObject()` fails in development and in the tests only. `ReviewAssistant::stream()` keeps the
+  last partial notes, which hold the whole answer.
+- In debug mode, the traceable platform also expects each round of a streamed call to be a stream.
+  A platform that answers a round with a plain `ToolCallResult` fails. The fake platform streams its
+  tool calls, as the providers do.
+- A refresh morphs the page and removes the `connected` attribute that the stream source of UX Turbo
+  sets on itself, as the page rendered by the server doesn't have it. The list keeps the stream
+  source in a `data-turbo-permanent` element, so that the "Live" badge stays.
+- The lists of proposals refresh when a proposal is submitted, not when a reviewer decides.

@@ -24,6 +24,9 @@ has its own OAuth layer, which the app doesn't use.
 The schedule is also a resource: `conference://{conference}/schedule`, e.g.
 `conference://symfonylive-lille/schedule`.
 
+A proposal that `submit_proposal` submits arrives in the lists of proposals that the reviewers have
+open in the back office, see [ai.md](ai.md).
+
 The Keycloak realm has a `reviewer` / `reviewer` user for the tools of the reviewers.
 
 The code is in `src/Mcp`. The tools are methods of `ConferenceTools` and `ReviewerTools` with the

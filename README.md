@@ -17,13 +17,16 @@ Requirements: PHP 8.5 with the `intl`, `pdo_pgsql`, `amqp` and `sodium` extensio
 
 ```bash
 composer install
-docker compose up -d --wait   # Postgres with pgvector, Mailpit, Keycloak, RabbitMQ
+docker compose up -d --wait   # Postgres with pgvector, Mailpit, Keycloak, RabbitMQ, Mercure
 symfony console doctrine:migrations:migrate -n
 symfony console doctrine:fixtures:load -n
-symfony serve -d --no-tls --port=8124
+PHP_CLI_SERVER_WORKERS=4 symfony serve -d --no-tls --port=8124
 ```
 
-Use the port 8124: the Keycloak realm in `docker/keycloak` redirects there. The Symfony CLI
+Use the port 8124: the Keycloak realm in `docker/keycloak` redirects there. Without PHP-FPM, the
+Symfony CLI serves the app with the built-in server of PHP, which answers one request at a time
+unless `PHP_CLI_SERVER_WORKERS` gives it more processes: the review assistant streams its notes,
+which holds a process while the model writes. The Symfony CLI
 exposes the containers to the app and starts the Messenger worker declared in
 `.symfony.local.yaml`; run the commands through it (`symfony console`, `symfony php`).
 Mailpit shows the emails at the URL `symfony open:local:webmail` opens.
@@ -70,6 +73,10 @@ Agent and Store components of Symfony AI, with the vectors in PostgreSQL (pgvect
 other provider. The tools of the assistant only read. Accepting or rejecting a proposal stays a
 reviewer action, which asks for the password of the reviewer. Without an API key, a fake platform
 answers.
+
+With Symfony UX, the reviewers see the proposals arrive in their list as they are submitted,
+through a Mercure hub, the notes are written in front of them as the model streams them, and the
+back office searches the talks and proposals by meaning as they type.
 [docs/ai.md](docs/ai.md) tells how to run it with Hugging Face:
 
 ```bash
@@ -78,7 +85,8 @@ symfony console assistant:index
 ```
 
 The database container needs the pgvector image of `compose.yaml`: [docs/ai.md](docs/ai.md)
-tells how to create it again if it is older.
+tells how to create it again if it is older. Containers created before the Mercure hub was added
+need it started: `docker compose up -d --wait mercure`. The Symfony CLI exposes its URL to the app.
 
 ## Tests
 
@@ -107,6 +115,9 @@ with `SYMFONY_HTTP_RECORDER=record` while the server runs.
 | Access tokens with scopes, protected resource metadata | `config/packages/security.yaml`, `src/Controller/Api/ProposalApiController.php` |
 | MCP tools behind the API firewall, `#[IsGranted]` on tools | `src/Mcp`, `config/packages/mcp.yaml`, `docs/mcp.md` |
 | Review assistant: an agent with read-only tools, embeddings in pgvector through Messenger | `src/Assistant`, `config/packages/ai.yaml`, `docs/ai.md` |
+| Proposals that arrive live: a Turbo refresh published to Mercure, morphing | `src/MessageHandler/RefreshProposalLists.php`, `templates/admin/proposals.html.twig` |
+| Notes streamed as Turbo Streams over server-sent events | `src/Controller/Admin/AssistantController.php`, `templates/admin/assistant.stream.html.twig` |
+| Search by meaning, a Live Component | `src/Twig/Components/SemanticSearch.php` |
 | Sub-commands, `InputFile[]`, enum list options | `src/Command/ConferenceCommands.php` |
 | Columns encrypted with KeyManagement | `src/Entity/Speaker.php`, `config/packages/key_management.yaml` |
 | HTTP cache with `Cache-Status` | `config/packages/framework.yaml` |
