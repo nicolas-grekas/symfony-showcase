@@ -4334,9 +4334,32 @@
                                         "default": null,
                                         "description": "Name of the client wrapping the data keys this store creates (must match an entry of \"clients\"); defaults to the default client."
                                     },
+                                    "allowed_clients": {
+                                        "$ref": "#/$defs/types/array_null",
+                                        "items": {
+                                            "$ref": "#/$defs/types/scalar"
+                                        },
+                                        "description": "Additional clients trusted to wrap and unwrap stored data keys. The store client is always trusted."
+                                    },
                                     "key_id": {
                                         "$ref": "#/$defs/types/scalar",
                                         "description": "Master key wrapping the data keys this store creates (backend-specific: alias, ARN, key URL, ...)."
+                                    },
+                                    "secret": {
+                                        "anyOf": [
+                                            {
+                                                "$ref": "#/$defs/types/array_null",
+                                                "items": {
+                                                    "$ref": "#/$defs/types/scalar"
+                                                }
+                                            },
+                                            {
+                                                "type": [
+                                                    "string"
+                                                ]
+                                            }
+                                        ],
+                                        "description": "Secret used to authenticate the stored data keys, defaults to the \"kernel.secret\" parameter. List several to rotate it: the first one signs, all of them verify."
                                     },
                                     "table": {
                                         "$ref": "#/$defs/types/scalar",
@@ -4356,7 +4379,7 @@
                                     "max_age": {
                                         "$ref": "#/$defs/types/variable",
                                         "default": 2592000,
-                                        "description": "Seconds after which the current data key of a scope is retired in favour of a fresh one; the default of 30 days keeps what one key seals under the collision bound of the random 96-bit IV each payload carries. 0 retires the key on every call, null never retires it."
+                                        "description": "Seconds after which the current data key of a scope is retired; this does not enforce a usage limit. The default is 30 days; 0 forces rotation on every call and null disables retirement."
                                     }
                                 },
                                 "additionalProperties": false,
@@ -8090,12 +8113,17 @@
                                         },
                                         "provider_uri": {
                                             "$ref": "#/$defs/types/scalar",
-                                            "description": "The OIDC Issuer URL (e.g. \"https://accounts.example.com\"). Used for .well-known/openid-configuration discovery."
+                                            "description": "The OIDC Issuer URL (e.g. \"https://accounts.example.com\"). Used for .well-known/openid-configuration discovery unless \"discovery_uri\" is set."
+                                        },
+                                        "discovery_uri": {
+                                            "$ref": "#/$defs/types/scalar",
+                                            "default": null,
+                                            "description": "Absolute URL of the discovery document. The \"issuer\" it announces is still checked against \"provider_uri\"."
                                         },
                                         "http_client": {
                                             "$ref": "#/$defs/types/scalar",
                                             "default": null,
-                                            "description": "The id of the HttpClient service every call to the provider is made with: discovery, JWKS, token and UserInfo endpoints. Defaults to \"http_client\". A scoped client must scope every host the provider announces, not only the issuer."
+                                            "description": "The id of the HttpClient service every call to the provider is made with: discovery, JWKS, token and UserInfo endpoints. Defaults to \"http_client\". A scoped client must scope the discovery host and every host the provider announces."
                                         },
                                         "client_id": {
                                             "$ref": "#/$defs/types/scalar",

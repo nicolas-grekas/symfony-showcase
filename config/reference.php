@@ -685,11 +685,13 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *     store?: array{ // Data key store: payloads then refer to a stored data key instead of carrying it, so the KMS is reached once per key and per process, and that key can be rewrapped under another provider without rewriting a payload.
  *         connection?: scalar|Param|null, // Service id of the DBAL connection holding the table. // Default: "doctrine.dbal.default_connection"
  *         client?: scalar|Param|null, // Name of the client wrapping the data keys this store creates (must match an entry of "clients"); defaults to the default client. // Default: null
+ *         allowed_clients?: list<scalar|Param|null>,
  *         key_id?: scalar|Param|null, // Master key wrapping the data keys this store creates (backend-specific: alias, ARN, key URL, ...).
+ *         secret?: Param|string|list<scalar|Param|null>,
  *         table?: scalar|Param|null, // Name of the table holding the wrapped data keys. // Default: "key_management_data_keys"
  *         read_self_contained?: bool|Param, // Whether a payload carrying its own wrapped data key is still read, through the default client. On while migrating to the stored format, off afterwards: such a payload resolves no row, so nothing the store checks applies to it. // Default: false
  *         bind_wrapping_context?: bool|Param, // Whether the backend authenticates the reference and the scope of each data key as it wraps it. Off by default: not every backend accepts authenticated data, and turning it on needs the stored keys rewrapped. // Default: false
- *         max_age?: mixed, // Seconds after which the current data key of a scope is retired in favour of a fresh one; the default of 30 days keeps what one key seals under the collision bound of the random 96-bit IV each payload carries. 0 retires the key on every call, null never retires it. // Default: 2592000
+ *         max_age?: mixed, // Seconds after which the current data key of a scope is retired; this does not enforce a usage limit. The default is 30 days; 0 forces rotation on every call and null disables retirement. // Default: 2592000
  *     },
  *     doctrine_dbal?: array{
  *         types?: array<string, array{ // Default: []
@@ -1499,8 +1501,9 @@ use Symfony\Component\Config\Loader\ParamConfigurator as Param;
  *             failure_path?: scalar|Param|null, // Default: null
  *             failure_forward?: bool|Param, // Default: false
  *             failure_path_parameter?: scalar|Param|null, // Default: "_failure_path"
- *             provider_uri?: scalar|Param|null, // The OIDC Issuer URL (e.g. "https://accounts.example.com"). Used for .well-known/openid-configuration discovery.
- *             http_client?: scalar|Param|null, // The id of the HttpClient service every call to the provider is made with: discovery, JWKS, token and UserInfo endpoints. Defaults to "http_client". A scoped client must scope every host the provider announces, not only the issuer. // Default: null
+ *             provider_uri?: scalar|Param|null, // The OIDC Issuer URL (e.g. "https://accounts.example.com"). Used for .well-known/openid-configuration discovery unless "discovery_uri" is set.
+ *             discovery_uri?: scalar|Param|null, // Absolute URL of the discovery document. The "issuer" it announces is still checked against "provider_uri". // Default: null
+ *             http_client?: scalar|Param|null, // The id of the HttpClient service every call to the provider is made with: discovery, JWKS, token and UserInfo endpoints. Defaults to "http_client". A scoped client must scope the discovery host and every host the provider announces. // Default: null
  *             client_id?: scalar|Param|null, // The OIDC client identifier.
  *             client_certificate?: Param|string|array{ // The TLS client certificate presented to the token and UserInfo endpoints.
  *                 certificate?: scalar|Param|null, // Path to the PEM file of the certificate.
@@ -2147,6 +2150,9 @@ namespace Symfony\Component\Routing\Loader\Configurator;
  * @psalm-type RouteConfig = array{
  *     path: string|array<string,string>,
  *     controller?: string,
+ *     template?: string,
+ *     redirect_to_route?: string,
+ *     redirect_to?: string,
  *     methods?: string|list<string>,
  *     requirements?: array<string,string>,
  *     defaults?: array<string,mixed>,
