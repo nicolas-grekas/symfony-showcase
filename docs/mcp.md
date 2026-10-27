@@ -41,8 +41,8 @@ That document tells the client where to get a token, and for which resource:
 {"resource":"http://localhost:8124/mcp","authorization_servers":["http://localhost:8180/realms/showcase"],"scopes_supported":["proposals:write"],"bearer_methods_supported":["header"]}
 ```
 
-Connect the clients to `http://localhost:8124/mcp`, not to `127.0.0.1`: clients check that the
-`resource` of this document is the URL they connect to.
+Connect the clients to `http://localhost:8124/mcp`, not to `127.0.0.1`. Keycloak only issues
+tokens for this URL, and the `mcp` firewall only accepts them.
 
 ## Keycloak
 
@@ -138,22 +138,35 @@ Without the scope, `submit_proposal` fails with a message that names the missing
 to `oauth.scopes`, then log in again with `/mcp`.
 
 Claude Desktop connects to remote MCP servers through the connectors of claude.ai, which call
-the server from the internet: the app must be deployed for that, with `mcp.servers.conferences.http.allowed_hosts`
-set to its host name, and the `mcp.url` parameter of `config/packages/security.yaml` set to its
-URL.
+the server from the internet. The app must be deployed for that, with `mcp.servers.conferences.http.allowed_hosts`
+set to its host name, and `MCP_RESOURCE` set as the next section says.
+
+## Deploying under another origin
+
+The URL of the MCP server is `http://localhost:8124/mcp` in two places. When the app runs under
+another origin, change both:
+
+- `MCP_RESOURCE`, for example `MCP_RESOURCE=https://conferences.example.com/mcp`: the `mcp`
+  firewall only accepts the tokens issued for this URL;
+- the `resource_url` attribute of the `showcase-api` client of the Keycloak realm: Keycloak only
+  issues tokens for this URL.
+
+The metadata document needs no change. Its `resource` is `/mcp`, which Symfony resolves against
+the origin of the request.
 
 ## What Symfony 8.2 provides
 
 - The `oidc` token handler of the `access_token` authenticator checks the signature, the
   issuer and the audience of the tokens, with the keys of the discovery document of Keycloak,
   and loads the user from the `email` claim. The `api` firewall expects the `showcase-api`
-  audience, and the `mcp` firewall the URL of the MCP server. The two firewalls share the rest
-  of their configuration through YAML anchors.
+  audience, and the `mcp` firewall the URL of the MCP server, from `MCP_RESOURCE`. The two
+  firewalls share the rest of their configuration through YAML anchors.
 - `resource_metadata` serves the RFC 9728 document of each firewall, and advertises it in the
   `WWW-Authenticate` header of the `401`. The `api` firewall doesn't set its `resource`, which
   is then the origin of the request, served at `/.well-known/oauth-protected-resource`. The
-  `mcp` firewall sets it to the URL of the MCP server, so its document is served at
-  `/.well-known/oauth-protected-resource/mcp`, the path RFC 9728 derives from it.
+  `mcp` firewall sets it to `/mcp`, which Symfony resolves against the origin of the request.
+  Its document is served at `/.well-known/oauth-protected-resource/mcp`, the path RFC 9728
+  derives from the resource.
 - `OAUTH2_SCOPE()` checks the scopes of the token, and a denial gets the
   `insufficient_scope` challenge of RFC 6750, with the missing scope. The MCP authorization
   specification asks for that challenge, so that clients ask the user for the scope.
@@ -199,12 +212,11 @@ The tools get the user from the `Security` service: `#[CurrentUser]` only works 
 - The MCP sessions aren't bound to the user who opened them. A session opened with a token of
   `alice` accepts the token of `carol`. The tools still act for the user of the token of each
   request.
-- The app sends no CORS headers, so the MCP clients that run in a browser can't connect. The
-  command-line clients and Claude Code don't need them.
+- The metadata document is served with `Access-Control-Allow-Origin: *`, but `/mcp` sends no
+  CORS headers, and its `access_control` rule answers the preflight requests with a `401`. So
+  the MCP clients that run in a browser can't connect. The command-line clients and Claude Code
+  don't need CORS.
 - When a token lacks a scope, the TypeScript MCP SDK (1.32) refreshes the token instead of
   asking the user for the scope, if it has a refresh token, and then gets the `403` again. The
   step-up only works for the clients that start a new authorization.
-- The URL of the MCP server is written in the configuration, as the `mcp.url` parameter:
-  Symfony needs the path of the `resource` when it builds the container, and refuses an
-  environment variable that holds the whole URL, or an `http` URL whose host is an environment
-  variable.
+  modelcontextprotocol/typescript-sdk#3114 fixes it for 1.x.
