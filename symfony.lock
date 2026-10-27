@@ -144,9 +144,12 @@
             "repo": "github.com/symfony/recipes",
             "branch": "main",
             "version": "8.2",
-            "ref": "b5fb7271219d786f2145f292c53ed7866284776c"
+            "ref": "39f00f15e0e41dceacca79bffb2f1e4a4901e017"
         },
         "files": [
+            ".editorconfig",
+            ".symfony.local.yaml",
+            "AGENTS.md",
             "config/packages/cache.yaml",
             "config/packages/framework.yaml",
             "config/preload.php",
@@ -154,11 +157,7 @@
             "config/services.yaml",
             "public/index.php",
             "src/Controller/.gitignore",
-            "src/Kernel.php",
-            ".editorconfig",
-            ".symfony.local.yaml",
-            "AGENTS.md",
-            "CLAUDE.md"
+            "src/Kernel.php"
         ]
     },
     "symfony/lock": {
