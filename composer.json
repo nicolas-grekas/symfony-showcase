@@ -18,6 +18,7 @@
         "symfony/ai-bundle": "^1.0",
         "symfony/ai-doctrine-store": "^1.0",
         "symfony/ai-hugging-face-platform": "^1.0",
+        "symfony/ai-ollama-platform": "^1.0",
         "symfony/ai-platform": "^1.0",
         "symfony/ai-store": "^1.0",
         "symfony/amqp-messenger": "8.2.*",
