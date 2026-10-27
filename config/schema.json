@@ -12084,6 +12084,37 @@
                     "clients": []
                 }
             },
+            "live_component": {
+                "$ref": "#/$defs/types/object_null",
+                "properties": {
+                    "secret": {
+                        "$ref": "#/$defs/types/scalar",
+                        "default": "%kernel.secret%",
+                        "description": "The secret used to compute fingerprints and checksums"
+                    },
+                    "fetch_credentials": {
+                        "anyOf": [
+                            {
+                                "enum": [
+                                    "same-origin",
+                                    "include",
+                                    "omit"
+                                ]
+                            },
+                            {
+                                "$ref": "#/$defs/types/param"
+                            }
+                        ],
+                        "default": "same-origin",
+                        "description": "The default fetch credentials mode for all Live Components ('same-origin', 'include', 'omit')"
+                    }
+                },
+                "additionalProperties": false,
+                "default": {
+                    "secret": "%kernel.secret%",
+                    "fetch_credentials": "same-origin"
+                }
+            },
             "lock": {
                 "anyOf": [
                     {
@@ -19732,6 +19763,71 @@
                 },
                 "additionalProperties": false
             },
+            "twig_component": {
+                "$ref": "#/$defs/types/object_null",
+                "properties": {
+                    "defaults": {
+                        "$ref": "#/$defs/types/object_null",
+                        "additionalProperties": {
+                            "anyOf": [
+                                {
+                                    "$ref": "#/$defs/types/object_null",
+                                    "properties": {
+                                        "template_directory": {
+                                            "$ref": "#/$defs/types/scalar",
+                                            "default": "components"
+                                        },
+                                        "name_prefix": {
+                                            "$ref": "#/$defs/types/scalar",
+                                            "default": ""
+                                        }
+                                    },
+                                    "additionalProperties": false
+                                },
+                                {
+                                    "type": [
+                                        "string"
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    "anonymous_template_directory": {
+                        "$ref": "#/$defs/types/scalar",
+                        "description": "Defaults to `components`"
+                    },
+                    "profiler": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/$defs/types/object_null",
+                                "properties": {
+                                    "enabled": {
+                                        "$ref": "#/$defs/types/boolean",
+                                        "default": "%kernel.debug%"
+                                    },
+                                    "collect_components": {
+                                        "$ref": "#/$defs/types/boolean",
+                                        "default": true,
+                                        "description": "Collect components instances"
+                                    }
+                                },
+                                "additionalProperties": false
+                            },
+                            {
+                                "type": [
+                                    "boolean"
+                                ]
+                            }
+                        ],
+                        "default": {
+                            "enabled": "%kernel.debug%",
+                            "collect_components": true
+                        },
+                        "description": "Enables the profiler for Twig Component"
+                    }
+                },
+                "additionalProperties": false
+            },
             "twig_extra": {
                 "$ref": "#/$defs/types/object_null",
                 "properties": {
@@ -19764,7 +19860,7 @@
                                 "properties": {
                                     "enabled": {
                                         "$ref": "#/$defs/types/boolean",
-                                        "default": false
+                                        "default": true
                                     }
                                 },
                                 "additionalProperties": false
@@ -19776,7 +19872,7 @@
                             }
                         ],
                         "default": {
-                            "enabled": false
+                            "enabled": true
                         }
                     },
                     "markdown": {
@@ -22552,6 +22648,9 @@
         "key_management": {
             "$ref": "#/$defs/nodes/key_management"
         },
+        "live_component": {
+            "$ref": "#/$defs/nodes/live_component"
+        },
         "lock": {
             "$ref": "#/$defs/nodes/lock"
         },
@@ -22608,6 +22707,9 @@
         },
         "twig": {
             "$ref": "#/$defs/nodes/twig"
+        },
+        "twig_component": {
+            "$ref": "#/$defs/nodes/twig_component"
         },
         "twig_extra": {
             "$ref": "#/$defs/nodes/twig_extra"
@@ -22666,6 +22768,9 @@
                 },
                 "key_management": {
                     "$ref": "#/$defs/nodes/key_management"
+                },
+                "live_component": {
+                    "$ref": "#/$defs/nodes/live_component"
                 },
                 "lock": {
                     "$ref": "#/$defs/nodes/lock"
@@ -22728,6 +22833,9 @@
                 },
                 "twig": {
                     "$ref": "#/$defs/nodes/twig"
+                },
+                "twig_component": {
+                    "$ref": "#/$defs/nodes/twig_component"
                 },
                 "twig_extra": {
                     "$ref": "#/$defs/nodes/twig_extra"
@@ -22793,6 +22901,9 @@
                 "key_management": {
                     "$ref": "#/$defs/nodes/key_management"
                 },
+                "live_component": {
+                    "$ref": "#/$defs/nodes/live_component"
+                },
                 "lock": {
                     "$ref": "#/$defs/nodes/lock"
                 },
@@ -22851,6 +22962,9 @@
                 },
                 "twig": {
                     "$ref": "#/$defs/nodes/twig"
+                },
+                "twig_component": {
+                    "$ref": "#/$defs/nodes/twig_component"
                 },
                 "twig_extra": {
                     "$ref": "#/$defs/nodes/twig_extra"
@@ -22914,6 +23028,9 @@
                 "key_management": {
                     "$ref": "#/$defs/nodes/key_management"
                 },
+                "live_component": {
+                    "$ref": "#/$defs/nodes/live_component"
+                },
                 "lock": {
                     "$ref": "#/$defs/nodes/lock"
                 },
@@ -22970,6 +23087,9 @@
                 },
                 "twig": {
                     "$ref": "#/$defs/nodes/twig"
+                },
+                "twig_component": {
+                    "$ref": "#/$defs/nodes/twig_component"
                 },
                 "twig_extra": {
                     "$ref": "#/$defs/nodes/twig_extra"

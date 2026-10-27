@@ -58,6 +58,7 @@
         "symfony/translation": "8.2.*",
         "symfony/twig-bundle": "8.2.*",
         "symfony/uid": "8.2.*",
+        "symfony/ux-live-component": "^3.6",
         "symfony/ux-turbo": "^3.5",
         "symfony/validator": "8.2.*",
         "symfony/web-link": "8.2.*",
