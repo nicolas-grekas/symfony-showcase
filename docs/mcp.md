@@ -5,9 +5,10 @@ Desktop or the MCP Inspector can search the program and submit proposals in the 
 speaker. It uses the MCP bundle of [Symfony AI](https://github.com/symfony/ai)
 (`symfony/mcp-bundle` 1.0.0-BETA1) and the official PHP SDK (`mcp/sdk` 0.9).
 
-The access tokens are the ones of the API: the `access_token` firewall of Symfony checks them
-against Keycloak, the same way as for `/api/*`. The MCP SDK has its own OAuth layer, which the
-app doesn't use.
+Keycloak issues the access tokens, and an `access_token` firewall of Symfony checks them, the
+same way as for `/api/*`. The tokens of the MCP server are bound to its URL with the resource
+indicators of RFC 8707, so they can't be used on the API, and the other way round. The MCP SDK
+has its own OAuth layer, which the app doesn't use.
 
 ## Tools and resources
 
@@ -33,17 +34,38 @@ Start the app as the [README](../README.md) says, on the port 8124. Then:
 curl -i -X POST http://localhost:8124/mcp
 ```
 
-The answer is a `401` with `WWW-Authenticate: Bearer resource_metadata="http://localhost:8124/.well-known/oauth-protected-resource"`.
-That document tells the client where to get a token:
+The answer is a `401` with `WWW-Authenticate: Bearer resource_metadata="http://localhost:8124/.well-known/oauth-protected-resource/mcp"`.
+That document tells the client where to get a token, and for which resource:
 
 ```json
-{"resource":"http://localhost:8124","authorization_servers":["http://localhost:8180/realms/showcase"],"scopes_supported":["proposals:write"],"bearer_methods_supported":["header"]}
+{"resource":"http://localhost:8124/mcp","authorization_servers":["http://localhost:8180/realms/showcase"],"scopes_supported":["proposals:write"],"bearer_methods_supported":["header"]}
 ```
 
-MCP clients log in with the `showcase-mcp` client of Keycloak: a public client with PKCE, whose
-redirect URIs are the ones of the MCP Inspector and of Claude Code. Keycloak creates it when it
-imports `docker/keycloak/showcase-realm.json`, which it does when its container is created. If
-your Keycloak container is older than this file, create it again (this drops what was stored in
+Connect the clients to `http://localhost:8124/mcp`, not to `127.0.0.1`: clients check that the
+`resource` of this document is the URL they connect to.
+
+## Keycloak
+
+The compose file runs Keycloak 26.8 with two experimental features that MCP clients use, as
+[the Keycloak guide for MCP](https://www.keycloak.org/securing-apps/mcp-authz-server) describes:
+
+- `resource-indicators` (RFC 8707). When a client sends `resource=http://localhost:8124/mcp`,
+  Keycloak checks that a client of the audience of the token has this URL as its `resource_url`
+  attribute, and the token gets this URL as its only audience. The `showcase-api` client of the
+  realm is that resource server: the `showcase-api` client scope already puts it in the audience
+  of the tokens. Another `resource` gets an `invalid_target` error. Without `resource`, the token
+  keeps the `showcase-api` audience, which only the API accepts.
+- `cimd` (client ID metadata documents). Claude Code and Claude Desktop use the URL of a
+  document on `claude.ai` as their client id, so they need no client of their own in the realm.
+  The `mcp-cimd` client policy lets Keycloak fetch these documents. It also accepts documents
+  served over HTTP from `host.docker.internal`, to test a client locally: don't keep that in
+  production.
+
+Clients that don't use a metadata document log in with the `showcase-mcp` client: a public
+client with PKCE, whose redirect URIs are the ones of the MCP Inspector and of Claude Code.
+
+Keycloak imports `docker/keycloak/showcase-realm.json` when its container is created. If your
+Keycloak container is older than this file, create it again (this drops what was stored in
 Keycloak since, such as sessions):
 
 ```bash
@@ -52,12 +74,14 @@ docker compose up -d --force-recreate --wait keycloak
 
 ## Testing with the MCP Inspector
 
-Get a token with the `showcase-cli` client, which accepts a password, then call the tools with
-the command-line mode of the [MCP Inspector](https://github.com/modelcontextprotocol/inspector):
+Get a token for the MCP server with the `showcase-cli` client, which accepts a password, then
+call the tools with the command-line mode of the
+[MCP Inspector](https://github.com/modelcontextprotocol/inspector):
 
 ```bash
 TOKEN=$(curl -s -d grant_type=password -d client_id=showcase-cli -d username=alice -d password=alice \
-    -d scope=openid http://localhost:8180/realms/showcase/protocol/openid-connect/token | jq -r .access_token)
+    -d scope=openid -d resource=http://localhost:8124/mcp \
+    http://localhost:8180/realms/showcase/protocol/openid-connect/token | jq -r .access_token)
 MCP="npx -y @modelcontextprotocol/inspector --cli http://localhost:8124/mcp --transport http --header"
 
 $MCP "Authorization: Bearer $TOKEN" --method tools/list
@@ -81,16 +105,22 @@ $MCP "Authorization: Bearer $TOKEN" --method tools/call --tool-name submit_propo
 
 ## Connecting Claude Code
 
-Claude Code finds Keycloak through the `401` and the metadata document. By default, Keycloak
-doesn't accept anonymous client registrations, so give Claude Code the id of the `showcase-mcp`
-client, and the port of the redirect URI that Keycloak knows:
+Claude Code finds Keycloak through the `401` and the metadata document, and identifies itself
+with its client ID metadata document:
+
+```bash
+claude mcp add --transport http conferences http://localhost:8124/mcp
+```
+
+Then run `/mcp` in Claude Code to log in, as `alice` / `alice`. With a version of Claude Code
+that doesn't use metadata documents, give it the `showcase-mcp` client, and the port of the
+redirect URI that Keycloak knows:
 
 ```bash
 claude mcp add --transport http --client-id showcase-mcp --callback-port 8125 conferences http://localhost:8124/mcp
 ```
 
-Then run `/mcp` in Claude Code to log in, as `alice` / `alice`. To submit proposals, Claude Code
-must ask for the `proposals:write` scope. Pin it in `.mcp.json`:
+To submit proposals, Claude Code must ask for the `proposals:write` scope. Pin it in `.mcp.json`:
 
 ```json
 {
@@ -98,7 +128,7 @@ must ask for the `proposals:write` scope. Pin it in `.mcp.json`:
         "conferences": {
             "type": "http",
             "url": "http://localhost:8124/mcp",
-            "oauth": {"clientId": "showcase-mcp", "callbackPort": 8125, "scopes": "proposals:write"}
+            "oauth": {"scopes": "proposals:write"}
         }
     }
 }
@@ -109,21 +139,25 @@ to `oauth.scopes`, then log in again with `/mcp`.
 
 Claude Desktop connects to remote MCP servers through the connectors of claude.ai, which call
 the server from the internet: the app must be deployed for that, with `mcp.servers.conferences.http.allowed_hosts`
-set to its host name.
+set to its host name, and the `mcp.url` parameter of `config/packages/security.yaml` set to its
+URL.
 
 ## What Symfony 8.2 provides
 
 - The `oidc` token handler of the `access_token` authenticator checks the signature, the
-  issuer and the `showcase-api` audience of the tokens, with the keys of the discovery document
-  of Keycloak, and loads the user from the `email` claim.
-- `resource_metadata` serves the RFC 9728 document at `/.well-known/oauth-protected-resource`,
-  and advertises it in the `WWW-Authenticate` header of the `401`. Its `resource` is the origin
-  of the request, which covers `/mcp` and `/api` alike, so the firewall of the API protects both
-  with the same configuration: its `pattern` is `^/(api/|mcp$)`.
+  issuer and the audience of the tokens, with the keys of the discovery document of Keycloak,
+  and loads the user from the `email` claim. The `api` firewall expects the `showcase-api`
+  audience, and the `mcp` firewall the URL of the MCP server. The two firewalls share the rest
+  of their configuration through YAML anchors.
+- `resource_metadata` serves the RFC 9728 document of each firewall, and advertises it in the
+  `WWW-Authenticate` header of the `401`. The `api` firewall doesn't set its `resource`, which
+  is then the origin of the request, served at `/.well-known/oauth-protected-resource`. The
+  `mcp` firewall sets it to the URL of the MCP server, so its document is served at
+  `/.well-known/oauth-protected-resource/mcp`, the path RFC 9728 derives from it.
 - `OAUTH2_SCOPE()` checks the scopes of the token, and a denial gets the
   `insufficient_scope` challenge of RFC 6750, with the missing scope. The MCP authorization
   specification asks for that challenge, so that clients ask the user for the scope.
-- `loginUser($user, 'api', [AccessTokenAuthenticator::SCOPE_ATTRIBUTE => [...]])` logs a user
+- `loginUser($user, 'mcp', [AccessTokenAuthenticator::SCOPE_ATTRIBUTE => [...]])` logs a user
   in on the stateless firewall in tests, with scopes: `tests/Mcp/McpServerTest.php` runs the
   MCP handshake and calls the tools with it, without Keycloak.
 
@@ -167,3 +201,7 @@ The tools get the user from the `Security` service: `#[CurrentUser]` only works 
   request.
 - The app sends no CORS headers, so the MCP clients that run in a browser can't connect. The
   command-line clients and Claude Code don't need them.
+- The URL of the MCP server is written in the configuration, as the `mcp.url` parameter:
+  Symfony needs the path of the `resource` when it builds the container, and refuses an
+  environment variable that holds the whole URL, or an `http` URL whose host is an environment
+  variable.

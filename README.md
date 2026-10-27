@@ -51,12 +51,12 @@ curl -H "Authorization: Bearer $TOKEN" http://127.0.0.1:8124/api/conferences/sym
 
 `/mcp` serves an MCP server, with the MCP bundle of Symfony AI: AI clients such as Claude Code
 or the MCP Inspector can search the talks, read the schedules, list the proposals of a speaker
-and submit new ones. It takes the same Keycloak tokens as the API, checked by the same firewall,
+and submit new ones. Keycloak issues its tokens for its URL (RFC 8707), a firewall checks them,
 and submitting needs the `proposals:write` scope. [docs/mcp.md](docs/mcp.md) tells how to
 connect a client:
 
 ```bash
-claude mcp add --transport http --client-id showcase-mcp --callback-port 8125 conferences http://localhost:8124/mcp
+claude mcp add --transport http conferences http://localhost:8124/mcp
 ```
 
 ## Tests
