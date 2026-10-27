@@ -68,16 +68,26 @@ claude mcp add --transport http conferences http://localhost:8124/mcp
 
 The page of a proposal in the back office shows the most similar talks and proposals of all
 conferences, and notes written by a model: a summary, tags and a track. It uses the Platform,
-Agent and Store components of Symfony AI, with the vectors in PostgreSQL (pgvector), and
+Agent and Store components of Symfony AI, with the vectors in PostgreSQL (pgvector), and open
+models on your machine with [Ollama](https://ollama.com), so it runs with no API key, or
 [Hugging Face Inference Providers](https://huggingface.co/docs/inference-providers/index) or any
 other provider. The tools of the assistant only read. Accepting or rejecting a proposal stays a
-reviewer action, which asks for the password of the reviewer. Without an API key, a fake platform
+reviewer action, which asks for the password of the reviewer. Without a model, a fake platform
 answers.
 
 With Symfony UX, the reviewers see the proposals arrive in their list as they are submitted,
 through a Mercure hub, the notes are written in front of them as the model streams them, and the
 back office searches the talks and proposals by meaning as they type.
-[docs/ai.md](docs/ai.md) tells how to run it with Hugging Face:
+[docs/ai.md](docs/ai.md) tells how to run it with Ollama, on your machine and with no API key:
+
+```bash
+ollama pull qwen3:8b
+ollama pull all-minilm
+printf 'AI_PLATFORM=ollama\nAI_CHAT_MODEL=qwen3:8b\nAI_EMBEDDING_MODEL=all-minilm\n' >> .env.local
+symfony console assistant:index
+```
+
+Or with Hugging Face:
 
 ```bash
 printf 'AI_PLATFORM=huggingface\nHUGGINGFACE_API_KEY=hf_...\n' >> .env.local

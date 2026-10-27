@@ -26,24 +26,61 @@ The same assistant is available to MCP clients, such as Claude Code, as two tool
 of the app (see "MCP tools").
 
 It uses [Symfony AI](https://github.com/symfony/ai) 1.0.0-BETA1, with the Platform, Agent and Store
-components, the AI bundle, the Hugging Face platform bridge and the Doctrine store bridge. The pages
+components, the AI bundle, the Ollama and Hugging Face platform bridges and the Doctrine store bridge. The pages
 use [Symfony UX](https://ux.symfony.com) 3.6: Turbo and its Mercure bridge, Live Components and
 Icons, with the Mercure bundle 0.6 and a [Mercure](https://mercure.rocks) hub.
 
 ## Running it
 
 Without any configuration, the assistant uses a fake platform, so that the app runs and the tests
-pass without an API key. `AI_PLATFORM` picks the platform:
+pass without an API key. With [Ollama](https://ollama.com), real models run on your machine, also
+without an API key. `AI_PLATFORM` picks the platform:
 
 | `AI_PLATFORM` | What answers | Needs |
 |---|---|---|
 | `fake` (the default) | `App\Assistant\FakePlatform`, which answers without calling any model | nothing |
+| `ollama` | open models on your machine, served by [Ollama](https://ollama.com) at `OLLAMA_URL` | Ollama and the models |
 | `huggingface` | [Hugging Face Inference Providers](https://huggingface.co/docs/inference-providers/index) | `HUGGINGFACE_API_KEY` |
 | `generic.default` | any API compatible with the one of OpenAI, at `GENERIC_BASE_URL` | `GENERIC_BASE_URL`, the models |
 
 The fake platform is not a model. The fake embeddings count the words of the texts. The fake notes
 take the first sentence of the abstract as the summary, and the most frequent words as the tags.
 The fake platform shows how the assistant works, not what a model writes.
+
+### On your machine, with Ollama
+
+Install [Ollama](https://ollama.com), then pull a chat model that supports tool calling, and an
+embedding model that gives vectors of 384 dimensions:
+
+```bash
+ollama pull qwen3:8b
+ollama pull all-minilm
+```
+
+Set these variables in `.env.local`, then embed the proposals again:
+
+```bash
+AI_PLATFORM=ollama
+AI_CHAT_MODEL=qwen3:8b
+AI_EMBEDDING_MODEL=all-minilm
+```
+
+```bash
+symfony console assistant:index
+```
+
+`OLLAMA_URL` is the URL of Ollama, `http://localhost:11434` by default.
+`config/packages/ai_ollama_platform.yaml` configures this platform. Ollama also runs the GGUF models
+of the Hugging Face Hub, with their name on the Hub, for example
+`ollama pull hf.co/Qwen/Qwen3-8B-GGUF:Q4_K_M`. Qwen3 8B needs a GPU with 8 GB of memory, or it runs
+slowly on the CPU. all-minilm is the model that `AI_EMBEDDING_MODEL` names on Hugging Face,
+sentence-transformers/all-MiniLM-L6-v2.
+
+Ollama constrains the whole answer of a model to the response format, so a model that must answer
+in JSON can't call a tool. `App\Assistant\ReadFirstWithOllama` sends the first round of a call
+without the response format: the model reads with its tools, then writes its notes in the format.
+The system prompt asks the model to call all its tools in the first round. The same listener turns
+the thinking of the model off, as the notes need no reasoning and come faster without it.
 
 ### With Hugging Face
 
@@ -73,12 +110,13 @@ symfony console assistant:index
 
 ### With another provider
 
-`generic.default` calls any API compatible with the one of OpenAI, such as a local
-[Ollama](https://ollama.com), whose URL is the default of `GENERIC_BASE_URL`.
+`generic.default` calls any API compatible with the one of OpenAI, at `GENERIC_BASE_URL`.
 `config/packages/ai_generic_platform.yaml` configures this platform. The generic bridge treats a
 model as an embedding model only when its name contains `embed`. Pick such a model with 384
-dimensions, for example `AI_EMBEDDING_MODEL=snowflake-arctic-embed:33m` on Ollama. The chat model
-must support tool calling and structured output.
+dimensions, for example `AI_EMBEDDING_MODEL=snowflake-arctic-embed:33m` on the API of Ollama that
+is compatible with the one of OpenAI. For Ollama, prefer the `ollama` platform: the generic bridge
+sends a text to embed as chat messages (see "Limits"). The chat model must support tool calling and
+structured output.
 
 For a provider that needs an API key, add an `api_key` to `ai_generic_platform.yaml`. Other
 providers have a bridge of their own, for example `symfony/ai-mistral-platform`. Install the bridge,
@@ -322,6 +360,10 @@ output and the profiler run for real. A test replaces the platform with its own 
 `AiAssertionsTrait` of the AI bundle asserts the calls to the model and to the tools, also when they
 happen in the body of a streamed response.
 
+`tests/Assistant/OllamaTest.php` replays the exchanges recorded with a local Ollama, with
+`#[UseRecord]`. Record them again with `SYMFONY_HTTP_RECORDER=record`, while Ollama runs with the
+all-minilm model.
+
 The tests don't need a Mercure hub. In the test environment, `mercure.yaml` gives the hub a
 `MockHttpClient`, and the tests read the updates that the app published from the hub service, which
 records them in debug mode. `tests/Controller/Admin/ProposalListTest.php` checks the update that a
@@ -371,6 +413,8 @@ The tests need pgvector in the test database.
   vectorizer on the store, declares `EntityEmbedder` and `EntityIndexer` in `services.yaml`, and
   embeds the proposals with Messenger and the `assistant:index` command.
 - `DenyWritingTools`, the cache of the notes, the panel of the back office and the MCP tools.
+- `ReadFirstWithOllama`, which lets a model of Ollama call its tools before it answers in the
+  response format, and turns its thinking off.
 - `ReviewAssistant::stream()`, the stream template of the panel, `RefreshProposalLists`, the
   `arrivals` Stimulus controller, and the search component.
 
@@ -380,6 +424,17 @@ The tests need pgvector in the test database.
   embedding models of the generic bridge accept messages, so the platform turns a single string into
   a message. The assistant is not affected. It embeds lists of texts, and compares the proposals by
   their stored vectors.
+- With the Ollama platform, the model of an agent can't take options in its name, such as
+  `qwen3:8b?think=false`: the bridge asks Ollama about the model with its whole name, and Ollama
+  doesn't find it. `ReadFirstWithOllama` sets the `think` option instead.
+- A model of Ollama calls its tools in the first round of a call only. The next rounds must answer in
+  the response format. A model that needs a second tool after it reads the result of the first one
+  writes its notes without it.
+- The Hugging Face Hub gives `hf.co/Qwen/Qwen3-8B-GGUF` a template that always opens a thinking
+  block, and a context of 40,960 tokens. With `think: false`, the model then writes its reasoning as
+  text before it calls its tools, which takes longer. With 8 GB of GPU memory, this context doesn't
+  fit next to the model, and Ollama runs a part of the model on the CPU. `ollama pull qwen3:8b` gets
+  the template of the Ollama library, which turns the thinking off, and the default context of Ollama.
 - `ai:store:retrieve --limit` returns 5 results at most. The command passes the limit as `maxItems`,
   and the Doctrine store reads `limit`.
 - `ai.yaml` lists the tools of the agent under `services`, as the short list form fails
