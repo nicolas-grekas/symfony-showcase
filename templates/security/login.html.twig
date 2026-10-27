@@ -3,7 +3,7 @@
 {% block title %}Log in{% endblock %}
 
 {% block body %}
-    <h1>{{ re_authentication ? 'Confirm your password' : 'Log in' }}</h1>
+    <h1>{% if re_authentication %}{{ ux_icon('lucide:lock') }} Confirm your password{% else %}Log in{% endif %}</h1>
 
     {% if re_authentication %}
         <p>This action needs a recent authentication, please type your password again.</p>
@@ -23,7 +23,7 @@
             <input type="password" name="_password" id="password" autocomplete="current-password" required {{ re_authentication ? 'autofocus' }}>
         </div>
         <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
-        <button type="submit">Log in</button>
+        <button type="submit">{{ re_authentication ? 'Confirm' : 'Log in' }}</button>
     </form>
 
     {% if not re_authentication %}

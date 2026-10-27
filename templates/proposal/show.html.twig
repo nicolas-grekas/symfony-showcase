@@ -16,7 +16,7 @@
             {{ ui.transition_button('proposal_start_review', proposal, 'Start the review') }}
         {% endif %}
         {% if workflow_can(proposal, 'accept') and is_granted('PROPOSAL_REVIEW', proposal) %}
-            <a class="button" href="{{ path('proposal_decide', {id: proposal.id}) }}">Accept or reject</a>
+            <a class="button" href="{{ path('proposal_decide', {id: proposal.id}) }}" title="Asks for your password">{{ ux_icon('lucide:lock') }} Accept or reject</a>
         {% endif %}
         {% if workflow_can(proposal, 'withdraw') and is_granted('PROPOSAL_WITHDRAW', proposal) %}
             {{ ui.transition_button('proposal_withdraw', proposal, 'Withdraw') }}

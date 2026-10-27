@@ -36,14 +36,16 @@ final class SecurityTest extends WebTestCase
 
         // a token restored from the session carries no proof of a recent authentication
         $this->client->loginUser($this->findUser('reviewer@example.com'));
-        $this->client->request('GET', '/proposals/'.$proposal->id.'/decide');
+        $this->client->request('GET', '/proposals/'.$proposal->id);
+        $this->assertSelectorExists('a[title="Asks for your password"]:contains("Accept or reject")');
+        $this->client->clickLink('Accept or reject');
         $this->assertResponseRedirects('/login');
 
         $this->client->followRedirect();
         $this->assertSelectorTextContains('h1', 'Confirm your password');
         $this->assertInputValueSame('_username', 'reviewer@example.com');
 
-        $this->client->submitForm('Log in', ['_password' => 'reviewer']);
+        $this->client->submitForm('Confirm', ['_password' => 'reviewer']);
         $this->assertResponseRedirects('http://localhost/proposals/'.$proposal->id.'/decide');
 
         $this->client->followRedirect();

@@ -152,6 +152,7 @@ final class ReviewAssistantTest extends WebTestCase
         $this->client->loginUser($this->findUser('reviewer@example.com'));
         $this->client->request('GET', '/admin/proposals/'.$proposal->id.'/assistant');
 
+        $this->assertSelectorTextSame('#assistant h2 .badge', 'Read-only');
         $this->assertSelectorTextContains('#assistant', 'The assistant only reads. Accepting or rejecting a proposal is your decision, and asks for your password.');
         $this->summarize();
         $this->client->request('GET', '/admin/proposals/'.$proposal->id.'/assistant');

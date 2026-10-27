@@ -32,7 +32,7 @@ button[type="button"] {
     color: #1f6feb;
 }
 
-input[type="text"], input[type="email"], input[type="url"], input[type="number"], textarea {
+input[type="text"], input[type="email"], input[type="password"], input[type="url"], input[type="number"], textarea {
     width: 100%;
     box-sizing: border-box;
     padding: .4rem;
@@ -123,4 +123,29 @@ input[type="search"] {
 .similarity meter {
     width: 6rem;
     vertical-align: middle;
+}
+
+svg {
+    vertical-align: -.125em;
+}
+
+.badge {
+    display: inline-block;
+    padding: 0 .6rem;
+    border: 1px solid #d0d7de;
+    border-radius: 1rem;
+    color: #59636e;
+    font-size: .8rem;
+    font-weight: normal;
+    vertical-align: middle;
+}
+
+.badge.live {
+    display: none;
+    border-color: #1a7f37;
+    color: #1a7f37;
+}
+
+turbo-mercure-stream-source[connected] + .badge.live {
+    display: inline-block;
 }

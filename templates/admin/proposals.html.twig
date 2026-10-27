@@ -8,8 +8,14 @@
 {% endblock %}
 
 {% block body %}
-    <h1>Proposals for {{ conference.name }}</h1>
-    {{ turbo_stream_from(path('admin_proposals', {conference: conference.id})) }}
+    <h1>
+        Proposals for {{ conference.name }}
+        {# permanent, as a refresh would remove the "connected" attribute that shows the badge #}
+        <span id="proposals-stream" data-turbo-permanent>
+            {{- turbo_stream_from(path('admin_proposals', {conference: conference.id})) -}}
+            <span class="badge live">{{ ux_icon('lucide:radio-tower') }} Live</span>
+        </span>
+    </h1>
 
     <table>
         <thead><tr><th>Title</th><th>Speakers</th><th>Status</th><th>Submitted</th><th>Public</th></tr></thead>

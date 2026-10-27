@@ -5,7 +5,7 @@
 
 {% block body %}
     <turbo-frame id="assistant">
-        <h2>Review assistant</h2>
+        <h2>{{ ux_icon('lucide:bot') }} Review assistant <span class="badge">{{ ux_icon('lucide:eye') }} Read-only</span></h2>
         <p class="help-text">The assistant only reads. Accepting or rejecting a proposal is your decision, and asks for your password.</p>
 
         <h3>Similar talks and proposals</h3>
@@ -37,7 +37,7 @@
         {% endif %}
         <form method="post" action="{{ path('admin_proposal_review', {id: proposal.id}) }}">
             <input type="hidden" name="_token" value="{{ csrf_token('assistant') }}">
-            <button type="submit">{{ notes ? 'Summarize again' : 'Summarize' }}</button>
+            <button type="submit">{{ ux_icon('lucide:sparkles') }} {{ notes ? 'Summarize again' : 'Summarize' }}</button>
         </form>
     </turbo-frame>
 {% endblock %}
