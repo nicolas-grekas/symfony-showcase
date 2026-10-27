@@ -17,7 +17,7 @@ Requirements: PHP 8.5 with the `intl`, `pdo_pgsql`, `amqp` and `sodium` extensio
 
 ```bash
 composer install
-docker compose up -d --wait   # Postgres, Mailpit, Keycloak, RabbitMQ
+docker compose up -d --wait   # Postgres with pgvector, Mailpit, Keycloak, RabbitMQ
 symfony console doctrine:migrations:migrate -n
 symfony console doctrine:fixtures:load -n
 symfony serve -d --no-tls --port=8124
@@ -61,6 +61,25 @@ connect a client:
 claude mcp add --transport http conferences http://localhost:8124/mcp
 ```
 
+## Review assistant
+
+The page of a proposal in the back office shows the most similar talks and proposals of all
+conferences, and notes written by a model: a summary, tags and a track. It uses the Platform,
+Agent and Store components of Symfony AI, with the vectors in PostgreSQL (pgvector), and
+[Hugging Face Inference Providers](https://huggingface.co/docs/inference-providers/index) or any
+other provider. The tools of the assistant only read. Accepting or rejecting a proposal stays a
+reviewer action, which asks for the password of the reviewer. Without an API key, a fake platform
+answers.
+[docs/ai.md](docs/ai.md) tells how to run it with Hugging Face:
+
+```bash
+printf 'AI_PLATFORM=huggingface\nHUGGINGFACE_API_KEY=hf_...\n' >> .env.local
+symfony console assistant:index
+```
+
+The database container needs the pgvector image of `compose.yaml`: [docs/ai.md](docs/ai.md)
+tells how to create it again if it is older.
+
 ## Tests
 
 ```bash
@@ -87,6 +106,7 @@ with `SYMFONY_HTTP_RECORDER=record` while the server runs.
 | ObjectMapper and JsonStreamer through `#[Serialize]`, `Link-Template`, api-catalog | `src/Api`, `src/Controller/Api` |
 | Access tokens with scopes, protected resource metadata | `config/packages/security.yaml`, `src/Controller/Api/ProposalApiController.php` |
 | MCP tools behind the API firewall, `#[IsGranted]` on tools | `src/Mcp`, `config/packages/mcp.yaml`, `docs/mcp.md` |
+| Review assistant: an agent with read-only tools, embeddings in pgvector through Messenger | `src/Assistant`, `config/packages/ai.yaml`, `docs/ai.md` |
 | Sub-commands, `InputFile[]`, enum list options | `src/Command/ConferenceCommands.php` |
 | Columns encrypted with KeyManagement | `src/Entity/Speaker.php`, `config/packages/key_management.yaml` |
 | HTTP cache with `Cache-Status` | `config/packages/framework.yaml` |
