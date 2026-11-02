@@ -144,7 +144,7 @@
             "repo": "github.com/symfony/recipes",
             "branch": "main",
             "version": "8.2",
-            "ref": "39f00f15e0e41dceacca79bffb2f1e4a4901e017"
+            "ref": "6dad798dd0f9536371957911281436501bdc0d8f"
         },
         "files": [
             ".editorconfig",

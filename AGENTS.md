@@ -6,11 +6,6 @@ that a package is installed.
 
 ## Installing packages
 
-Add a feature with `composer require <package>` (`symfony/messenger`,
-`orm-pack`...): its Flex recipe registers the bundle and writes its default
-configuration. Don't edit `config/bundles.php` or write that configuration by
-hand.
-
 Before writing infrastructure code or adding a third-party library, check
 whether a Symfony component does the job: Lock, Cache, HttpClient, Mailer,
 Messenger, Scheduler, RateLimiter, Workflow... Usually there is one, and
@@ -25,8 +20,6 @@ Messenger, Scheduler, RateLimiter, Workflow... Usually there is one, and
   `config/schema.json` is their JSON schema, which editors use and `lint:yaml`
   checks when `opis/json-schema` is installed. Both are regenerated when the
   container is rebuilt in debug mode. Read them instead of guessing an option.
-- Configure services and routes with attributes, YAML or PHP. Symfony 8
-  removed the XML format.
 - Prefer attributes to configuration files: `#[Route]`, `#[IsGranted]`,
   `#[AsCommand]`, `#[AsEventListener]`, `#[AsMessageHandler]`, `#[Autowire]`,
   `#[Target]`... Services are autowired and autoconfigured, so a service
@@ -50,8 +43,6 @@ Messenger, Scheduler, RateLimiter, Workflow... Usually there is one, and
 - Makers (`bin/console make:*`) ask for missing arguments, and a
   non-interactive shell then waits forever. Pass all the arguments, with
   `--no-interaction`.
-- With Doctrine, change the schema with migrations (`make:migration`, then
-  `doctrine:migrations:migrate`), not with `doctrine:schema:update`.
 
 ## Tests
 
@@ -60,8 +51,9 @@ Messenger, Scheduler, RateLimiter, Workflow... Usually there is one, and
 helpers replace a lot of setup code:
 
 - `$client->loginUser($user)` instead of submitting a login form;
-- `MessengerAssertionsTrait`, with `consumeQueuedMessages()`, for the messages
-  sent to in-memory transports;
+- `MessengerAssertionsTrait`: a message sent to an async transport isn't handled
+  during a test. Call `consumeQueuedMessages()` and check what the handler did,
+  such as the email it sent, or the handler stays untested;
 - `#[UseRecord]` to record HTTP exchanges once and replay them, instead of
   calling real APIs;
 - `ClockSensitiveTrait::mockTime()` to control the time.
@@ -92,6 +84,26 @@ the team:
 - Keep the diff to what the task needs: no unrelated renames, reformatting or
   refactoring.
 
+## When a package gets in the way
+
+These rules apply to bugs, missing features, slow code paths and APIs that make
+the app write boilerplate, in Symfony or in any other package:
+
+- Before you write a workaround, check that the problem is real. Reproduce it in
+  a few lines, compare the installed version with the latest release, and
+  search the issues and pull requests of the project.
+- For a performance issue, measure it first, with the profiler or a benchmark,
+  and keep the numbers.
+- Keep the workaround small. Link the workaround to the upstream issue or pull
+  request in a comment, so that it can be removed after the fix is released.
+- Offer to report it upstream. Draft the issue with the reproduction or the
+  numbers, or a pull request with a test when the fix is clear. Ask before
+  posting anything, since it is published under the name of the person you
+  work for.
+- Report security issues privately, as the security policy of the project says,
+  never in a public issue. For Symfony, see
+  https://symfony.com/doc/current/contributing/code/security.html.
+
 ## Look it up
 
 Symfony's APIs change between versions, and what you remember may be outdated.
@@ -105,6 +117,9 @@ The application can tell what exists:
   `debug:event-dispatcher`...;
 - `bin/console lint:container`, `lint:yaml config/`, `lint:twig templates/`: to
   catch errors before running;
+- `vendor/symfony/<package>/CHANGELOG.md`: what each version added, deprecated
+  or removed. Read the sections of the recent versions before you use a
+  component;
 - the source and the docblocks in `vendor/`;
 - https://symfony.com/doc/current/, switched to the version of `composer.json`
   when it differs.
