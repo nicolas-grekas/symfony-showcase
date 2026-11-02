@@ -51,12 +51,12 @@
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "main",
-            "version": "3.1",
-            "ref": "1d01ec03c6ecbd67c3375c5478c9a423ae5d6a33"
+            "version": "3.7",
+            "ref": "22bf81c4b6beb7c8258f08ab92f4007306880a18"
         },
         "files": [
             "config/packages/doctrine_migrations.yaml",
-            "migrations/.gitignore"
+            "src/Migrations/.gitignore"
         ]
     },
     "php-http/discovery": {
@@ -140,7 +140,7 @@
             "repo": "github.com/symfony/recipes",
             "branch": "main",
             "version": "8.2",
-            "ref": "1766d3625a3cc3b88fe5686a22875a24a976fb3b"
+            "ref": "e6c7a755207c237c61e1d16ace459b5e73593316"
         },
         "files": [
             "assets/app.js",
@@ -204,7 +204,7 @@
             "repo": "github.com/symfony/recipes",
             "branch": "main",
             "version": "8.2",
-            "ref": "39f00f15e0e41dceacca79bffb2f1e4a4901e017"
+            "ref": "6dad798dd0f9536371957911281436501bdc0d8f"
         },
         "files": [
             ".editorconfig",

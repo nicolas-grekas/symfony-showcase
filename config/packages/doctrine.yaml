@@ -12,10 +12,6 @@ doctrine:
         naming_strategy: doctrine.orm.naming_strategy.underscore
         identity_generation_preferences:
             Doctrine\DBAL\Platforms\PostgreSQLPlatform: identity
-        mappings:
-            App:
-                dir: '%kernel.project_dir%/src/Entity'
-                prefix: 'App\Entity'
 
 when@test:
     doctrine:
