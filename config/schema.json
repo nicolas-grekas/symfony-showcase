@@ -1414,6 +1414,11 @@
                                                     "$ref": "#/$defs/types/scalar",
                                                     "default": false
                                                 },
+                                                "auto_discover_entities": {
+                                                    "$ref": "#/$defs/types/boolean_null",
+                                                    "default": null,
+                                                    "description": "Registers all entity classes discovered by the container scan, removing the need for explicit \"mappings\". When not set, enabled if neither \"mappings\" nor \"auto_mapping\" is configured and Symfony 8.2 and doctrine/orm 3.6 are available."
+                                                },
                                                 "naming_strategy": {
                                                     "$ref": "#/$defs/types/scalar",
                                                     "default": "doctrine.orm.naming_strategy.default"
@@ -1607,7 +1612,9 @@
                                                                         "$ref": "#/$defs/types/scalar"
                                                                     },
                                                                     "alias": {
-                                                                        "$ref": "#/$defs/types/scalar"
+                                                                        "$ref": "#/$defs/types/scalar",
+                                                                        "deprecated": true,
+                                                                        "description": "Deprecated since doctrine/doctrine-bundle 3.4: The \"doctrine.orm.entity_managers..mappings..alias.alias\" option is deprecated and will be removed in DoctrineBundle 4.0, as Doctrine ORM no longer supports entity namespace aliases."
                                                                     },
                                                                     "prefix": {
                                                                         "$ref": "#/$defs/types/scalar"
@@ -1715,6 +1722,7 @@
                                                 "class_metadata_factory_name": "Doctrine\\ORM\\Mapping\\ClassMetadataFactory",
                                                 "default_repository_class": "Doctrine\\ORM\\EntityRepository",
                                                 "auto_mapping": false,
+                                                "auto_discover_entities": null,
                                                 "naming_strategy": "doctrine.orm.naming_strategy.default",
                                                 "quote_strategy": "doctrine.orm.quote_strategy.default",
                                                 "typed_field_mapper": "doctrine.orm.typed_field_mapper.default",
@@ -1898,6 +1906,11 @@
                                     "auto_mapping": {
                                         "$ref": "#/$defs/types/scalar",
                                         "default": false
+                                    },
+                                    "auto_discover_entities": {
+                                        "$ref": "#/$defs/types/boolean_null",
+                                        "default": null,
+                                        "description": "Registers all entity classes discovered by the container scan, removing the need for explicit \"mappings\". When not set, enabled if neither \"mappings\" nor \"auto_mapping\" is configured and Symfony 8.2 and doctrine/orm 3.6 are available."
                                     },
                                     "naming_strategy": {
                                         "$ref": "#/$defs/types/scalar",
@@ -2092,7 +2105,9 @@
                                                             "$ref": "#/$defs/types/scalar"
                                                         },
                                                         "alias": {
-                                                            "$ref": "#/$defs/types/scalar"
+                                                            "$ref": "#/$defs/types/scalar",
+                                                            "deprecated": true,
+                                                            "description": "Deprecated since doctrine/doctrine-bundle 3.4: The \"doctrine.orm.entity_managers..mappings..alias.alias\" option is deprecated and will be removed in DoctrineBundle 4.0, as Doctrine ORM no longer supports entity namespace aliases."
                                                         },
                                                         "prefix": {
                                                             "$ref": "#/$defs/types/scalar"
@@ -4379,7 +4394,7 @@
                                     "max_age": {
                                         "$ref": "#/$defs/types/variable",
                                         "default": 2592000,
-                                        "description": "Seconds after which the current data key of a scope is retired; this does not enforce a usage limit. The default is 30 days; 0 forces rotation on every call and null disables retirement."
+                                        "description": "Seconds after which the current root key of a scope is retired. The default is 30 days; 0 forces rotation on every call and null disables retirement."
                                     }
                                 },
                                 "additionalProperties": false,
@@ -7194,7 +7209,7 @@
                     },
                     "recent_authentication_lifetime": {
                         "$ref": "#/$defs/types/integer",
-                        "minimum": 0,
+                        "minimum": 1,
                         "default": 7200,
                         "description": "Number of seconds an interactive authentication keeps granting IS_AUTHENTICATED_RECENTLY. Use it to make sensitive actions require the user to authenticate again.",
                         "examples": [
@@ -7203,7 +7218,7 @@
                     },
                     "very_recent_authentication_lifetime": {
                         "$ref": "#/$defs/types/integer",
-                        "minimum": 0,
+                        "minimum": 1,
                         "default": 300,
                         "description": "Number of seconds an interactive authentication keeps granting IS_AUTHENTICATED_VERY_RECENTLY, a stricter bar than IS_AUTHENTICATED_RECENTLY for the most sensitive actions.",
                         "examples": [
@@ -8550,7 +8565,7 @@
                                                 "enabled": false,
                                                 "leeway": 30
                                             },
-                                            "description": "Renew the access token with the refresh token grant of RFC 6749, Section 6, so that it stays usable to call an API on behalf of the logged-in user. The provider only issues a refresh token when it was asked for one, e.g. with the \"offline_access\" scope, and the renewal needs the \"expires_in\" it is optional for the provider to report. Whether this is enabled or not, the tokens are held as the \"oidc_refresh_token\", \"oidc_access_token\" and \"oidc_access_token_expires_at\" attributes of the security token, and the \"security.authenticator.oidc_login.token_refresher.<firewall>\" service renews them on demand. A provider rotating refresh tokens expects the previous one never to be replayed, which a session handler locking the session guarantees, and the default one does."
+                                            "description": "Renew the access token with the refresh token grant of RFC 6749, Section 6, so that it stays usable to call an API on behalf of the logged-in user. The provider only issues a refresh token when it was asked for one, e.g. with the \"offline_access\" scope, and the renewal needs the \"expires_in\" it is optional for the provider to report. Whether this is enabled or not, the tokens are held as the \"oauth2_refresh_token\", \"oauth2_access_token\" and \"oauth2_access_token_expires_at\" attributes of the security token, and the \"security.authenticator.oidc_login.token_refresher.<firewall>\" service renews them on demand. A provider rotating refresh tokens expects the previous one never to be replayed, which a session handler locking the session guarantees, and the default one does."
                                         },
                                         "enable_end_session": {
                                             "$ref": "#/$defs/types/boolean",
@@ -9455,7 +9470,7 @@
                                                 "resource": {
                                                     "$ref": "#/$defs/types/scalar",
                                                     "default": null,
-                                                    "description": "The resource identifier of this firewall: an HTTPS URL, without a fragment (e.g. \"https://api.example.com\" or \"https://example.com/api\"). Its path component is inserted after the well-known path, as RFC 9728, Section 3.1 prescribes, so that one host can serve the metadata of several protected resources. Defaults to the origin the document is served from, which is what a firewall covering a whole application wants."
+                                                    "description": "The resource identifier of this firewall: an HTTPS URL without a fragment (e.g. \"https://example.com/api\"), read when the container is compiled, or a path (e.g. \"/api\") resolved against the origin of the request. Its path is inserted after the well-known path, as RFC 9728, Section 3.1 prescribes. Defaults to the origin of the request, which is what a firewall covering a whole application wants."
                                                 },
                                                 "authorization_servers": {
                                                     "anyOf": [
