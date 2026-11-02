@@ -80,7 +80,7 @@
             "repo": "github.com/symfony/recipes",
             "branch": "main",
             "version": "8.2",
-            "ref": "1766d3625a3cc3b88fe5686a22875a24a976fb3b"
+            "ref": "e6c7a755207c237c61e1d16ace459b5e73593316"
         },
         "files": [
             "assets/app.js",
